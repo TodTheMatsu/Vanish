@@ -4,7 +4,7 @@
 
 @layer components{
   .boxdesign{
-    @apply bg-white text-white text-xl rounded-3xl bg-opacity-10 backdrop-blur-xl border-2 border-opacity-20
+    @apply bg-white text-white text-xl rounded-full bg-opacity-10 backdrop-blur-xl border-2 border-opacity-20
       border-white from-white/20 from-10% to-white/5 glow:border-opacity-100 bg-gradient-to-r 
   }
 }
