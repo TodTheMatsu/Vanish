@@ -1,18 +1,20 @@
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { Container } from "tsparticles-slim";
 
 const ParticlesComponent = () => {
     const [init, setInit] = useState(false);
+    const initRef = useRef(false);
 
-    useEffect(() => {
+    if (!initRef.current) {
         initParticlesEngine(async (engine) => {
             await loadSlim(engine);
         }).then(() => {
             setInit(true);
         });
-    }, []);
+        initRef.current = true;
+    }
 
     const particlesLoaded = useCallback(async (container: Container | undefined) => {
         if (container) {
@@ -39,7 +41,7 @@ const ParticlesComponent = () => {
                                     enable: true,
                                     mode: "repulse",
                                 },
-               
+
                             },
                             modes: {
                                 push: {
@@ -74,21 +76,21 @@ const ParticlesComponent = () => {
                             },
                             number: {
                                 density: {
-                                    enable: true,
+                                    enable: false,
                                 },
-                                value: 80,
+                                value: 200,
                             },
                             opacity: {
-                                value: 0.5,
+                                value: 1,
                             },
                             shape: {
                                 type: "circle",
                             },
                             size: {
-                                value: { min: 1, max: 5 },
+                                value: { min: 1, max: 2 },
                             },
                         },
-                        detectRetina: true,
+                        detectRetina: false,
                     }}
                 />
             )}
