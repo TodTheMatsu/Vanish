@@ -5,6 +5,6 @@
 @layer components{
   .boxdesign{
     @apply bg-white text-white text-xl rounded-3xl bg-opacity-0 backdrop-blur-md border-2
-      border-neutral-500 from-white/20 from-0% to-white/5 glow:border-opacity-100 bg-gradient-to-r 
+      border-neutral-500
   }
 }

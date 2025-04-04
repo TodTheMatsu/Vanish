@@ -62,7 +62,7 @@ const ParticlesComponent = () => {
                                 distance: 150,
                                 enable: true,
                                 opacity: 0.5,
-                                width: 1,
+                                width: 0.25,
                             },
                             move: {
                                 direction: "none",
@@ -71,7 +71,7 @@ const ParticlesComponent = () => {
                                     default: "bounce",
                                 },
                                 random: false,
-                                speed: 2,
+                                speed: 0.5,
                                 straight: false,
                             },
                             number: {
@@ -87,7 +87,7 @@ const ParticlesComponent = () => {
                                 type: "circle",
                             },
                             size: {
-                                value: { min: 1, max: 2 },
+                                value: { min: 0.5, max: 1 },
                             },
                         },
                         detectRetina: false,
