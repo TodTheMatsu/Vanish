@@ -72,15 +72,15 @@ interface NavLinksProps {
 
 const NavLinks = ({ navLinks }: NavLinksProps) => {
   return (
-    <div className='top-[5%] fixed right-[10%]'>
-      <motion.div className='flex-grow text-neutral-500 text-md p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-5 hover:border-white'>
+    <div className='absolute md:fixed top-[5%] right-[5%] md:right-[10%]'>
+      <motion.div className='flex-grow text-neutral-500 text-md p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
         {navLinks.map((link, index) => (
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 5 + index * 0.5 } }}
             whileHover={{ scale: 1.15 }}
             key={index}
-            className='hover:text-white'
+            className='hover:text-white text-sm md:text-md'
           >
             {link.text}
           </motion.button>
@@ -110,8 +110,8 @@ function App() {
       <Particles />
       <motion.div
         className={`fixed w-screen h-screen`}
-        initial={{ backdropFilter: 'blur(0em)' }}
-        animate={{ backdropFilter: backgroundBlur ? 'blur(0.1em)' : 'blur(0em)' }}
+        initial={{ backdropFilter: 'blur(0.1em)' }}
+        animate={{ backdropFilter: backgroundBlur ? 'blur(0em)' : 'blur(0.1em)' }}
         transition={{ duration: 2 }}
       ></motion.div>
       <div className='bg-black h-[400vh] overflow-x-hidden w-screen flex items-center flex-col justify-start'>
@@ -174,23 +174,23 @@ function App() {
             scale={[0, 1]}
             translateY={['200%', '0%']}
           >
-            <p className='text-white text-center font-light text-xl w-1/2 mx-auto'>{vanishDescription}</p>
+            <p className='text-white text-center font-light text-xl w-[80%] md:w-1/2 mx-auto'>{vanishDescription}</p>
           </Parallax>
-          <Parallax shouldAlwaysCompleteAnimation={true} opacity={[0, 1]} startScroll={1900} endScroll={2200}>
-            <div className='w-screen my-[5%] h-[50%] flex items-center justify-center'>
-              <div className='w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
-                <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Personal Use</h3>
-                <p className='text-white text-center px-[10%] font-light text-xl'>
-                  Share moments, thoughts, and messages without worrying about them coming back years later. Perfect for private
-                  conversations that should remain private.
-                </p>
+          <Parallax shouldAlwaysCompleteAnimation={true} opacity={[0, 1]} startScroll={600} endScroll={2200} scale={[0, 1]}>
+            <div className='w-screen my-[5%] h-[50%] flex items-center justify-center flex-wrap'>
+              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
+              <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Personal Use</h3>
+              <p className='text-white text-center px-[10%] font-light text-xl'>
+                Share moments, thoughts, and messages without worrying about them coming back years later. Perfect for private
+                conversations that should remain private.
+              </p>
               </div>
-              <div className='w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
-                <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Business Use</h3>
-                <p className='text-white text-center px-[10%] font-light text-xl'>
-                  Discuss sensitive information, share temporary credentials, or collaborate on confidential projects with the assurance
-                  that your data won't persist indefinitely.
-                </p>
+              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
+              <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Business Use</h3>
+              <p className='text-white text-center px-[10%] font-light text-xl'>
+                Discuss sensitive information, share temporary credentials, or collaborate on confidential projects with the assurance
+                that your data won't persist indefinitely.
+              </p>
               </div>
             </div>
           </Parallax>
