@@ -73,14 +73,14 @@ interface NavLinksProps {
 const NavLinks = ({ navLinks }: NavLinksProps) => {
   return (
     <div className='absolute md:fixed top-[5%] right-[5%] md:right-[10%]'>
-      <motion.div className='flex-grow text-neutral-500 text-md p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
+      <motion.div className='grow text-neutral-500 text-lg p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
         {navLinks.map((link, index) => (
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 5 + index * 0.5 } }}
             whileHover={{ scale: 1.15 }}
             key={index}
-            className='hover:text-white text-sm md:text-md'
+            className='hover:text-white cursor-pointer text-sm md:text-lg'
           >
             {link.text}
           </motion.button>
@@ -137,7 +137,7 @@ function App() {
               initial={{ scale: 1, opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 4.5, duration: 1 } }}
               whileHover={{ scale: 1.1, borderColor: 'white' }}
-              className='boxdesign hover:text-black  hover:backdrop-opacity-100 hover:bg-white text-center my-5 flex flew-grow items-center justify-center px-5 py-2'
+              className='boxdesign hover:text-black cursor-pointer hover:backdrop-opacity-100 hover:bg-white text-center my-5 flex flew-grow items-center justify-center px-5 py-2'
             >
               Explore
             </motion.button>
@@ -156,12 +156,12 @@ function App() {
           </div>
         </Parallax>
 
-        <div className='flex fixed items-center w-screen h-screen justify-center pointer-events-none flex-col'>
+        <div className='flex items-center w-screen h-screen justify-center pointer-events-none flex-col'>
           <Parallax
             shouldAlwaysCompleteAnimation={true}
             opacity={[0, 1]}
-            startScroll={500}
-            endScroll={2000}
+            startScroll={0}
+            endScroll={1000}
             translateX={['120%', '0%']}
           >
             <h3 className='text-white p-6 text-4xl font-bold'>What is Vanish?</h3>
@@ -169,33 +169,44 @@ function App() {
           <Parallax
             shouldAlwaysCompleteAnimation={true}
             opacity={[0, 1]}
-            startScroll={500}
-            endScroll={2000}
+            startScroll={0}
+            endScroll={1000}
             scale={[0, 1]}
             translateY={['200%', '0%']}
           >
             <p className='text-white text-center font-light text-xl w-[80%] md:w-1/2 mx-auto'>{vanishDescription}</p>
           </Parallax>
-          <Parallax shouldAlwaysCompleteAnimation={true} opacity={[0, 1]} startScroll={600} endScroll={2200} scale={[0, 1]}>
-            <div className='w-screen my-[5%] h-[50%] flex items-center justify-center flex-wrap'>
-              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
+          <Parallax shouldAlwaysCompleteAnimation={true} opacity={[0, 1]} startScroll={0} endScroll={1000} scale={[0, 1]}>
+            <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 1,
+              delay:1,
+            }}
+            viewport={{ once: true }}
+            className='w-screen my-[5%] h-[50%] flex items-center justify-center flex-wrap'>
+              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white/5 rounded-lg shadow-lg m-5'>
               <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Personal Use</h3>
               <p className='text-white text-center px-[10%] font-light text-xl'>
                 Share moments, thoughts, and messages without worrying about them coming back years later. Perfect for private
                 conversations that should remain private.
               </p>
               </div>
-              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white bg-opacity-5 rounded-lg shadow-lg m-5'>
+              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white/5 bg-opacity-5 rounded-lg shadow-lg m-5'>
               <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Business Use</h3>
               <p className='text-white text-center px-[10%] font-light text-xl'>
                 Discuss sensitive information, share temporary credentials, or collaborate on confidential projects with the assurance
                 that your data won't persist indefinitely.
               </p>
               </div>
-            </div>
+            </motion.div>
           </Parallax>
+          
         </div>
-
+        
+          
+        </div>
         <NavLinks navLinks={navLinks} />
       </div>
     </ParallaxProvider>
