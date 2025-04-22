@@ -51,7 +51,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="min-h-screen w-screen bg-black text-white flex">
       {/* Sidebar */}
       <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4 space-y-6">
         <motion.button
