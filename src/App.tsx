@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import Particles from './components/Particles';
 import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
 import { useState } from 'react';
+import HomePage from './components/HomePage';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
 
@@ -205,6 +206,7 @@ function App() {
           
         </div>     
         </div>
+        <HomePage />
         <NavLinks navLinks={navLinks} />
     </ParallaxProvider>
   );
