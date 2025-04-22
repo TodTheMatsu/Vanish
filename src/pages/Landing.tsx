@@ -153,8 +153,9 @@ export default function Landing() {
               <motion.span
                 key={index}
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.05, delay: index * 0.02 }}
+                whileInView={{ opacity: 1 }}
+                 viewport={{ once: true }}
+                transition={{ duration: 0.025, delay: index * 0.01 }}
               >
                 {char}
               </motion.span>
