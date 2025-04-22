@@ -67,11 +67,19 @@ export default function Home() {
   };
 
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, displayName: e.target.value });
+    setTempUser({ ...tempUser, displayName: e.target.value });
   };
 
   const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, profilePicture: e.target.value });
+    setTempUser({ ...tempUser, profilePicture: e.target.value });
+  };
+
+  const [showPostCreation, setShowPostCreation] = useState(false);
+  const [tempUser, setTempUser] = useState(user);
+
+  const handleSaveSettings = () => {
+    setUser(tempUser);
+    setShowSettings(false);
   };
 
   return (
@@ -121,36 +129,14 @@ export default function Home() {
       {/* Main Content */}
       <div className="ml-16 md:ml-64 flex-1 p-4">
         <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="mb-8 bg-neutral-900 rounded-xl p-4">
-            <textarea
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500"
-              placeholder="What's happening?"
-              rows={3}
-            />
-            <div className="flex justify-between items-center mt-2">
-              <select
-                value={expiresIn}
-                onChange={(e) => setExpiresIn(Number(e.target.value))}
-                className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1"
-              >
-                <option value={1}>1 hour</option>
-                <option value={24}>24 hours</option>
-                <option value={48}>48 hours</option>
-                <option value={72}>72 hours</option>
-                <option value={168}>1 week</option>
-              </select>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600"
-                type="submit"
-              >
-                Post
-              </motion.button>
-            </div>
-          </form>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowPostCreation(true)}
+            className="mb-8 w-full py-3 bg-blue-500 rounded-xl font-bold hover:bg-blue-600 flex items-center justify-center space-x-2"
+          >
+            <span>Create Post</span>
+          </motion.button>
 
           <div className="space-y-4">
             {posts.map(post => (
@@ -183,6 +169,69 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Post Creation Overlay */}
+      <AnimatePresence>
+        {showPostCreation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-neutral-900 rounded-xl p-6 max-w-2xl w-[90%] relative"
+            >
+              <button
+                onClick={() => setShowPostCreation(false)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-white"
+              >
+                <IoCloseOutline size={24} />
+              </button>
+              
+              <h2 className="text-2xl font-bold mb-4">Create Post</h2>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit(e);
+                setShowPostCreation(false);
+              }}>
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500 mb-4"
+                  placeholder="What's happening?"
+                  rows={4}
+                />
+                <div className="flex justify-between items-center">
+                  <select
+                    value={expiresIn}
+                    onChange={(e) => setExpiresIn(Number(e.target.value))}
+                    className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1"
+                  >
+                    <option value={1}>1 hour</option>
+                    <option value={24}>24 hours</option>
+                    <option value={48}>48 hours</option>
+                    <option value={72}>72 hours</option>
+                    <option value={168}>1 week</option>
+                  </select>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600"
+                    type="submit"
+                  >
+                    Post
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Settings Overlay */}
       <AnimatePresence>
@@ -231,7 +280,7 @@ export default function Home() {
                   <label className="block text-sm font-medium mb-2">Display Name</label>
                   <input
                     type="text"
-                    value={user.displayName}
+                    value={tempUser.displayName}
                     onChange={handleDisplayNameChange}
                     className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -241,7 +290,7 @@ export default function Home() {
                   <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
                   <input
                     type="text"
-                    value={user.profilePicture}
+                    value={tempUser.profilePicture}
                     onChange={handleProfilePictureChange}
                     className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -250,7 +299,7 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowSettings(false)}
+                  onClick={handleSaveSettings}
                   className="w-full py-2 bg-blue-500 rounded-lg font-bold mt-4"
                 >
                   Save Changes
