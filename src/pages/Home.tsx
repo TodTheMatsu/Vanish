@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { IoHomeSharp, IoMailSharp, IoSettingsSharp } from 'react-icons/io5';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoHomeSharp, IoMailSharp, IoSettingsSharp, IoCloseOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
@@ -23,7 +23,8 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
   const [expiresIn, setExpiresIn] = useState(24);
-  const [currentUser] = useState<User>({
+  const [showSettings, setShowSettings] = useState(false);
+  const [user, setUser] = useState<User>({
     username: 'defaultUser',
     displayName: 'Default User',
     profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
@@ -51,7 +52,7 @@ export default function Home() {
           content: newPost, 
           timestamp: new Date(),
           expiresIn: expiresIn,
-          author: currentUser
+          author: user
         },
         ...posts
       ]);
@@ -65,19 +66,27 @@ export default function Home() {
     return `${hours}h remaining`;
   };
 
+  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser({ ...user, displayName: e.target.value });
+  };
+
+  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser({ ...user, profilePicture: e.target.value });
+  };
+
   return (
     <div className="min-h-screen w-screen bg-black text-white flex">
       {/* Sidebar */}
       <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4">
         <div className="flex items-center space-x-3 mb-8 w-full">
           <img 
-            src={currentUser.profilePicture} 
+            src={user.profilePicture} 
             alt="Profile" 
             className="w-10 h-10 rounded-full"
           />
           <div className="hidden md:block">
-            <div className="font-bold">{currentUser.displayName}</div>
-            <div className="text-sm text-neutral-400">@{currentUser.username}</div>
+            <div className="font-bold">{user.displayName}</div>
+            <div className="text-sm text-neutral-400">@{user.username}</div>
           </div>
         </div>
         
@@ -100,7 +109,7 @@ export default function Home() {
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            onClick={() => navigate('/settings')}
+            onClick={() => setShowSettings(true)}
             className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
           >
             <IoSettingsSharp size={24} />
@@ -174,6 +183,83 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Settings Overlay */}
+      <AnimatePresence>
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-neutral-900 rounded-xl p-6 max-w-2xl w-[90%] relative"
+            >
+              <button
+                onClick={() => setShowSettings(false)}
+                className="absolute top-4 right-4 text-neutral-400 hover:text-white"
+              >
+                <IoCloseOutline size={24} />
+              </button>
+              
+              <h1 className="text-3xl font-bold mb-6">Settings</h1>
+              
+              <div className="space-y-6">
+                <div>
+                  <img 
+                    src={user.profilePicture} 
+                    alt="Profile" 
+                    className="w-24 h-24 rounded-full mb-4"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={user.username}
+                    disabled
+                    className="w-full p-2 bg-neutral-800 rounded-lg text-neutral-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Display Name</label>
+                  <input
+                    type="text"
+                    value={user.displayName}
+                    onChange={handleDisplayNameChange}
+                    className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
+                  <input
+                    type="text"
+                    value={user.profilePicture}
+                    onChange={handleProfilePictureChange}
+                    className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowSettings(false)}
+                  className="w-full py-2 bg-blue-500 rounded-lg font-bold mt-4"
+                >
+                  Save Changes
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
