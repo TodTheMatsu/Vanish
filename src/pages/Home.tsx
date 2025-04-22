@@ -1,19 +1,33 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { IoHomeSharp, IoMailSharp } from 'react-icons/io5';
+import { IoHomeSharp, IoMailSharp, IoSettingsSharp } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+
+interface User {
+  username: string;
+  displayName: string;
+  profilePicture: string;
+}
 
 interface Post {
   id: number;
   content: string;
   timestamp: Date;
   expiresIn: number;
+  author: User;
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
   const [expiresIn, setExpiresIn] = useState(24);
+  const [currentUser] = useState<User>({
+    username: 'defaultUser',
+    displayName: 'Default User',
+    profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,7 +50,8 @@ export default function Home() {
           id: Date.now(), 
           content: newPost, 
           timestamp: new Date(),
-          expiresIn: expiresIn
+          expiresIn: expiresIn,
+          author: currentUser
         },
         ...posts
       ]);
@@ -53,21 +68,45 @@ export default function Home() {
   return (
     <div className="min-h-screen w-screen bg-black text-white flex">
       {/* Sidebar */}
-      <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4 space-y-6">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
-        >
-          <IoHomeSharp size={24} />
-          <span className="hidden md:inline">Home</span>
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
-        >
-          <IoMailSharp size={24} />
-          <span className="hidden md:inline">Private Messages</span>
-        </motion.button>
+      <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4">
+        <div className="flex items-center space-x-3 mb-8 w-full">
+          <img 
+            src={currentUser.profilePicture} 
+            alt="Profile" 
+            className="w-10 h-10 rounded-full"
+          />
+          <div className="hidden md:block">
+            <div className="font-bold">{currentUser.displayName}</div>
+            <div className="text-sm text-neutral-400">@{currentUser.username}</div>
+          </div>
+        </div>
+        
+        <div className="space-y-4 w-full">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            onClick={() => navigate('/home')}
+            className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
+          >
+            <IoHomeSharp size={24} />
+            <span className="hidden md:inline">Home</span>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            onClick={() => navigate('/messages')}
+            className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
+          >
+            <IoMailSharp size={24} />
+            <span className="hidden md:inline">Private Messages</span>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            onClick={() => navigate('/settings')}
+            className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
+          >
+            <IoSettingsSharp size={24} />
+            <span className="hidden md:inline">Settings</span>
+          </motion.button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -112,6 +151,17 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 className="p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words"
               >
+                <div className="flex items-center space-x-3 mb-4">
+                  <img 
+                    src={post.author.profilePicture} 
+                    alt="Profile" 
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div>
+                    <span className="font-bold">{post.author.displayName}</span>
+                    <span className="text-neutral-400 text-sm ml-2">@{post.author.username}</span>
+                  </div>
+                </div>
                 <div className="min-h-[50px] mb-4">
                   <p className="text-lg whitespace-pre-wrap">{post.content}</p>
                 </div>

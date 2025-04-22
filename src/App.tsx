@@ -12,6 +12,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/messages" element={<div className="min-h-screen bg-black text-white flex items-center justify-center">Messages coming soon...</div>} />
           </Routes>
         </div>
       </ParallaxProvider>
