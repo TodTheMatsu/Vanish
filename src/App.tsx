@@ -203,12 +203,9 @@ function App() {
             </motion.div>
           </Parallax>
           
-        </div>
-        
-          
+        </div>     
         </div>
         <NavLinks navLinks={navLinks} />
-      </div>
     </ParallaxProvider>
   );
 }
