@@ -174,14 +174,14 @@ export default function Home() {
                             />
                           </span>
                         );
-                      } else if (isUrl && !isImageUrl) {
+                      } else if (isUrl) {
                         return (
                           <a 
                             key={index}
                             href={segment}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 break-all underline"
+                            className="text-blue-400 hover:text-blue-300 break-all"
                           >
                             {segment}
                           </a>
@@ -234,20 +234,10 @@ export default function Home() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-blue-500 mb-4 min-h-[100px] resize-none"
+                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500 mb-4"
                   placeholder="What's happening?"
+                  rows={4}
                 />
-                <div className="mb-4 text-neutral-400">
-                  {newPost.split(/(\s+)/).map((word, index) => {
-                    const isUrl = word.match(/^(https?:\/\/[^\s]+)$/i);
-                    const isMediaUrl = word.match(/\.(jpeg|jpg|gif|png)$/i);
-                    return isUrl && !isMediaUrl ? (
-                      <span key={index} className="text-blue-400 underline">{word} </span>
-                    ) : (
-                      <span key={index}>{word}</span>
-                    );
-                  })}
-                </div>
                 <div className="flex justify-between items-center">
                   <select
                     value={expiresIn}
