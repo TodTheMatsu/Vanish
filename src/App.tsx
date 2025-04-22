@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
 import Particles from './components/Particles';
-import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
+import { ParallaxProvider } from 'react-scroll-parallax';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import HomePage from './components/HomePage';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
+import Home from './components/Home';
+
 
 interface NavLink {
   text: string;
@@ -92,9 +95,6 @@ const NavLinks = ({ navLinks }: NavLinksProps) => {
 };
 
 function App() {
-  const text = 'Vanish';
-  const baseOpacity = 1;
-  const [showHomePage, setShowHomePage] = useState(false);
   const navLinks = [
     { text: 'About' },
     { text: 'Sign Up' },
@@ -103,114 +103,31 @@ function App() {
     { text: 'Privacy Policy' },
     { text: 'Terms of Service' },
   ];
+  const text = 'Vanish';
+  const baseOpacity = 1;
   const vanishDescription =
     'Vanish is a privacy-focused social media platform that gives you complete control over your digital footprint. Unlike traditional social networks that store your data indefinitely, Vanish automatically deletes your messages after a set period of time, ensuring your conversations remain private and temporary.';
   const [backgroundBlur, setBackgroundBlur] = useState(true);
 
   return (
-    <ParallaxProvider>
-      <Particles />
-      <motion.div
-        className={`fixed w-screen h-screen`}
-        initial={{ backdropFilter: 'blur(0.1em)' }}
-        animate={{ backdropFilter: backgroundBlur ? 'blur(0em)' : 'blur(0.1em)' }}
-        transition={{ duration: 2 }}
-      ></motion.div>
-      <div className='bg-black h-[400vh] overflow-x-hidden w-screen flex items-center flex-col justify-start'>
-        <Parallax
-          shouldAlwaysCompleteAnimation={true}
-          opacity={[1, 0]}
-          translateY={['0%', '100%']}
-          easing='easeIn'
-          speed={1000}
-          startScroll={0}
-          endScroll={1000}
-          scale={[1, 0]}
-          onProgressChange={(progress) => {
-            setBackgroundBlur(progress < 0.2);
-          }}
-        >
-          <div className='flex items-center h-screen justify-center flex-col'>
-            <div className='flex items-center justify-center flex-col'>
-              <AnimatedText baseOpacity={baseOpacity} text={text} />
-            </div>
-            <AnimatedWords baseOpacity={baseOpacity} text={'Post.  Share.  Vanish.'} />
-            <motion.button
-              initial={{ scale: 1, opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 4.5, duration: 1 } }}
-              whileHover={{ scale: 1.1, borderColor: 'white' }}
-              className='boxdesign hover:text-black cursor-pointer hover:backdrop-opacity-100 hover:bg-white text-center my-5 flex flew-grow items-center justify-center px-5 py-2'
-              onClick={() => setShowHomePage(true)}
-            >
-              Explore
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, y: -50 }}
-              animate={{
-                opacity: 1,
-                y: 0,
-                transition: { delay: 5, duration: 1.5, type: 'spring', stiffness: 100 },
-              }}
-            >
-              <IconContext.Provider value={{ size: '2em', className: 'animate-bounce fill-neutral-500 hover:fill-white' }}>
-                <IoMdArrowDown />
-              </IconContext.Provider>
-            </motion.button>
-          </div>
-        </Parallax>
-
-        <div className='flex items-center w-screen h-screen justify-center pointer-events-none flex-col'>
-          <Parallax
-            shouldAlwaysCompleteAnimation={true}
-            opacity={[0, 1]}
-            startScroll={0}
-            endScroll={1000}
-            translateX={['120%', '0%']}
-          >
-            <h3 className='text-white p-6 text-4xl font-bold'>What is Vanish?</h3>
-          </Parallax>
-          <Parallax
-            shouldAlwaysCompleteAnimation={true}
-            opacity={[0, 1]}
-            startScroll={0}
-            endScroll={1000}
-            scale={[0, 1]}
-            translateY={['200%', '0%']}
-          >
-            <p className='text-white text-center font-light text-xl w-[80%] md:w-1/2 mx-auto'>{vanishDescription}</p>
-          </Parallax>
-          <Parallax shouldAlwaysCompleteAnimation={true} opacity={[0, 1]} startScroll={0} endScroll={1000} scale={[0, 1]}>
-            <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 1,
-              delay:1,
-            }}
-            viewport={{ once: true }}
-            className='w-screen my-[5%] h-[50%] flex items-center justify-center flex-wrap'>
-              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white/5 rounded-lg shadow-lg m-5'>
-              <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Personal Use</h3>
-              <p className='text-white text-center px-[10%] font-light text-xl'>
-                Share moments, thoughts, and messages without worrying about them coming back years later. Perfect for private
-                conversations that should remain private.
-              </p>
-              </div>
-              <div className='w-[80%] md:w-[30%] lg:w-[15%] h-full bg-white/5 bg-opacity-5 rounded-lg shadow-lg m-5'>
-              <h3 className='text-white text-center text-2xl my-[5%] font-semibold'>For Business Use</h3>
-              <p className='text-white text-center px-[10%] font-light text-xl'>
-                Discuss sensitive information, share temporary credentials, or collaborate on confidential projects with the assurance
-                that your data won't persist indefinitely.
-              </p>
-              </div>
-            </motion.div>
-          </Parallax>
-          
-        </div>     
+    <BrowserRouter>
+      <ParallaxProvider>
+        <Particles />
+        <motion.div
+          className={`fixed w-screen h-screen`}
+          initial={{ backdropFilter: 'blur(0.1em)' }}
+          animate={{ backdropFilter: backgroundBlur ? 'blur(0em)' : 'blur(0.1em)' }}
+          transition={{ duration: 2 }}
+        ></motion.div>
+        <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
+          <Routes>
+            <Route path="/" element={<Home baseOpacity={baseOpacity} text={text} vanishDescription={vanishDescription} navLinks={navLinks} backgroundBlur={backgroundBlur} setBackgroundBlur={setBackgroundBlur}/>} />
+            <Route path="/home" element={<HomePage />} />
+          </Routes>
+          <NavLinks navLinks={navLinks} />
         </div>
-        {showHomePage && <HomePage />}
-        <NavLinks navLinks={navLinks} />
-    </ParallaxProvider>
+      </ParallaxProvider>
+    </BrowserRouter>
   );
 }
 
