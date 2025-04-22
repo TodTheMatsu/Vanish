@@ -158,7 +158,24 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="min-h-[50px] mb-4">
-                  <p className="text-lg whitespace-pre-wrap">{post.content}</p>
+                  <p className="text-lg whitespace-pre-wrap">
+                    {post.content.split(' ').map((word, index) => {
+                      const isImageUrl = word.match(/\.(jpeg|jpg|gif|png)$/i) != null;
+                      return isImageUrl ? (
+                        <span key={index}>
+                          <img 
+                            src={word} 
+                            alt="Post content" 
+                            className="max-w-full h-auto rounded-lg my-2"
+                            onError={(e) => e.currentTarget.style.display = 'none'}
+                          />
+                          {' '}
+                        </span>
+                      ) : (
+                        <span key={index}>{word} </span>
+                      );
+                    })}
+                  </p>
                 </div>
                 <div className="flex justify-between text-sm text-neutral-400 mt-auto">
                   <span>{new Date(post.timestamp).toLocaleString()}</span>
