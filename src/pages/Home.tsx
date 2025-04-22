@@ -66,7 +66,7 @@ export default function Home() {
             <select
               value={expiresIn}
               onChange={(e) => setExpiresIn(Number(e.target.value))}
-              className="bg-transparent border border-white/20 rounded px-2 py-1"
+              className="bg-black border border-white/20 rounded-md px-2 py-1 "
             >
               <option value={1}>1 hour</option>
               <option value={24}>24 hours</option>
@@ -94,9 +94,9 @@ export default function Home() {
               className="p-4 border border-white/20 rounded-lg"
             >
               <p className="mb-2">{post.content}</p>
-              <div className="flex justify-between text-sm text-gray-400">
+              <div className="flex justify-between text-sm text-gray-400 space-x-1">
                 <span>{new Date(post.timestamp).toLocaleString()}</span>
-                <span>{timeLeft(post)}</span>
+                <span className='font-bold'>{timeLeft(post)}</span>
               </div>
             </motion.div>
           ))}
