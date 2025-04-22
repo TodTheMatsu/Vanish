@@ -148,7 +148,18 @@ export default function Landing() {
           <h3 className='text-white p-6 text-4xl font-bold'>What is Vanish?</h3>
         </Parallax>
         <Parallax opacity={[0, 1]} startScroll={0} endScroll={1000} scale={[0, 1]} translateY={['200%', '0%']}>
-          <p className='text-white text-center text-white font-light text-xl w-[80%] md:w-1/2 mx-auto'>{vanishDescription}</p>
+          <p className='text-white text-center text-white font-light text-xl w-[80%] md:w-1/2 mx-auto'>
+            {vanishDescription.split('').map((char, index) => (
+              <motion.span
+                key={index}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.05, delay: index * 0.02 }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </p>
         </Parallax>
       </div>
     </>
