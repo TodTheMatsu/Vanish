@@ -1,18 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { IoHomeSharp, IoMailSharp } from 'react-icons/io5';
 
 interface Post {
   id: number;
   content: string;
   timestamp: Date;
-  expiresIn: number; // hours
+  expiresIn: number;
 }
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
-  const [expiresIn, setExpiresIn] = useState(24); // default 24 hours
+  const [expiresIn, setExpiresIn] = useState(24);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -22,7 +23,7 @@ export default function Home() {
           return Date.now() < expirationTime;
         })
       );
-    }, 60000); // Check every minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -50,56 +51,75 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-2xl mx-auto p-4">
-        <h1 className="text-xl font-bold mb-4">Home</h1>
-        
-        <form onSubmit={handleSubmit} className="mb-8 border-b border-white/20 pb-4">
-          <textarea
-            value={newPost}
-            onChange={(e) => setNewPost(e.target.value)}
-            className="w-full p-4 bg-transparent border border-white/20 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500"
-            placeholder="What's happening?"
-            rows={3}
-          />
-          <div className="flex justify-between items-center mt-2">
-            <select
-              value={expiresIn}
-              onChange={(e) => setExpiresIn(Number(e.target.value))}
-              className="bg-black border border-white/20 rounded-md px-2 py-1 "
-            >
-              <option value={1}>1 hour</option>
-              <option value={24}>24 hours</option>
-              <option value={48}>48 hours</option>
-              <option value={72}>72 hours</option>
-              <option value={168}>1 week</option>
-            </select>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600"
-              type="submit"
-            >
-              Post
-            </motion.button>
-          </div>
-        </form>
+    <div className="min-h-screen bg-black text-white flex">
+      {/* Sidebar */}
+      <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4 space-y-6">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
+        >
+          <IoHomeSharp size={24} />
+          <span className="hidden md:inline">Home</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          className="flex items-center space-x-2 text-white hover:text-blue-500 w-full p-2 rounded"
+        >
+          <IoMailSharp size={24} />
+          <span className="hidden md:inline">Private Messages</span>
+        </motion.button>
+      </div>
 
-        <div className="space-y-4">
-          {posts.map(post => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 border border-white/20 rounded-lg"
-            >
-              <p className="mb-2">{post.content}</p>
-              <div className="flex justify-between text-sm text-gray-400 space-x-1">
-                <span>{new Date(post.timestamp).toLocaleString()}</span>
-                <span className='font-bold'>{timeLeft(post)}</span>
-              </div>
-            </motion.div>
-          ))}
+      {/* Main Content */}
+      <div className="ml-16 md:ml-64 flex-1 p-4">
+        <div className="max-w-2xl mx-auto">
+          <form onSubmit={handleSubmit} className="mb-8 bg-neutral-900 rounded-xl p-4">
+            <textarea
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+              className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500"
+              placeholder="What's happening?"
+              rows={3}
+            />
+            <div className="flex justify-between items-center mt-2">
+              <select
+                value={expiresIn}
+                onChange={(e) => setExpiresIn(Number(e.target.value))}
+                className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1"
+              >
+                <option value={1}>1 hour</option>
+                <option value={24}>24 hours</option>
+                <option value={48}>48 hours</option>
+                <option value={72}>72 hours</option>
+                <option value={168}>1 week</option>
+              </select>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600"
+                type="submit"
+              >
+                Post
+              </motion.button>
+            </div>
+          </form>
+
+          <div className="space-y-4">
+            {posts.map(post => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all"
+              >
+                <p className="mb-4 text-lg">{post.content}</p>
+                <div className="flex justify-between text-sm text-neutral-400">
+                  <span>{new Date(post.timestamp).toLocaleString()}</span>
+                  <span className="font-bold text-blue-400">{timeLeft(post)}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
