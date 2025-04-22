@@ -174,14 +174,14 @@ export default function Home() {
                             />
                           </span>
                         );
-                      } else if (isUrl) {
+                      } else if (isUrl && !isImageUrl) {
                         return (
                           <a 
                             key={index}
                             href={segment}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 break-all"
+                            className="text-blue-400 hover:text-blue-300 break-all underline"
                           >
                             {segment}
                           </a>
@@ -231,12 +231,23 @@ export default function Home() {
                 handleSubmit(e);
                 setShowPostCreation(false);
               }}>
-                <textarea
-                  value={newPost}
-                  onChange={(e) => setNewPost(e.target.value)}
-                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white resize-none focus:outline-none focus:border-blue-500 mb-4"
+                <div
+                  contentEditable
+                  onInput={(e) => {
+                    const content = e.currentTarget.innerText;
+                    setNewPost(content);
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: newPost.split(/(\s+)/).map(word => {
+                      const isUrl = word.match(/^(https?:\/\/[^\s]+)$/i);
+                      const isMediaUrl = word.match(/\.(jpeg|jpg|gif|png)$/i);
+                      return isUrl && !isMediaUrl
+                        ? `<span class="text-blue-400 underline">${word}</span>`
+                        : word
+                    }).join('')
+                  }}
+                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-blue-500 mb-4 min-h-[100px] overflow-auto"
                   placeholder="What's happening?"
-                  rows={4}
                 />
                 <div className="flex justify-between items-center">
                   <select
