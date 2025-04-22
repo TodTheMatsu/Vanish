@@ -94,6 +94,7 @@ const NavLinks = ({ navLinks }: NavLinksProps) => {
 function App() {
   const text = 'Vanish';
   const baseOpacity = 1;
+  const [showHomePage, setShowHomePage] = useState(false);
   const navLinks = [
     { text: 'About' },
     { text: 'Sign Up' },
@@ -139,6 +140,7 @@ function App() {
               animate={{ opacity: 1, transition: { delay: 4.5, duration: 1 } }}
               whileHover={{ scale: 1.1, borderColor: 'white' }}
               className='boxdesign hover:text-black cursor-pointer hover:backdrop-opacity-100 hover:bg-white text-center my-5 flex flew-grow items-center justify-center px-5 py-2'
+              onClick={() => setShowHomePage(true)}
             >
               Explore
             </motion.button>
@@ -206,7 +208,7 @@ function App() {
           
         </div>     
         </div>
-        <HomePage />
+        {showHomePage && <HomePage />}
         <NavLinks navLinks={navLinks} />
     </ParallaxProvider>
   );
