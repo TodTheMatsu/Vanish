@@ -90,7 +90,7 @@ export default function Home() {
           <img 
             src={user.profilePicture} 
             alt="Profile" 
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 object-cover rounded-full"
           />
           <div className="hidden md:block">
             <div className="font-bold">{user.displayName}</div>
