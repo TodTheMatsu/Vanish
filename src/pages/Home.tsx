@@ -231,24 +231,23 @@ export default function Home() {
                 handleSubmit(e);
                 setShowPostCreation(false);
               }}>
-                <div
-                  contentEditable
-                  onInput={(e) => {
-                    const content = e.currentTarget.innerText;
-                    setNewPost(content);
-                  }}
-                  dangerouslySetInnerHTML={{
-                    __html: newPost.split(/(\s+)/).map(word => {
-                      const isUrl = word.match(/^(https?:\/\/[^\s]+)$/i);
-                      const isMediaUrl = word.match(/\.(jpeg|jpg|gif|png)$/i);
-                      return isUrl && !isMediaUrl
-                        ? `<span class="text-blue-400 underline">${word}</span>`
-                        : word
-                    }).join('')
-                  }}
-                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-blue-500 mb-4 min-h-[100px] overflow-auto"
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  className="w-full p-4 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:border-blue-500 mb-4 min-h-[100px] resize-none"
                   placeholder="What's happening?"
                 />
+                <div className="mb-4 text-neutral-400">
+                  {newPost.split(/(\s+)/).map((word, index) => {
+                    const isUrl = word.match(/^(https?:\/\/[^\s]+)$/i);
+                    const isMediaUrl = word.match(/\.(jpeg|jpg|gif|png)$/i);
+                    return isUrl && !isMediaUrl ? (
+                      <span key={index} className="text-blue-400 underline">{word} </span>
+                    ) : (
+                      <span key={index}>{word}</span>
+                    );
+                  })}
+                </div>
                 <div className="flex justify-between items-center">
                   <select
                     value={expiresIn}
