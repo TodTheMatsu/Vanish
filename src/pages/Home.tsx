@@ -159,21 +159,36 @@ export default function Home() {
                 </div>
                 <div className="min-h-[50px] mb-4">
                   <p className="text-lg whitespace-pre-wrap">
-                    {post.content.split(' ').map((word, index) => {
-                      const isImageUrl = word.match(/\.(jpeg|jpg|gif|png)$/i) != null;
-                      return isImageUrl ? (
-                        <span key={index}>
-                          <img 
-                            src={word} 
-                            alt="Post content" 
-                            className="max-w-full h-auto rounded-lg my-2"
-                            onError={(e) => e.currentTarget.style.display = 'none'}
-                          />
-                          {' '}
-                        </span>
-                      ) : (
-                        <span key={index}>{word} </span>
-                      );
+                    {post.content.split(/(\s+)/).map((segment, index) => {
+                      const isImageUrl = segment.match(/\.(jpeg|jpg|gif|png)$/i) != null;
+                      const isUrl = segment.match(/^(https?:\/\/[^\s]+)$/i) != null;
+                      
+                      if (isImageUrl) {
+                        return (
+                          <span key={index} className="block my-2">
+                            <img 
+                              src={segment} 
+                              alt="Post content" 
+                              className="max-w-full h-auto rounded-lg"
+                              onError={(e) => e.currentTarget.style.display = 'none'}
+                            />
+                          </span>
+                        );
+                      } else if (isUrl) {
+                        return (
+                          <a 
+                            key={index}
+                            href={segment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-400 hover:text-blue-300 break-all"
+                          >
+                            {segment}
+                          </a>
+                        );
+                      } else {
+                        return <span key={index}>{segment}</span>;
+                      }
                     })}
                   </p>
                 </div>
