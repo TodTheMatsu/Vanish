@@ -1,9 +1,9 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
 import { Parallax } from 'react-scroll-parallax';
+import Particles from '../components/Particles'; // Added import for Particles component
 
 interface AnimatedTextProps {
   baseOpacity: number;
@@ -70,6 +70,7 @@ export default function Landing() {
 
   return (
     <>
+      <Particles /> {/* Added Particles component */}
       <div className='flex items-center h-screen justify-center flex-col'>
         <div className='flex items-center justify-center flex-col'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />

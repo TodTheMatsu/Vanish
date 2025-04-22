@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import Particles from './components/Particles';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
@@ -46,7 +45,6 @@ function App() {
   return (
     <BrowserRouter>
       <ParallaxProvider>
-        <Particles />
         <motion.div
           className="fixed w-screen h-screen"
           initial={{ backdropFilter: 'blur(0.1em)' }}
