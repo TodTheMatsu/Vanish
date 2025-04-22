@@ -45,12 +45,7 @@ function App() {
   return (
     <BrowserRouter>
       <ParallaxProvider>
-        <motion.div
-          className="fixed w-screen h-screen"
-          initial={{ backdropFilter: 'blur(0.1em)' }}
-          animate={{ backdropFilter: 'blur(0em)' }}
-          transition={{ duration: 2 }}
-        ></motion.div>
+
         <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
           <Routes>
             <Route path="/" element={<Landing />} />

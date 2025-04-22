@@ -14,6 +14,12 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
   const textArray = text.split('');
   return (
     <>
+      <motion.div
+        className="fixed w-screen h-screen"
+        initial={{ backdropFilter: 'blur(0.1em)' }}
+        animate={{ backdropFilter: 'blur(0em)' }}
+        transition={{ duration: 2 }}
+      ></motion.div>
       <h1 className='text-white font-bold text-9xl absolute select-none'>
         {textArray.map((char, index) => (
           <motion.span
