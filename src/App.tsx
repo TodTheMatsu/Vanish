@@ -3,7 +3,7 @@ import { ParallaxProvider } from 'react-scroll-parallax';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
-
+import Settings from './pages/Settings';
 function App() {
   return (
     <BrowserRouter>
