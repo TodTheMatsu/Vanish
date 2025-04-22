@@ -110,10 +110,12 @@ export default function Home() {
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all"
+                className="p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words"
               >
-                <p className="mb-4 text-lg">{post.content}</p>
-                <div className="flex justify-between text-sm text-neutral-400">
+                <div className="min-h-[50px] mb-4">
+                  <p className="text-lg whitespace-pre-wrap">{post.content}</p>
+                </div>
+                <div className="flex justify-between text-sm text-neutral-400 mt-auto">
                   <span>{new Date(post.timestamp).toLocaleString()}</span>
                   <span className="font-bold text-blue-400">{timeLeft(post)}</span>
                 </div>
