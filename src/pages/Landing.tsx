@@ -1,9 +1,38 @@
+
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
 import { Parallax } from 'react-scroll-parallax';
-import Particles from '../components/Particles'; // Added import for Particles component
+import Particles from '../components/Particles';
+
+interface NavLink {
+  text: string;
+}
+
+interface NavLinksProps {
+  navLinks: NavLink[];
+}
+
+const NavLinks = ({ navLinks }: NavLinksProps) => {
+  return (
+    <div className='absolute md:fixed top-[5%] right-[5%] md:right-[10%]'>
+      <motion.div className='grow text-neutral-500 text-lg p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
+        {navLinks.map((link, index) => (
+          <motion.button
+            initial={{ scale: 1, opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 5 + index * 0.5 } }}
+            whileHover={{ scale: 1.15 }}
+            key={index}
+            className='hover:text-white cursor-pointer text-sm md:text-lg'
+          >
+            {link.text}
+          </motion.button>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
 
 interface AnimatedTextProps {
   baseOpacity: number;
@@ -74,9 +103,19 @@ export default function Landing() {
   const baseOpacity = 1;
   const vanishDescription = 'Vanish is a privacy-focused social media platform that gives you complete control over your digital footprint. Unlike traditional social networks that store your data indefinitely, Vanish automatically deletes your messages after a set period of time, ensuring your conversations remain private and temporary.';
 
+  const navLinks = [
+    { text: 'About' },
+    { text: 'Sign Up' },
+    { text: 'Sign In' },
+    { text: 'Contact' },
+    { text: 'Privacy Policy' },
+    { text: 'Terms of Service' },
+  ];
+
   return (
     <>
-      <Particles /> {/* Added Particles component */}
+      <Particles />
+      <NavLinks navLinks={navLinks} />
       <div className='flex items-center h-screen justify-center flex-col'>
         <div className='flex items-center justify-center flex-col'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />
