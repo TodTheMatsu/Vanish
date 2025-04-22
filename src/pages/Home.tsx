@@ -130,12 +130,14 @@ export default function Home() {
       <div className="ml-16 md:ml-64 flex-1 p-4">
         <div className="max-w-2xl mx-auto">
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowPostCreation(true)}
-            className="mb-8 w-full py-3 bg-blue-500 rounded-xl font-bold hover:bg-blue-600 flex items-center justify-center space-x-2"
+            className="fixed bottom-8 right-8 md:right-24 w-14 h-14 bg-blue-500 rounded-full shadow-lg hover:bg-blue-600 flex items-center justify-center"
           >
-            <span>Create Post</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 12V5.749c0-.221-.078-.435-.22-.609l-1.9-2.357C17.735 2.582 17.501 2.5 17.26 2.5H6.74c-.24 0-.474.082-.62.283L4.22 5.14C4.078 5.314 4 5.528 4 5.75V19.5c0 .276.224.5.5.5h3.411c.173 0 .334-.09.426-.236l.29-.464c.552-.884 1.516-1.42 2.545-1.42h1.656c1.029 0 1.993.536 2.545 1.42l.29.464c.092.147.253.236.426.236H19.5c.276 0 .5-.224.5-.5V12zM7 10.5a.5.5 0 01-.5-.5V9a.5.5 0 01.5-.5h10a.5.5 0 01.5.5v1a.5.5 0 01-.5.5H7z"/>
+            </svg>
           </motion.button>
 
           <div className="space-y-4">
