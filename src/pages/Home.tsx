@@ -54,6 +54,12 @@ export default function Home() {
       setIsSettingsLoading(false);
       return;
     }
+    // Validate that the profile picture is a valid URL.
+    if (!/^https?:\/\/.+/.test(tempUser.profilePicture)) {
+      setSettingsError('Profile picture must be a valid URL.');
+      setIsSettingsLoading(false);
+      return;
+    }
     try {
       // Get current user to retrieve id.
       const { data: { user: currentUser } } = await supabase.auth.getUser();

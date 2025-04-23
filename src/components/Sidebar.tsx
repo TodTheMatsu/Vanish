@@ -12,7 +12,12 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
     <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4">
       {/* User Info */}
       <div className="flex items-center space-x-3 mb-8 w-full">
-        <img src={user.profilePicture} alt="Profile" className="w-10 h-10 object-cover rounded-full" />
+        <img 
+          src={user.profilePicture} 
+          alt="Profile" 
+          className="w-10 h-10 object-cover rounded-full" 
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+        />
         <div className="hidden md:block">
           <div className="font-bold">{user.displayName}</div>
           <div className="text-sm text-neutral-400">@{user.username}</div>

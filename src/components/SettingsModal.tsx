@@ -47,7 +47,12 @@ export default function SettingsModal({
             <div className="space-y-6">
               {/* Profile Preview */}
               <div className="border border-neutral-700 rounded-lg p-4 flex items-center space-x-4">
-                <img src={tempUser.profilePicture} alt="Profile Preview" className="w-16 h-16 rounded-full object-cover" />
+                <img 
+                  src={tempUser.profilePicture} 
+                  alt="Profile Preview" 
+                  className="w-16 h-16 rounded-full object-cover" 
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+                />
                 <div>
                   <div className="font-bold">{tempUser.displayName}</div>
                   <div className="text-sm text-neutral-400">@{tempUser.username}</div>

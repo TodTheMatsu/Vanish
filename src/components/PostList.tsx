@@ -22,7 +22,12 @@ export function PostList({ posts }: PostListProps) {
           className="p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words"
         >
           <div className="flex items-center space-x-3 mb-4">
-            <img src={post.author.profilePicture} alt="Profile" className="w-8 h-8 rounded-full object-cover" />
+            <img 
+              src={post.author.profilePicture} 
+              alt="Profile" 
+              className="w-8 h-8 rounded-full object-cover" 
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+            />
             <div>
               <span className="font-bold">{post.author.displayName}</span>
               <span className="text-neutral-400 text-sm ml-2">@{post.author.username}</span>

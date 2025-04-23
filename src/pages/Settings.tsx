@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -33,7 +32,8 @@ export default function Settings() {
             <img 
               src={user.profilePicture} 
               alt="Profile" 
-              className="w-24 h-24 rounded-full mb-4"
+              className="w-24 h-24 rounded-full mb-4" 
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
             />
           </div>
           
