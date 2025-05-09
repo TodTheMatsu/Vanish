@@ -27,7 +27,7 @@ Vanish is a privacy-focused social media platform built with React, TypeScript, 
 *   **tsparticles:** Used for creating particle effects on the landing page.
 
 ## File Structure
-<code>
+<pre>
 Vanish/
 ├── .replit # Replit configuration file
 ├── .gitignore # Specifies intentionally untracked files that Git should ignore
@@ -68,4 +68,4 @@ Vanish/
 ├── tsconfig.json # Main TypeScript configuration file
 ├── tsconfig.node.json # TypeScript configuration file for Node.js
 └── vite.config.ts # Vite configuration file
-</code>
+</pre>
