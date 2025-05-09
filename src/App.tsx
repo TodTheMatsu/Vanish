@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Profile from './pages/Profile'; // import the profile page
 import { AuthProvider } from './AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -39,6 +40,8 @@ function App() {
                   </div>
                 </ProtectedRoute>
               } />
+              {/* Add the route for the profile page */}
+              <Route path="/profile/:username" element={<Profile />} />
             </Routes>
           </div>
         </ParallaxProvider>
