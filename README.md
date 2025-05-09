@@ -115,7 +115,7 @@ Vanish/
     The application will be available at `http://localhost:5173`.
 
 ## Further Development
-
+*    End to End encrption
 *   Implement the messages feature.
 *   Add the ability to include images and other media in posts.
 *   Implement user following and a personalized feed.
