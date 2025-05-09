@@ -82,6 +82,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
 
 const AnimatedWords = ({ baseOpacity, text }: AnimatedTextProps) => {
   return (
+    <>
     <motion.h2 className='text-white text-4xl space-x-1'>
       {text.split(' ').map((word, wordIndex) => (
         <motion.span
@@ -94,7 +95,7 @@ const AnimatedWords = ({ baseOpacity, text }: AnimatedTextProps) => {
         </motion.span>
       ))}
     </motion.h2>
-  );
+  </>);
 };
 
 export default function Landing() {
@@ -115,6 +116,8 @@ export default function Landing() {
 
   return (
     <>
+      <title>Vanish: Privacy-Focused Social Media</title>
+      <meta name="description" content={vanishDescription} />
       <Particles />
       <div className='flex items-center h-screen justify-center flex-col'>
         <div className='flex items-center justify-center flex-col'>
