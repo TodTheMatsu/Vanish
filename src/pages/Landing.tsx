@@ -21,7 +21,7 @@ const NavLinks = ({ navLinks }: NavLinksProps) => {
         {navLinks.map((link, index) => (
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 5 + index * 0.5 } }}
+            animate={{ opacity: 1, transition: { delay: 4 + index * 0.2 } }}
             whileHover={{ scale: 1.15 }}
             key={index}
             className='hover:text-white cursor-pointer text-sm md:text-lg'
@@ -116,11 +116,11 @@ export default function Landing() {
   return (
     <>
       <Particles />
-      <NavLinks navLinks={navLinks} />
       <div className='flex items-center h-screen justify-center flex-col'>
         <div className='flex items-center justify-center flex-col'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />
         </div>
+        <NavLinks navLinks={navLinks} />
         <AnimatedWords baseOpacity={baseOpacity} text={'Post.  Share.  Vanish.'} />
         <motion.button
           initial={{ scale: 1, opacity: 0 }}
