@@ -69,3 +69,55 @@ Vanish/
 ├── tsconfig.node.json # TypeScript configuration file for Node.js
 └── vite.config.ts # Vite configuration file
 </pre>
+
+
+## Key Components and Functionality
+
+*   **`App.tsx` ([src/App.tsx](src/App.tsx)):** Sets up the React Router and defines the routes for the application. It wraps the application with `AuthProvider` and `ParallaxProvider`.
+*   **`AuthContext.tsx` ([src/AuthContext.tsx](src/AuthContext.tsx)):** Manages user authentication state using React Context and Supabase Auth. It provides `login`, `signup`, and `logout` functions.
+*   **`ProtectedRoute.tsx` ([src/components/ProtectedRoute.tsx](src/components/ProtectedRoute.tsx)):** A component that protects routes, redirecting unauthenticated users to the login page.
+*   **`Landing.tsx` ([src/pages/Landing.tsx](src/pages/Landing.tsx)):** The landing page of the application, featuring animated text, parallax scrolling, and a description of Vanish.
+*   **`Home.tsx` ([src/pages/Home.tsx](src/pages/Home.tsx)):** The main page for logged-in users, displaying posts and a sidebar for navigation.
+*   **`PostList.tsx` ([src/components/PostList.tsx](src/components/PostList.tsx)):** Displays a list of posts, fetching data using the `usePosts` hook.
+*   **`CreatePostModal.tsx` ([src/components/CreatePostModal.tsx](src/components/CreatePostModal.tsx)):** A modal for creating new posts, allowing users to set the expiration time.
+*   **`SettingsModal.tsx` ([src/components/SettingsModal.tsx](src/components/SettingsModal.tsx)):** A modal for user settings, allowing users to update their display name and profile picture.
+*   **`usePosts.ts` ([src/hooks/usePosts.ts](src/hooks/usePosts.ts)):** A custom hook that fetches and manages posts data from Supabase.
+*   **`useUserData.ts` ([src/hooks/useUserData.ts](src/hooks/useUserData.ts)):** A custom hook that fetches and manages user data from Supabase.
+*   **`supabaseClient.ts` ([src/supabaseClient.ts](src/supabaseClient.ts)):** Initializes the Supabase client with the provided URL and API key.
+
+## Setup Instructions
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone <repository_url>
+    ```
+2.  **Install dependencies:**
+
+    ```bash
+    npm install
+    ```
+3.  **Configure environment variables:**
+
+    *   Create a `.env` file in the root directory.
+    *   Add your Supabase URL and API key:
+
+        ```
+        VITE_SUPABASE_URL=<your_supabase_url>
+        VITE_SUPABASE_ANON_KEY=<your_supabase_anon_key>
+        ```
+4.  **Run the application:**
+
+    ```bash
+    npm run dev
+    ```
+
+    The application will be available at `http://localhost:5173`.
+
+## Further Development
+
+*   Implement the messages feature.
+*   Add the ability to include images and other media in posts.
+*   Implement user following and a personalized feed.
+*   Add more settings options.
+*   Improve the UI/UX.
