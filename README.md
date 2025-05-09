@@ -28,42 +28,42 @@ Vanish is a privacy-focused social media platform built with React, TypeScript, 
 
 ## File Structure
 Vanish/
-├── .replit                   # Replit configuration file
-├── .gitignore                # Specifies intentionally untracked files that Git should ignore
-├── .env                      # Environment variables (Supabase URL and Key)
-├── index.html                # Main HTML file
-├── package.json              # Node.js package file
-├── postcss.config.js         # PostCSS configuration file
-├── README.md                 # Documentation file
-├── eslint.config.js          # ESLint configuration file
+├── .replit # Replit configuration file
+├── .gitignore # Specifies intentionally untracked files that Git should ignore
+├── .env # Environment variables (Supabase URL and Key)
+├── index.html # Main HTML file
+├── package.json # Node.js package file
+├── postcss.config.js # PostCSS configuration file
+├── README.md # Documentation file
+├── eslint.config.js # ESLint configuration file
 ├── src/
-│   ├── App.tsx               # Main application component
-│   ├── AuthContext.tsx       # Authentication context
-│   ├── components/
-│   │   ├── CreatePostModal.tsx # Modal for creating new posts
-│   │   ├── PostList.tsx        # Component to display list of posts
-│   │   ├── ProtectedRoute.tsx  # Component for protected routes
-│   │   ├── SettingsModal.tsx   # Modal for user settings
-│   │   ├── Sidebar.tsx         # Sidebar navigation component
-│   │   └── Particles.tsx       # Particles animation component
-│   ├── hooks/
-│   │   ├── usePosts.ts         # Hook for managing posts data
-│   │   └── useUserData.ts      # Hook for managing user data
-│   ├── index.css             # Main CSS file
-│   ├── main.tsx              # Entry point for the React application
-│   ├── pages/
-│   │   ├── Home.tsx            # Home page component
-│   │   ├── Landing.tsx         # Landing page component
-│   │   ├── Login.tsx           # Login page component
-│   │   ├── Messages.tsx        # Messages page component
-│   │   ├── Settings.tsx        # Settings page component
-│   │   └── Signup.tsx          # Signup page component
-│   ├── supabaseClient.ts     # Supabase client initialization
-│   ├── types/
-│   │   └── user.ts           # TypeScript type definition for user profile
-│   └── vite-env.d.ts         # TypeScript definition file for Vite environment variables
-├── tailwind.config.js        # Tailwind CSS configuration file
-├── tsconfig.app.json         # TypeScript configuration file for the app
-├── tsconfig.json             # Main TypeScript configuration file
-├── tsconfig.node.json        # TypeScript configuration file for Node.js
-└── vite.config.ts            # Vite configuration file
+│ ├── App.tsx # Main application component
+│ ├── AuthContext.tsx # Authentication context
+│ ├── components/
+│ │ ├── CreatePostModal.tsx # Modal for creating new posts
+│ │ ├── PostList.tsx # Component to display list of posts
+│ │ ├── ProtectedRoute.tsx # Component for protected routes
+│ │ ├── SettingsModal.tsx # Modal for user settings
+│ │ ├── Sidebar.tsx # Sidebar navigation component
+│ │ └── Particles.tsx # Particles animation component
+│ ├── hooks/
+│ │ ├── usePosts.ts # Hook for managing posts data
+│ │ └── useUserData.ts # Hook for managing user data
+│ ├── index.css # Main CSS file
+│ ├── main.tsx # Entry point for the React application
+│ ├── pages/
+│ │ ├── Home.tsx # Home page component
+│ │ ├── Landing.tsx # Landing page component
+│ │ ├── Login.tsx # Login page component
+│ │ ├── Messages.tsx # Messages page component
+│ │ ├── Settings.tsx # Settings page component
+│ │ └── Signup.tsx # Signup page component
+│ ├── supabaseClient.ts # Supabase client initialization
+│ ├── types/
+│ │ └── user.ts # TypeScript type definition for user profile
+│ └── vite-env.d.ts # TypeScript definition file for Vite environment variables
+├── tailwind.config.js # Tailwind CSS configuration file
+├── tsconfig.app.json # TypeScript configuration file for the app
+├── tsconfig.json # Main TypeScript configuration file
+├── tsconfig.node.json # TypeScript configuration file for Node.js
+└── vite.config.ts # Vite configuration file
