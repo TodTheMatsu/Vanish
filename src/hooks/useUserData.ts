@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { User } from './usePosts';
+import { UserProfile } from '../types/user';
 
-const defaultUser: User = {
+const defaultUser: UserProfile = {
   username: 'defaultUser',
   displayName: 'Default User',
   profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
 };
 
 export const useUserData = () => {
-  const [user, setUser] = useState<User>(defaultUser);
+  const [user, setUser] = useState<UserProfile>(defaultUser);
 
   const fetchUserData = async () => {
     try {
@@ -21,7 +21,7 @@ export const useUserData = () => {
         .eq('email', authUser.email)
         .single();
       if (profile) {
-        const userData = {
+        const userData: UserProfile = {
           username: profile.username,
           displayName: profile.display_name,
           profilePicture: profile.profile_picture || defaultUser.profilePicture

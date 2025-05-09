@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-
-export interface User {
-  username: string;
-  displayName: string;
-  profilePicture: string;
-}
+import { UserProfile } from '../types/user';
 
 export interface Post {
   id: number;
   content: string;
   timestamp: Date;
   expiresIn: number;
-  author: User;
+  author: UserProfile;
 }
 
 export const usePosts = () => {
@@ -39,7 +34,10 @@ export const usePosts = () => {
             displayName: post.profiles?.display_name || 'Unknown',
             profilePicture: post.profiles?.profile_picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
           }
-        }));
+        })).filter(post => {
+          const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
+          return Date.now() < expiration;
+        });
         setPosts(formatted);
       }
     } catch (error) {
@@ -82,7 +80,10 @@ export const usePosts = () => {
             profilePicture: post.profiles.profile_picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
           }
         };
-        setPosts(prev => [formatted, ...prev]);
+        setPosts(prev => [formatted, ...prev].filter(post => {
+          const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
+          return Date.now() < expiration;
+        }));
         return formatted;
       }
     } catch (error) {

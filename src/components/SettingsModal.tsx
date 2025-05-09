@@ -1,13 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { UserProfile } from '../types/user';
 
 interface SettingsModalProps {
   show: boolean;
-  tempUser: { username: string; displayName: string; profilePicture: string };
+  tempUser: UserProfile;
   isLoading: boolean;
   settingsError: string;
   onUsernameChange: (val: string) => void;
   onDisplayNameChange: (val: string) => void;
-  onProfilePictureChange: (val: string) => void; // re-added prop
+  onProfilePictureChange: (val: string) => void;
   onSave: () => void;
   onClose: () => void;
   onLogout: () => void;
@@ -20,7 +21,7 @@ export default function SettingsModal({
   settingsError,
   onUsernameChange,
   onDisplayNameChange,
-  onProfilePictureChange, // re-added in destructuring
+  onProfilePictureChange,
   onSave,
   onClose,
   onLogout

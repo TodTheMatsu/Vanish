@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { UserProfile } from '../types/user';
 
-interface User {
-  username: string;
-  displayName: string;
-  profilePicture: string;
-}
+interface UserProfileState extends UserProfile {}
 
 export default function Settings() {
-  const [user, setUser] = useState<User>({
+  const [user, setUser] = useState<UserProfileState>({
     username: 'defaultUser',
     displayName: 'Default User',
     profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'

@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { IoHomeSharp, IoMailSharp, IoSettingsSharp } from 'react-icons/io5';
+import { UserProfile } from '../types/user';
 
 interface SidebarProps {
-  user: { profilePicture: string; displayName: string; username: string };
+  user: UserProfile;
   onNavigate: (path: string) => void;
   onSettings: () => void;
 }

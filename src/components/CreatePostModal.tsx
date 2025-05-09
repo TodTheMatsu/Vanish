@@ -58,7 +58,11 @@ export default function CreatePostModal({
                   onChange={(e) => onExpiresChange(Number(e.target.value))}
                   className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1"
                 >
+                  <option value={0}>0 seconds</option>
+                  <option value={5 / 60}>5 minutes</option>
+                  <option value={30 / 60}>30 minutes</option>
                   <option value={1}>1 hour</option>
+                  <option value={12}>12 hours</option>
                   <option value={24}>24 hours</option>
                   <option value={48}>48 hours</option>
                   <option value={72}>72 hours</option>
