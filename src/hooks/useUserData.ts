@@ -5,7 +5,7 @@ import { UserProfile } from '../types/user';
 const defaultUser: UserProfile = {
   username: 'defaultUser',
   displayName: 'Default User',
-  profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+  profilePicture: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
 };
 
 export const useUserData = (username?: string) => {

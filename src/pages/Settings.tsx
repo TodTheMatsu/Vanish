@@ -8,7 +8,7 @@ export default function Settings() {
   const [user, setUser] = useState<UserProfileState>({
     username: 'defaultUser',
     displayName: 'Default User',
-    profilePicture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+    profilePicture: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
   });
 
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ export default function Settings() {
               src={user.profilePicture} 
               alt="Profile" 
               className="w-24 h-24 rounded-full mb-4" 
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
             />
           </div>
           

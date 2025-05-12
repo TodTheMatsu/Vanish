@@ -1,94 +1,46 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
 import Sidebar from '../components/Sidebar';
 import { PostList } from '../components/PostList';
 import CreatePostModal from '../components/CreatePostModal';
 import SettingsModal from '../components/SettingsModal';
 import { usePosts } from '../hooks/usePosts';
 import { useUserData } from '../hooks/useUserData';
-import { supabase } from '../supabaseClient';
+import { useSettings } from '../hooks/useSettings'; // Import the shared hook
 
 export default function Home() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
   const { posts, createPost } = usePosts();
   const { user, setUser } = useUserData();
   const [newPost, setNewPost] = useState('');
   const [expiresIn, setExpiresIn] = useState(24);
   const [showPostCreation, setShowPostCreation] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [tempUser, setTempUser] = useState(user);
-  const [isSettingsLoading, setIsSettingsLoading] = useState(false);
-  const [settingsError, setSettingsError] = useState('');
+
+  const {
+    tempUser,
+    isSettingsLoading,
+    settingsError,
+    setTempUser,
+    handleUsernameChange,
+    handleDisplayNameChange,
+    handleProfilePictureChange,
+    handleSaveSettings,
+    handleLogout,
+    setIsSettingsLoading,
+    setSettingsError,
+  } = useSettings({
+    user,
+    setUser,
+    onClose: () => setShowSettings(false), // Close the modal
+  });
 
   // Handlers for creating a post
   const handleCreatePost = async () => {
     if (!newPost.trim()) return;
     await createPost({ content: newPost, expiresIn });
     setNewPost('');
-  };
-
-  // Handlers for settings changes
-  const handleUsernameChange = (val: string) => {
-    // Validate username: only lowercase letters and numbers allowed.
-    const allowedRegex = /^[a-z0-9]*$/;
-    if (!allowedRegex.test(val)) {
-      setSettingsError('Username must only contain lowercase letters and numbers. No spaces or special characters.');
-    } else {
-      setSettingsError('');
-    }
-    setTempUser(prev => ({ ...prev, username: val }));
-  };
-
-  const handleDisplayNameChange = (val: string) =>
-    setTempUser(prev => ({ ...prev, displayName: val }));
-  const handleProfilePictureChange = (val: string) =>
-    setTempUser(prev => ({ ...prev, profilePicture: val }));
-  
-  const handleSaveSettings = async () => {
-    setIsSettingsLoading(true);
-    if (!/^[a-z0-9]+$/.test(tempUser.username)) {
-      setSettingsError('Username must only contain lowercase letters and numbers. No spaces or special characters.');
-      setIsSettingsLoading(false);
-      return;
-    }
-    // Validate that the profile picture is a valid URL.
-    if (!/^https?:\/\/.+/.test(tempUser.profilePicture)) {
-      setSettingsError('Profile picture must be a valid URL.');
-      setIsSettingsLoading(false);
-      return;
-    }
-    try {
-      // Get current user to retrieve id.
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser?.id) {
-        setSettingsError("User not found");
-        setIsSettingsLoading(false);
-        return;
-      }
-      // Update the profiles table with new settings.
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          username: tempUser.username,
-          display_name: tempUser.displayName,
-          profile_picture: tempUser.profilePicture
-        })
-        .eq('user_id', currentUser.id);
-      if (error) {
-        setSettingsError(error.message);
-      } else {
-        setUser(tempUser);
-        setShowSettings(false);
-      }
-    } catch (error) {
-      setSettingsError('Error updating settings');
-      console.error('Settings update error:', error);
-    } finally {
-      setIsSettingsLoading(false);
-    }
   };
 
   return (
@@ -133,10 +85,7 @@ export default function Home() {
         onProfilePictureChange={handleProfilePictureChange}
         onSave={handleSaveSettings}
         onClose={() => setShowSettings(false)}
-        onLogout={async () => {
-          await logout();
-          navigate('/');
-        }}
+        onLogout={handleLogout}
       />
     </div>
   );

@@ -32,7 +32,7 @@ export const usePosts = () => {
           author: {
             username: post.profiles?.username || 'unknown',
             displayName: post.profiles?.display_name || 'Unknown',
-            profilePicture: post.profiles?.profile_picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+            profilePicture: post.profiles?.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
           }
         })).filter(post => {
           const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
@@ -77,7 +77,7 @@ export const usePosts = () => {
           author: {
             username: post.profiles.username,
             displayName: post.profiles.display_name,
-            profilePicture: post.profiles.profile_picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+            profilePicture: post.profiles.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
           }
         };
         setPosts(prev => [formatted, ...prev].filter(post => {

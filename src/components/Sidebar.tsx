@@ -37,7 +37,7 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
             src={user.profilePicture} 
             alt="Profile" 
             className="w-10 h-10 object-cover rounded-full" 
-            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
           />
           <div className="hidden md:block">
             <div className="font-bold">{user.displayName}</div>

@@ -26,7 +26,7 @@ export function PostList({ posts }: PostListProps) {
               src={post.author.profilePicture} 
               alt="Profile" 
               className="w-8 h-8 rounded-full object-cover" 
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
             />
             <div>
               <span className="font-bold">{post.author.displayName}</span>

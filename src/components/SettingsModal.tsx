@@ -33,7 +33,7 @@ export default function SettingsModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed text-white inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -52,7 +52,7 @@ export default function SettingsModal({
                   src={tempUser.profilePicture} 
                   alt="Profile Preview" 
                   className="w-16 h-16 rounded-full object-cover" 
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=default" }}
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
                 />
                 <div>
                   <div className="font-bold">{tempUser.displayName}</div>
