@@ -290,7 +290,7 @@ export default function Profile() {
         </div>
 
         {/* Posts */}
-        <div className="w-full max-w-2xl text-white mt-8">
+        <div className="w-full max-w-3xl text-white mt-8">
           <h3 className="text-xl font-bold text-white mb-4">Posts</h3>
           <PostList posts={posts.filter(post => post.author.username === routeUsername)} />
         </div>

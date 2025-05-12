@@ -102,7 +102,7 @@ export default function Home() {
         }}
       />
       <div className="ml-16 md:ml-64 flex-1 p-4">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}

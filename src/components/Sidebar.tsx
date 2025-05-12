@@ -23,7 +23,7 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
   };
 
   return (
-    <div className="w-16 md:w-64 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4">
+    <div className="w-16 md:w-80 bg-neutral-900 fixed h-screen flex flex-col items-center md:items-start p-4">
       {/* User Info */}
       <motion.div 
         className="flex items-center space-x-3 mb-8 w-full border-2 text-white border-neutral-800 p-2 rounded-lg hover:bg-neutral-800 transition duration-200 cursor-pointer"
