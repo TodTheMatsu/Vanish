@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
 import Sidebar from '../components/Sidebar';
@@ -9,7 +9,7 @@ import { PostList } from '../components/PostList'; // Import PostList
 export default function Profile() {
   const { username: routeUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
-  const { user, loading, error, fetchUserData, setUser } = useUserData(routeUsername);
+  const { user, loading, error, setUser } = useUserData(routeUsername);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingBio, setEditingBio] = useState(false);
