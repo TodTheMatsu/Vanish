@@ -2,122 +2,131 @@
 
 ## Overview
 
-Vanish is a privacy-focused social media platform built with React, TypeScript, and Vite, utilizing Supabase for authentication and data storage. The core concept is to give users control over their digital footprint by automatically deleting posts after a specified time.
+Vanish is a privacy-focused social media platform built with React, TypeScript, and Vite. Using Supabase for authentication and data storage, it automatically deletes posts after a specified time, giving users complete control over their digital footprint. The app features user profiles with editable bios and banners, real-time post updates, and a fully responsive design.
 
 ## Key Features
 
-*   **Authentication:** Users can sign up, log in, and log out using Supabase authentication.
-*   **Post Creation:** Users can create text-based posts with an expiration time (ranging from seconds to a week).
-*   **Automatic Post Deletion:** Posts are automatically removed after their expiration time.
-*   **User Profiles:** Users have profiles with a username, display name, and profile picture.
-*   **Settings:** Users can modify their display name and profile picture.
-*   **Real-time Updates:** The application uses React and Supabase to provide a real-time experience.
-*   **Landing Page:** A landing page introduces the concept of Vanish.
+- **Authentication:** Users can sign up, log in, and log out using Supabase Auth.
+- **Post Creation:** Create text-based posts with customizable expiration times (from seconds up to a week).
+- **Automatic Post Expiration:** Posts are automatically removed after their set expiration.
+- **User Profiles:** Profiles display username, display name, profile picture, bio, and banner. Profile owners can edit their bio and banner image.
+- **Settings:** Users can update their display name and profile picture via a settings modal.
+- **Protected Routes:** Certain pages (e.g., Home, Profile, Messages) require authentication.
+- **Landing Page:** Features animated text, parallax scrolling effects, and an introduction to Vanish.
+- **Real-time Updates:** Uses Supabase and custom hooks for seamless data fetching and updates.
+- **Responsive Sidebar:** Navigation that includes quick access to Home, Messages (coming soon), Profile, and Settings.
 
 ## Technologies Used
 
-*   **React:** A JavaScript library for building user interfaces.
-*   **TypeScript:** A typed superset of JavaScript.
-*   **Vite:** A build tool that provides a fast and optimized development experience.
-*   **Supabase:** An open-source Firebase alternative that provides authentication, database, and real-time functionality.
-*   **Tailwind CSS:** A utility-first CSS framework.
-*   **Framer Motion:** A library for creating animations.
-*   **React Router:** A standard library for routing in React applications.
-*   **React Scroll Parallax:** Used for creating parallax scrolling effects on the landing page.
-*   **tsparticles:** Used for creating particle effects on the landing page.
+- **React & TypeScript:** For building a strongly-typed user interface.
+- **Vite:** A fast build tool providing an optimized development experience.
+- **Supabase:** Provides authentication, real-time database features, and storage.
+- **Tailwind CSS:** Utilized for rapidly building custom user interfaces.
+- **Framer Motion:** Enables smooth animations and transitions across the app.
+- **React Router:** For client-side routing and protected routes.
+- **React Scroll Parallax:** Powers the parallax scrolling on the landing page.
+- **tsparticles:** For creating captivating particle effects on the landing page.
 
 ## File Structure
-<pre>
+
+```
 Vanish/
-├── .replit # Replit configuration file
-├── .gitignore # Specifies intentionally untracked files that Git should ignore
-├── .env # Environment variables (Supabase URL and Key)
-├── index.html # Main HTML file
-├── package.json # Node.js package file
-├── postcss.config.js # PostCSS configuration file
-├── README.md # Documentation file
-├── eslint.config.js # ESLint configuration file
+├── .replit                  # Replit configuration file
+├── .gitignore               # Files and directories git should ignore
+├── .env                     # Environment variables for Supabase credentials
+├── index.html               # Main HTML file
+├── package.json             # Project configuration and dependencies
+├── postcss.config.js        # PostCSS configuration file
+├── README.md                # Project documentation (this file)
+├── eslint.config.js         # ESLint configuration file
 ├── src/
-│ ├── App.tsx # Main application component
-│ ├── AuthContext.tsx # Authentication context
-│ ├── components/
-│ │ ├── CreatePostModal.tsx # Modal for creating new posts
-│ │ ├── PostList.tsx # Component to display list of posts
-│ │ ├── ProtectedRoute.tsx # Component for protected routes
-│ │ ├── SettingsModal.tsx # Modal for user settings
-│ │ ├── Sidebar.tsx # Sidebar navigation component
-│ │ └── Particles.tsx # Particles animation component
-│ ├── hooks/
-│ │ ├── usePosts.ts # Hook for managing posts data
-│ │ └── useUserData.ts # Hook for managing user data
-│ ├── index.css # Main CSS file
-│ ├── main.tsx # Entry point for the React application
-│ ├── pages/
-│ │ ├── Home.tsx # Home page component
-│ │ ├── Landing.tsx # Landing page component
-│ │ ├── Login.tsx # Login page component
-│ │ ├── Messages.tsx # Messages page component
-│ │ ├── Settings.tsx # Settings page component
-│ │ └── Signup.tsx # Signup page component
-│ ├── supabaseClient.ts # Supabase client initialization
-│ ├── types/
-│ │ └── user.ts # TypeScript type definition for user profile
-│ └── vite-env.d.ts # TypeScript definition file for Vite environment variables
-├── tailwind.config.js # Tailwind CSS configuration file
-├── tsconfig.app.json # TypeScript configuration file for the app
-├── tsconfig.json # Main TypeScript configuration file
-├── tsconfig.node.json # TypeScript configuration file for Node.js
-└── vite.config.ts # Vite configuration file
-</pre>
+│   ├── App.tsx              # Main application component with routing
+│   ├── AuthContext.tsx      # Authentication context and hooks
+│   ├── components/
+│   │   ├── CreatePostModal.tsx   # Modal for creating new posts
+│   │   ├── Sidebar.tsx           # Sidebar navigation with profile preview and settings
+│   │   ├── PostList.tsx          # Renders the list of posts
+│   │   ├── ProtectedRoute.tsx    # Protects routes from unauthorized access
+│   │   ├── SettingsModal.tsx     # Modal for updating user settings
+│   │   └── Particles.tsx         # Particle animation component for the landing page
+│   ├── hooks/
+│   │   ├── usePosts.ts           # Custom hook for fetching and managing posts
+│   │   └── useUserData.ts        # Custom hook for fetching and managing user profile data
+│   ├── index.css             # Main CSS file using Tailwind CSS
+│   ├── main.tsx              # Entry point for the React application
+│   ├── pages/
+│   │   ├── Home.tsx          # Home page displaying posts and sidebar
+│   │   ├── Landing.tsx       # Animated landing page with parallax effects
+│   │   ├── Login.tsx         # Login form page
+│   │   ├── Signup.tsx        # Signup form page
+│   │   ├── Profile.tsx       # User profile page with editable bio and banner
+│   │   └── Settings.tsx      # Standalone settings page (alternative to modal)
+│   ├── supabaseClient.ts     # Supabase client initialization and configuration
+│   ├── types/
+│   │   └── user.ts           # Type definitions for user profiles
+│   └── vite-env.d.ts         # Vite environment variable typings
+├── tailwind.config.js       # Tailwind CSS configuration file
+├── tsconfig.app.json        # TypeScript configuration for the React app
+├── tsconfig.json            # Main TypeScript configuration file
+├── tsconfig.node.json       # TypeScript configuration for Node.js related files
+└── vite.config.ts           # Vite configuration file
+```
 
+## Getting Started
 
-## Key Components and Functionality
+### Prerequisites
 
-*   **`App.tsx` ([src/App.tsx](src/App.tsx)):** Sets up the React Router and defines the routes for the application. It wraps the application with `AuthProvider` and `ParallaxProvider`.
-*   **`AuthContext.tsx` ([src/AuthContext.tsx](src/AuthContext.tsx)):** Manages user authentication state using React Context and Supabase Auth. It provides `login`, `signup`, and `logout` functions.
-*   **`ProtectedRoute.tsx` ([src/components/ProtectedRoute.tsx](src/components/ProtectedRoute.tsx)):** A component that protects routes, redirecting unauthenticated users to the login page.
-*   **`Landing.tsx` ([src/pages/Landing.tsx](src/pages/Landing.tsx)):** The landing page of the application, featuring animated text, parallax scrolling, and a description of Vanish.
-*   **`Home.tsx` ([src/pages/Home.tsx](src/pages/Home.tsx)):** The main page for logged-in users, displaying posts and a sidebar for navigation.
-*   **`PostList.tsx` ([src/components/PostList.tsx](src/components/PostList.tsx)):** Displays a list of posts, fetching data using the `usePosts` hook.
-*   **`CreatePostModal.tsx` ([src/components/CreatePostModal.tsx](src/components/CreatePostModal.tsx)):** A modal for creating new posts, allowing users to set the expiration time.
-*   **`SettingsModal.tsx` ([src/components/SettingsModal.tsx](src/components/SettingsModal.tsx)):** A modal for user settings, allowing users to update their display name and profile picture.
-*   **`usePosts.ts` ([src/hooks/usePosts.ts](src/hooks/usePosts.ts)):** A custom hook that fetches and manages posts data from Supabase.
-*   **`useUserData.ts` ([src/hooks/useUserData.ts](src/hooks/useUserData.ts)):** A custom hook that fetches and manages user data from Supabase.
-*   **`supabaseClient.ts` ([src/supabaseClient.ts](src/supabaseClient.ts)):** Initializes the Supabase client with the provided URL and API key.
+- [Node.js](https://nodejs.org/) (v14 or later)
+- npm
 
-## Setup Instructions
+### Setup Instructions
 
-1.  **Clone the repository:**
+1. **Clone the repository:**
 
-    ```bash
-    git clone <repository_url>
-    ```
-2.  **Install dependencies:**
+   ```bash
+   git clone <repository_url>
+   cd Vanish
+   ```
 
-    ```bash
-    npm install
-    ```
-3.  **Configure environment variables:**
+2. **Install dependencies:**
 
-    *   Create a `.env` file in the root directory.
-    *   Add your Supabase URL and API key:
+   ```bash
+   npm install
+   ```
 
-        ```
-        VITE_SUPABASE_URL=<your_supabase_url>
-        VITE_SUPABASE_ANON_KEY=<your_supabase_anon_key>
-        ```
-4.  **Run the application:**
+3. **Configure environment variables:**
 
-    ```bash
-    npm run dev
-    ```
+   Create a `.env` file in the project root (if it doesn't already exist) and add your Supabase credentials:
 
-    The application will be available at `http://localhost:5173`.
+   ```
+   VITE_SUPABASE_URL=<your_supabase_url>
+   VITE_SUPABASE_ANON_KEY=<your_supabase_anon_key>
+   ```
+
+4. **Run the application:**
+
+   ```bash
+   npm run dev
+   ```
+
+   The app should now be available at [http://localhost:5173](http://localhost:5173).
 
 ## Further Development
-*    End to End encrption
-*   Implement the messages feature.
-*   Add the ability to include images and other media in posts.
-*   Implement user following and a personalized feed.
-*   Add more settings options.
-*   Improve the UI/UX.
+
+- **Messages Feature:** Currently a placeholder, this feature is under development.
+- **Enhanced Media Support:** Adding the ability to include images and videos in posts.
+- **Improved UI/UX:** Continual design improvements and component refinements.
+- **End-to-End Encryption:** Future work on securing communications end-to-end.
+- **User Following:** Implement user following and personalized feeds.
+
+## References
+
+- **App Component:** [src/App.tsx](src/App.tsx)
+- **Profile Component:** [src/pages/Profile.tsx](src/pages/Profile.tsx)
+- **Auth Context:** [src/AuthContext.tsx](src/AuthContext.tsx)
+- **Supabase Client:** [src/supabaseClient.ts](src/supabaseClient.ts)
+- **Custom Hooks:** [src/hooks/useUserData.ts](src/hooks/useUserData.ts), [src/hooks/usePosts.ts](src/hooks/usePosts.ts)
+
+## License
+
+This project is licensed under the terms specified in the repository LICENSE file.
