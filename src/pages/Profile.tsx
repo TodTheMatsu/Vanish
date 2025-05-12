@@ -10,6 +10,7 @@ export default function Profile() {
   const { username: routeUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user, loading, error, fetchUserData, setUser } = useUserData(routeUsername);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingBio, setEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
@@ -25,8 +26,44 @@ export default function Profile() {
     }
   }, [user]);
 
+  // Fetch authenticated (current) user for the sidebar
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        console.error("Error fetching current user", authError);
+        return;
+      }
+
+      if (authUser) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('username, display_name, profile_picture')
+          .eq('user_id', authUser.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile data", profileError);
+          return;
+        }
+
+        if (profileData) {
+          const fullUser = {
+            ...authUser,
+            username: profileData.username,
+            displayName: profileData.display_name,
+            profilePicture: profileData.profile_picture || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+          };
+          setCurrentUser(fullUser);
+        }
+      }
+    };
+
+    getCurrentUser();
+  }, []);
+
   const fetchUserPosts = async () => {
-    if (!user?.username) return;
+    if (!routeUsername) return;
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -34,7 +71,7 @@ export default function Profile() {
           id, content, timestamp, expires_in,
           profiles:profiles ( username, display_name, profile_picture )
         `)
-        .eq('profiles.username', user.username)
+        .eq('profiles.username', routeUsername)
         .order('timestamp', { ascending: false });
 
       if (error) throw error;
@@ -60,7 +97,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchUserPosts();
-  }, [user?.username]);
+  }, [routeUsername]);
 
   const handleSaveBio = async () => {
     setIsLoading(true);
@@ -131,11 +168,17 @@ export default function Profile() {
 
   return (
     <div className="flex min-h-screen w-screen bg-neutral-950">
-      <Sidebar
-        user={user}
-        onNavigate={(path: string) => navigate(path)}
-        onSettings={() => {}}
-      />
+      {currentUser ? (
+        <Sidebar
+          user={currentUser}
+          onNavigate={(path: string) => navigate(path)}
+          onSettings={() => {}}
+        />
+      ) : (
+        <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
+          Loading...
+        </div>
+      )}
       <main className="flex-1 flex flex-col items-center p-8">
         {/* Banner */}
         <div className="w-full max-w-[50%] relative">
@@ -143,21 +186,31 @@ export default function Profile() {
             src={user.banner_url || 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif'}
             alt="Banner"
             className="w-full h-48 object-cover rounded-md"
-            onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif'; }}
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif';
+            }}
           />
-          <button
-            onClick={() => setEditingBanner(true)}
-            className="absolute top-2 right-2 bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
-          >
-            Edit Banner
-          </button>
+
+          {/* Show edit banner only if the current user owns this profile */}
+          {routeUsername === currentUser?.username && (
+            <button
+              onClick={() => setEditingBanner(true)}
+              className="absolute top-2 right-2 bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
+            >
+              Edit Banner
+            </button>
+          )}
 
           {/* Profile picture overlapping banner and info box */}
           <img
             src={user.profilePicture}
             alt="Profile"
             className="absolute left-1/2 transform -translate-x-1/2 top-36 w-50 h-50 object-cover rounded-full border-4 border-neutral-800"
-            onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'; }}
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
+            }}
           />
 
           {editingBanner && (
@@ -223,12 +276,14 @@ export default function Profile() {
             ) : (
               <>
                 <p className="text-neutral-300 mb-4">{user.bio || 'No bio provided.'}</p>
-                <button
-                  onClick={() => setEditingBio(true)}
-                  className="bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
-                >
-                  Edit Bio
-                </button>
+                {routeUsername === currentUser?.username && (
+                  <button
+                    onClick={() => setEditingBio(true)}
+                    className="bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
+                  >
+                    Edit Bio
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -237,7 +292,7 @@ export default function Profile() {
         {/* Posts */}
         <div className="w-full max-w-2xl text-white mt-8">
           <h3 className="text-xl font-bold text-white mb-4">Posts</h3>
-          <PostList posts={posts} /> {/* Reuse PostList component */}
+          <PostList posts={posts.filter(post => post.author.username === routeUsername)} />
         </div>
       </main>
     </div>

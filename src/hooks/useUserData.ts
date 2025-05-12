@@ -19,7 +19,7 @@ export const useUserData = (username?: string) => {
     try {
       let query = supabase
         .from('profiles')
-        .select('username, display_name, profile_picture, bio, banner_url');
+        .select('user_id, username, display_name, profile_picture, bio, banner_url');
 
       if (username) {
         query = query.eq('username', username);
@@ -30,7 +30,8 @@ export const useUserData = (username?: string) => {
           setLoading(false);
           return;
         }
-        query = query.eq('email', authUser.email);
+        // Instead of matching by email, match on the user_id from auth.users.
+        query = query.eq('user_id', authUser.id);
       }
 
       const { data: profile, error: profileError } = await query.single();

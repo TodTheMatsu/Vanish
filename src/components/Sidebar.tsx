@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { IoHomeSharp, IoMailSharp, IoSettingsSharp } from 'react-icons/io5';
 import { UserProfile } from '../types/user';
 import { useNavigate } from 'react-router-dom';
+import { use } from 'motion/react-client';
 
 interface SidebarProps {
   user: UserProfile;
