@@ -28,8 +28,6 @@ export default function Home() {
     handleProfilePictureChange,
     handleSaveSettings,
     handleLogout,
-    setIsSettingsLoading,
-    setSettingsError,
   } = useSettings({
     user,
     setUser,
