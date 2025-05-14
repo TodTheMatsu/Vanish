@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { ParallaxProvider } from 'react-scroll-parallax';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
@@ -13,7 +12,6 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ParallaxProvider>
           <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -44,7 +42,6 @@ function App() {
               <Route path="/profile/:username" element={<Profile />} />
             </Routes>
           </div>
-        </ParallaxProvider>
       </AuthProvider>
     </BrowserRouter>
   );

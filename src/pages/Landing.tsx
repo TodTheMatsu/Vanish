@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
-import { Parallax } from 'react-scroll-parallax';
+import {IoMdTimer, IoMdLock, IoMdEye, IoMdPeople, IoMdTrash, IoMdPhonePortrait} from 'react-icons/io';
 import Particles from '../components/Particles';
 import { useAuth } from '../AuthContext';
 
@@ -17,7 +17,7 @@ interface NavLinksProps {
 const NavLinks = ({ navLinks }: NavLinksProps) => {
   return (
     <div className='absolute md:fixed top-[5%] right-[5%] md:right-[10%]'>
-      <motion.div className='grow text-neutral-500 text-lg p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
+      <motion.div className='grow text-neutral-500 z-10 text-lg p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
         {navLinks.map((link, index) => (
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
@@ -106,13 +106,20 @@ export default function Landing() {
   const vanishDescription = 'Vanish is a privacy-focused social media platform that gives you complete control over your digital footprint. Unlike traditional social networks that store your data indefinitely, Vanish automatically deletes your messages after a set period of time, ensuring your conversations remain private and temporary.';
 
   const navLinks = [
-    { text: 'About' },
+    { text: 'Home' },
     { text: 'Sign Up' },
     { text: 'Sign In' },
     { text: 'Contact' },
     { text: 'Privacy Policy' },
     { text: 'Terms of Service' },
   ];
+
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about-section');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <>
@@ -123,7 +130,7 @@ export default function Landing() {
         <div className='flex items-center justify-center flex-col'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />
         </div>
-        <NavLinks navLinks={navLinks} />
+
         <AnimatedWords baseOpacity={baseOpacity} text={'Post.  Share.  Vanish.'} />
         <motion.button
           initial={{ scale: 1, opacity: 0 }}
@@ -147,32 +154,156 @@ export default function Landing() {
             y: 0,
             transition: { delay: 5, duration: 1.5, type: 'spring', stiffness: 100 },
           }}
+          className='cursor-pointer'
+          onClick={scrollToAbout}
         >
           <IconContext.Provider value={{ size: '2em', className: 'animate-bounce fill-neutral-500 hover:fill-white' }}>
             <IoMdArrowDown />
           </IconContext.Provider>
         </motion.button>
       </div>
-      <div className='flex items-center w-screen h-screen justify-center pointer-events-none flex-col'>
-        <Parallax opacity={[0, 1]} startScroll={0} endScroll={1000} translateX={['120%', '0%']}>
-          <h3 className='text-white p-6 text-4xl font-bold'>What is Vanish?</h3>
-        </Parallax>
-        <Parallax opacity={[0, 1]} startScroll={0} endScroll={1000} scale={[0, 1]} translateY={['200%', '0%']}>
-          <p className='text-white text-center text-white font-light text-xl w-[80%] md:w-1/2 mx-auto'>
-            {vanishDescription.split('').map((char, index) => (
-              <motion.span
-                key={index}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                 viewport={{ once: true }}
-                transition={{ duration: 0.025, delay: index * 0.01 }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </p>
-        </Parallax>
+      <div id="about-section" className='flex text-white items-center w-screen h-screen justify-center flex-col'>
+        <motion.h3 
+            initial={{ opacity: 0, y: -50 }}
+            viewport={{ once: true }}
+            whileInView={{
+              opacity: 1,
+              y: 0,
+              transition: { duration: 1.5, stiffness: 100 },
+            }}
+          className='p-6 text-4xl z-10  font-bold'>What is Vanish?</motion.h3>
+        <p className=' text-center z-10  font-light text-xl  w-[80%] md:w-1/2 mx-auto'>
+          {vanishDescription.split('').map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className=''
+              transition={{ duration: 0.05, delay: index * 0.005 +1  }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </p>
+        <motion.img 
+        initial={{ opacity: 0, y: 50 , borderWidth: '2px' }}
+        viewport={{ once: true }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+          transition: {delay: 1.2 ,duration: 1.5, stiffness: 100 },
+        }}
+        src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
+      <div className='flex text-white items-center w-screen h-screen justify-center flex-col'>
+        <div className='flex text-white bg-white/10 backdrop-blur-xs items-center w-[80%] rounded-2xl py-40 justify-center flex-col'>
+          <motion.h3
+          initial={{ opacity: 0, y: -50 }}
+          viewport={{ once: true }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+            transition: { duration: 1.5, stiffness: 100 },
+          }}
+        className='p-6 text-5xl font-bold'>Key Features</motion.h3>
+          <h4
+          className='text-center text-2xl font-light w-[80%] md:w-1/2 mx-auto'>
+        {'Designed with your privacy and security as the top priority.'.split('').map((char, index) => (
+          <motion.span
+            key={index}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.05, delay: index * 0.01+1 }}
+          >
+            {char}
+          </motion.span>
+        ))}
+        </h4>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 p-6'>
+          {[
+            {
+          title: 'Timed Messages',
+          description:
+          'Set custom expiration times for your messages, from seconds to days. Once the timer expires, your message is permanently deleted from all devices.',
+          icon: <IoMdTimer size={30} className="mb-2" />,
+            },
+            {
+          title: 'End-to-End Encryption',
+          description:
+          'All messages are encrypted from the moment they leave your device until they reach the recipient. Not even Vanish can read your private conversations.',
+          icon: <IoMdLock size={30} className="mb-2 " />,
+            },
+            {
+          title: 'Screenshot Detection',
+          description:
+          'Get notified immediately when someone takes a screenshot of your messages, giving you complete awareness of how your content is being saved.',
+          icon: <IoMdEye size={30} className="mb-2" />,
+            },
+            {
+          title: 'Secure Group Chats',
+          description:
+          'Create temporary group conversations that automatically dissolve after a set period, perfect for event planning or time-sensitive discussions.',
+          icon: <IoMdPeople size={30} className="mb-2 " />,
+            },
+            {
+          title: 'No Data Storage',
+          description:
+          "Unlike other platforms, we don't store your messages on our servers after they expire. When it's gone, it's truly gone.",
+          icon: <IoMdTrash size={30} className="mb-2" />,
+            },
+            {
+          title: 'Cross-Platform',
+          description:
+          'Available on iOS, Android, and web browsers, allowing you to communicate securely no matter which device you\'re using.',
+          icon: <IoMdPhonePortrait size={30} className="mb-2" />,
+            },
+          ].map((feature, featureIndex) => (
+            <motion.div
+          key={featureIndex}
+          className=' p-6 py-10 rounded-lg flex flex-col items-center text-center'
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 1 + featureIndex * 0.1 }}
+            >
+          {feature.icon}
+          <h5 className='text-2xl font-semibold mb-2'>
+          {feature.title.split('').map((char, index) => (
+            <motion.span
+          key={index}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.05, delay: 1.5 + featureIndex * 0.2 + index * 0.01 }}
+            >
+          {char}
+            </motion.span>
+          ))}
+          </h5>
+          <p className='text-neutral-300 text-xl'>
+          {feature.description.split('').map((char, index) => (
+            <motion.span
+          key={index}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 0.05,
+            delay: 1.5 + featureIndex * 0.2 + feature.title.length * 0.01 + index * 0.005,
+          }}
+            >
+          {char}
+            </motion.span>
+          ))}
+          </p>
+            </motion.div>
+          ))}
+        </div>
+        </div>
+      </div>
+      <NavLinks navLinks={navLinks} />
     </>
   );
 }
