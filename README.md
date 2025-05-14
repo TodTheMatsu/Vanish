@@ -52,24 +52,24 @@ Vanish/
 │   ├── hooks/
 │   │   ├── usePosts.ts           # Custom hook for fetching and managing posts
 │   │   └── useUserData.ts        # Custom hook for fetching and managing user profile data
-│   ├── index.css             # Main CSS file using Tailwind CSS
-│   ├── main.tsx              # Entry point for the React application
+│   ├── index.css               # Main CSS file using Tailwind CSS
+│   ├── main.tsx                # Entry point for the React application
 │   ├── pages/
-│   │   ├── Home.tsx          # Home page displaying posts and sidebar
-│   │   ├── Landing.tsx       # Animated landing page with parallax effects
-│   │   ├── Login.tsx         # Login form page
-│   │   ├── Signup.tsx        # Signup form page
-│   │   ├── Profile.tsx       # User profile page with editable bio and banner
-│   │   └── Settings.tsx      # Standalone settings page (alternative to modal)
-│   ├── supabaseClient.ts     # Supabase client initialization and configuration
+│   │   ├── Home.tsx            # Home page displaying posts and sidebar
+│   │   ├── Landing.tsx         # Animated landing page with parallax effects
+│   │   ├── Login.tsx           # Login form page
+│   │   ├── Signup.tsx          # Signup form page
+│   │   ├── Profile.tsx         # User profile page with editable bio and banner
+│   │   └── Settings.tsx        # Standalone settings page (alternative to modal)
+│   ├── supabaseClient.ts       # Supabase client initialization and configuration
 │   ├── types/
-│   │   └── user.ts           # Type definitions for user profiles
-│   └── vite-env.d.ts         # Vite environment variable typings
-├── tailwind.config.js       # Tailwind CSS configuration file
-├── tsconfig.app.json        # TypeScript configuration for the React app
-├── tsconfig.json            # Main TypeScript configuration file
-├── tsconfig.node.json       # TypeScript configuration for Node.js related files
-└── vite.config.ts           # Vite configuration file
+│   │   └── user.ts             # Type definitions for user profiles
+│   └── vite-env.d.ts           # Vite environment variable typings
+├── tailwind.config.js         # Tailwind CSS configuration file
+├── tsconfig.app.json          # TypeScript configuration for the React app
+├── tsconfig.json              # Main TypeScript configuration file
+├── tsconfig.node.json         # TypeScript configuration for Node.js related files
+└── vite.config.ts             # Vite configuration file
 ```
 
 ## Getting Started
