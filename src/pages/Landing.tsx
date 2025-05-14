@@ -192,19 +192,26 @@ export default function Landing() {
         whileInView={{
           opacity: 1,
           y: 0,
-          transition: {delay: 1.2 ,duration: 1.5, stiffness: 100 },
+          transition: {delay: 1.2 ,duration: 1.5},
         }}
         src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
       <div className='flex text-white items-center w-screen h-screen justify-center flex-col'>
-        <div className='flex text-white bg-white/10 backdrop-blur-xs items-center w-[80%] rounded-2xl py-40 justify-center flex-col'>
+        <motion.div
+        initial={{ opacity: 0}}
+        whileInView={{
+          opacity: 1,
+          transition: {delay: 0.5, duration: 1.5},
+        }}
+        viewport={{ once: true }}
+        className='flex text-white bg-white/10 backdrop-blur-xs items-center w-[80%] rounded-2xl py-40 justify-center flex-col'>
           <motion.h3
           initial={{ opacity: 0, y: -50 }}
           viewport={{ once: true }}
           whileInView={{
             opacity: 1,
             y: 0,
-            transition: { duration: 1.5, stiffness: 100 },
+            transition: { delay: 0.5,duration: 1.5, stiffness: 100 },
           }}
         className='p-6 text-5xl font-bold'>Key Features</motion.h3>
           <h4
@@ -301,7 +308,7 @@ export default function Landing() {
             </motion.div>
           ))}
         </div>
-        </div>
+        </motion.div>
       </div>
       <NavLinks navLinks={navLinks} />
     </>
