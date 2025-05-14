@@ -126,6 +126,7 @@ export default function Landing() {
       <title>Vanish: Privacy-Focused Social Media</title>
       <meta name="description" content={vanishDescription} />
       <Particles />
+      {/* Hero Section */}
       <div className='flex items-center h-screen justify-center flex-col'>
         <div className='flex items-center justify-center flex-col'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />
@@ -145,7 +146,7 @@ export default function Landing() {
             }
           }}
         >
-          Explore
+          Get Started
         </motion.button>
         <motion.button
           initial={{ opacity: 0, y: -50 }}
@@ -162,6 +163,7 @@ export default function Landing() {
           </IconContext.Provider>
         </motion.button>
       </div>
+      {/* About Vanish Section */}
       <div id="about-section" className='flex text-white items-center w-screen h-screen justify-center flex-col'>
         <motion.h3 
             initial={{ opacity: 0, y: -50 }}
@@ -196,6 +198,7 @@ export default function Landing() {
         }}
         src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
+      {/* Key Features Section */}
       <div className='flex text-white items-center w-screen h-screen justify-center flex-col'>
         <motion.div
         initial={{ opacity: 0}}
@@ -310,6 +313,7 @@ export default function Landing() {
         </div>
         </motion.div>
       </div>
+      {/* Navigation Links */}
       <NavLinks navLinks={navLinks} />
     </>
   );

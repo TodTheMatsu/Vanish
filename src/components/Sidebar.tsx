@@ -51,7 +51,7 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={() => setShowSearch(true)}
-            className="flex items-center space-x-2 text-white cursor-pointer hover:text-blue-500 w-full p-2 rounded"
+            className="flex items-center space-x-2 text-white cursor-pointer hover:bg-white/5 w-full p-2 rounded"
           >
             <IoSearchSharp size={24} />
             <span className="hidden md:inline">Search Users</span>
@@ -61,7 +61,7 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
               key={item.path}
               whileHover={{ scale: 1.05 }}
               onClick={() => onNavigate(item.path)}
-              className="flex items-center space-x-2 text-white cursor-pointer hover:text-blue-500 w-full p-2 rounded"
+              className="flex items-center space-x-2 text-white cursor-pointer hover:bg-white/5 w-full p-2 rounded"
             >
               <item.icon size={24} />
               <span className="hidden md:inline">{item.label}</span>
@@ -71,7 +71,7 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={onSettings}
-            className="flex items-center space-x-2 text-white cursor-pointer hover:text-blue-500 w-full p-2 rounded"
+            className="flex items-center space-x-2 text-white cursor-pointer hover:bg-white/5 w-full p-2 rounded"
           >
             <IoSettingsSharp size={24} />
             <span className="hidden md:inline">Settings</span>
