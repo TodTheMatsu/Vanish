@@ -34,7 +34,7 @@ const ParticlesComponent = () => {
                                 value: "#000000",
                             },
                         },
-                        fpsLimit: 120,
+                        fpsLimit: 60,
                         interactivity: {
                             events: {
                                 onHover: {
@@ -76,7 +76,7 @@ const ParticlesComponent = () => {
                             },
                             number: {
                                 density: {
-                                    enable: false,
+                                    enable: true,
                                 },
                                 value: 200,
                             },

@@ -45,11 +45,11 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
     <>
       <motion.div
         className="fixed w-screen h-screen"
-        initial={{ backdropFilter: 'blur(0.1em)' }}
+        initial={{ backdropFilter: 'blur(0.5em)' }}
         animate={{ backdropFilter: 'blur(0em)' }}
-        transition={{ duration: 2 }}
+        transition={{delay:2, duration: 2 }}
       ></motion.div>
-      <h1 className='text-white font-bold text-9xl absolute select-none'>
+      <h1 className='text-white font-bold text-6xl sm:text-7xl md:text-8xl lg:text-9xl absolute select-none'>
         {textArray.map((char, index) => (
           <motion.span
             key={index}
@@ -61,7 +61,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
           </motion.span>
         ))}
       </h1>
-      <motion.h1 className='text-white font-bold blur-md text-9xl select-none'>
+      <motion.h1 className='text-white font-bold blur-md text-6xl sm:text-7xl md:text-8xl lg:text-9xl select-none'>
         {textArray.map((char, index) => (
           <motion.span
             key={index}
@@ -83,7 +83,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
 const AnimatedWords = ({ baseOpacity, text }: AnimatedTextProps) => {
   return (
     <>
-    <motion.h2 className='text-white text-4xl space-x-1'>
+    <motion.h2 className='text-white text-2xl md:text-3xl lg:text-4xl space-x-1'>
       {text.split(' ').map((word, wordIndex) => (
         <motion.span
           key={wordIndex}
@@ -164,7 +164,7 @@ export default function Landing() {
         </motion.button>
       </div>
       {/* About Vanish Section */}
-      <div id="about-section" className='flex text-white items-center w-screen h-screen justify-center flex-col'>
+      <div id="about-section" className='flex text-white items-center w-screen h-screen justify-center flex-col px-4 sm:px-0'>
         <motion.h3 
             initial={{ opacity: 0, y: -50 }}
             viewport={{ once: true }}
@@ -173,8 +173,8 @@ export default function Landing() {
               y: 0,
               transition: { duration: 1.5, stiffness: 100 },
             }}
-          className='p-6 text-4xl z-10  font-bold'>What is Vanish?</motion.h3>
-        <p className=' text-center z-10  font-light text-xl  w-[80%] md:w-1/2 mx-auto'>
+          className='p-6 text-3xl md:text-4xl z-10 font-bold'>What is Vanish?</motion.h3>
+        <p className=' text-center z-10 font-light text-lg md:text-xl w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
           {vanishDescription.split('').map((char, index) => (
             <motion.span
               key={index}
@@ -196,10 +196,10 @@ export default function Landing() {
           y: 0,
           transition: {delay: 1.2 ,duration: 1.5},
         }}
-        src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-70 rounded-3xl mask-b-from-70% '/>
+        src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-50 sm:scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
       {/* Key Features Section */}
-      <div className='flex text-white items-center w-screen h-screen justify-center flex-col'>
+      <div className='flex text-white items-center w-screen justify-center flex-col px-4 sm:px-0'>
         <motion.div
         initial={{ opacity: 0}}
         whileInView={{
@@ -207,7 +207,7 @@ export default function Landing() {
           transition: {delay: 0.5, duration: 1.5},
         }}
         viewport={{ once: true }}
-        className='flex text-white bg-white/10 backdrop-blur-xs items-center w-[80%] rounded-2xl py-40 justify-center flex-col'>
+        className='flex text-white bg-white/10 backdrop-blur-xs items-center w-full md:w-[80%] rounded-2xl py-20 md:py-40 justify-center flex-col'>
           <motion.h3
           initial={{ opacity: 0, y: -50 }}
           viewport={{ once: true }}
@@ -216,9 +216,9 @@ export default function Landing() {
             y: 0,
             transition: { delay: 0.5,duration: 1.5, stiffness: 100 },
           }}
-        className='p-6 text-5xl font-bold'>Key Features</motion.h3>
+        className='p-6 text-3xl md:text-4xl lg:text-5xl font-bold'>Key Features</motion.h3>
           <h4
-          className='text-center text-2xl font-light w-[80%] md:w-1/2 mx-auto'>
+          className='text-center text-xl md:text-2xl font-light w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
         {'Designed with your privacy and security as the top priority.'.split('').map((char, index) => (
           <motion.span
             key={index}
@@ -292,7 +292,7 @@ export default function Landing() {
             </motion.span>
           ))}
           </h5>
-          <p className='text-neutral-300 text-xl'>
+          <p className='text-neutral-300 text-base md:text-lg lg:text-xl'>
           {feature.description.split('').map((char, index) => (
             <motion.span
           key={index}
