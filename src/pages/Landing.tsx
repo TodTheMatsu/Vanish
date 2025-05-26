@@ -44,7 +44,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
   return (
     <>
       <motion.div
-        className="fixed w-screen h-screen"
+        className="fixed w-screen h-[200%]"
         initial={{ backdropFilter: 'blur(0.5em)' }}
         animate={{ backdropFilter: 'blur(0em)' }}
         transition={{delay:2, duration: 2 }}
