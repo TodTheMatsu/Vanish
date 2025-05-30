@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
+import { usePostsByUsername } from '../hooks/usePosts';
 import Sidebar from '../components/Sidebar';
 import { supabase } from '../supabaseClient';
-import { Post } from '../hooks/usePosts';
-import { PostList } from '../components/PostList'; // Import PostList
+import { PostList } from '../components/PostList';
 import SettingsModal from '../components/SettingsModal';
-import { useSettings } from '../hooks/useSettings'; // Import the shared hook
+import { useSettings } from '../hooks/useSettings';
 
 export default function Profile() {
   const { username: routeUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
-  const { user, loading, error, setUser, fetchUserData } = useUserData(routeUsername);
+  const { user, loading, error, setUser, fetchUserData, isUpdating } = useUserData(routeUsername);
+  const { data: posts = [], isLoading: postsLoading } = usePostsByUsername(routeUsername || '');
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [editingBio, setEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
   const [editingBanner, setEditingBanner] = useState(false);
@@ -24,19 +24,16 @@ export default function Profile() {
     tempUser,
     isSettingsLoading,
     settingsError,
-    setTempUser,
     handleUsernameChange,
     handleDisplayNameChange,
     handleProfilePictureChange,
     handleSaveSettings,
     handleLogout,
-    setIsSettingsLoading,
-    setSettingsError,
   } = useSettings({
     user,
     setUser,
-    onClose: () => setShowSettings(false), // Close the modal
-    fetchUserData: fetchUserData, // Refresh user data
+    onClose: () => setShowSettings(false),
+    fetchUserData: fetchUserData,
   });
 
   useEffect(() => {
@@ -72,7 +69,7 @@ export default function Profile() {
             ...authUser,
             username: profileData.username,
             displayName: profileData.display_name,
-            profilePicture: profileData.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
+            profilePicture: profileData.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
           };
           setCurrentUser(fullUser);
         }
@@ -82,60 +79,10 @@ export default function Profile() {
     getCurrentUser();
   }, []);
 
-  const fetchUserPosts = async () => {
-    if (!routeUsername) return;
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .select(`
-          id, content, timestamp, expires_in,
-          profiles:profiles ( username, display_name, profile_picture )
-        `)
-        .eq('profiles.username', routeUsername)
-        .order('timestamp', { ascending: false });
-
-      if (error) throw error;
-
-      if (data) {
-        const formattedPosts = data.map((post: any) => ({
-          id: post.id,
-          content: post.content,
-          timestamp: new Date(post.timestamp),
-          expiresIn: post.expires_in,
-          author: {
-            username: post.profiles?.username || 'unknown',
-            displayName: post.profiles?.display_name || 'Unknown',
-            profilePicture: post.profiles?.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
-          }
-        }));
-        setPosts(formattedPosts);
-      }
-    } catch (error) {
-      console.error('Error fetching user posts:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserPosts();
-  }, [routeUsername]);
-
   const handleSaveBio = async () => {
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser?.id) {
-        return;
-      }
-      const { error } = await supabase
-        .from('profiles')
-        .update({ bio: tempBio })
-        .eq('user_id', currentUser.id);
-
-      if (error) {
-        console.error('Error updating bio:', error);
-      } else {
-        setUser(prev => ({ ...prev, bio: tempBio }));
-        setEditingBio(false);
-      }
+      setUser({ ...user, bio: tempBio });
+      setEditingBio(false);
     } catch (error) {
       console.error('Bio update error:', error);
     }
@@ -143,26 +90,13 @@ export default function Profile() {
 
   const handleSaveBanner = async () => {
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser?.id) {
-        return;
-      }
       // Validate that the banner picture is a valid URL.
       if (!/^https?:\/\/.+/.test(tempBannerUrl)) {
         console.error('Banner picture must be a valid URL.');
         return;
       }
-      const { error } = await supabase
-        .from('profiles')
-        .update({ banner_url: tempBannerUrl })
-        .eq('user_id', currentUser.id);
-
-      if (error) {
-        console.error('Error updating banner:', error);
-      } else {
-        setUser(prev => ({ ...prev, banner_url: tempBannerUrl }));
-        setEditingBanner(false);
-      }
+      setUser({ ...user, banner_url: tempBannerUrl });
+      setEditingBanner(false);
     } catch (error) {
       console.error('Banner update error:', error);
     }
@@ -178,7 +112,7 @@ export default function Profile() {
           <Sidebar
             user={currentUser}
             onNavigate={(path: string) => navigate(path)}
-            onSettings={() => setShowSettings(true)} // Open settings modal
+            onSettings={() => setShowSettings(true)}
           />
         ) : (
           <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
@@ -231,10 +165,10 @@ export default function Profile() {
                 <div className="flex justify-between mt-2">
                   <button
                     onClick={handleSaveBanner}
-                    disabled={loading}
+                    disabled={isUpdating}
                     className="bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 disabled:opacity-50"
                   >
-                    {loading ? 'Saving...' : 'Save Banner'}
+                    {isUpdating ? 'Saving...' : 'Save Banner'}
                   </button>
                   <button
                     onClick={() => setEditingBanner(false)}
@@ -265,10 +199,10 @@ export default function Profile() {
                   <div className="flex justify-between mt-2">
                     <button
                       onClick={handleSaveBio}
-                      disabled={loading}
+                      disabled={isUpdating}
                       className="bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600 disabled:opacity-50"
                     >
-                      {loading ? 'Saving...' : 'Save Bio'}
+                      {isUpdating ? 'Saving...' : 'Save Bio'}
                     </button>
                     <button
                       onClick={() => setEditingBio(false)}
@@ -298,7 +232,11 @@ export default function Profile() {
           {/* Posts */}
           <div className="w-full max-w-3xl text-white mt-8">
             <h3 className="text-xl font-bold text-white mb-4">Posts</h3>
-            <PostList posts={posts.filter(post => post.author.username === routeUsername)} />
+            {postsLoading ? (
+              <div className="text-center">Loading posts...</div>
+            ) : (
+              <PostList posts={posts.filter(post => post.author.username === routeUsername)} />
+            )}
           </div>
         </main>
       </div>

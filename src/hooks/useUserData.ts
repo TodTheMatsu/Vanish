@@ -1,66 +1,53 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from '../types/user';
+import { userApi } from '../api/userApi';
 
 const defaultUser: UserProfile = {
   username: 'defaultUser',
   displayName: 'Default User',
-  profilePicture: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
+  profilePicture: 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
 };
 
 export const useUserData = (username?: string) => {
-  const [user, setUser] = useState<UserProfile>(defaultUser);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchUserData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      let query = supabase
-        .from('profiles')
-        .select('user_id, username, display_name, profile_picture, bio, banner_url');
+  const {
+    data: user = defaultUser,
+    isLoading: loading,
+    error,
+    refetch: fetchUserData
+  } = useQuery<UserProfile, Error>({
+    queryKey: ['userData', username],
+    queryFn: () => userApi.fetchUser(username),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
 
-      if (username) {
-        query = query.eq('username', username);
-      } else {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        if (!authUser) {
-          setError("No authenticated user found.");
-          setLoading(false);
-          return;
-        }
-        // Instead of matching by email, match on the user_id from auth.users.
-        query = query.eq('user_id', authUser.id);
-      }
+  const updateUserMutation = useMutation({
+    mutationFn: async (updatedUser: Partial<UserProfile>) => {
+      await userApi.updateUser(updatedUser);
+      return updatedUser;
+    },
+    onSuccess: (updatedData) => {
+      // Update the cache with the new user data
+      queryClient.setQueryData(['userData', username], (oldData: UserProfile) => ({
+        ...oldData,
+        ...updatedData
+      }));
+    },
+  });
 
-      const { data: profile, error: profileError } = await query.single();
-
-      if (profileError) {
-        setError(profileError.message);
-      }
-
-      if (profile) {
-        const userData: UserProfile = {
-          username: profile.username,
-          displayName: profile.display_name,
-          profilePicture: profile.profile_picture || defaultUser.profilePicture,
-          bio: profile.bio || '',
-          banner_url: profile.banner_url || ''
-        };
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setError("Failed to fetch user data.");
-    } finally {
-      setLoading(false);
-    }
+  const setUser = (updatedUser: UserProfile | ((prev: UserProfile) => UserProfile)) => {
+    const newUser = typeof updatedUser === 'function' ? updatedUser(user) : updatedUser;
+    updateUserMutation.mutate(newUser);
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, [username]);
-
-  return { user, setUser, loading, error, fetchUserData };
+  return { 
+    user, 
+    setUser, 
+    loading, 
+    error: error?.message || null, 
+    fetchUserData,
+    isUpdating: updateUserMutation.isPending
+  };
 };

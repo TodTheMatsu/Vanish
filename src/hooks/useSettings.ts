@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient, QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 import { useAuth } from '../AuthContext';
 import { UserProfile } from '../types/user';
 import { supabase } from '../supabaseClient';
@@ -8,7 +9,7 @@ interface UseSettingsProps {
   user: UserProfile;
   setUser: React.Dispatch<React.SetStateAction<UserProfile>>;
   onClose?: () => void; // Optional close handler
-  fetchUserData?: () => Promise<void>; // Optional fetch user data
+  fetchUserData?: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<UserProfile, Error>>; // Optional fetch user data
 }
 
 export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettingsProps) => {
@@ -17,6 +18,7 @@ export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettin
   const [settingsError, setSettingsError] = useState('');
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const queryClient = useQueryClient();
 
   // Update tempUser when the user changes
   useEffect(() => {
@@ -71,6 +73,8 @@ export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettin
         return false;
       } else {
         setUser(tempUser);
+        // Invalidate and refetch user data queries
+        queryClient.invalidateQueries({ queryKey: ['userData'] });
         if (fetchUserData) {
           await fetchUserData();
         }
