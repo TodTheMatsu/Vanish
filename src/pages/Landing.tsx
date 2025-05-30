@@ -29,7 +29,7 @@ const NavLinks = ({ navLinks }: NavLinksProps) => {
   }, []);
 
   return (
-    <div className='fixed top-[5%] z-50 right-[5%] md:right-[10%]'>
+    <div className='fixed top-[1%] md:top-[5%] z-50 md:right-[10%]'>
       <motion.div 
         className='text-neutral-400 text-sm md:text-base p-2 md:p-3 rounded-2xl flex flex-row items-center justify-center space-x-2 md:space-x-4 border border-transparent hover:border-white/20'
         animate={{
