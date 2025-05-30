@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from '../types/user';
 
 export interface Post {
@@ -10,12 +10,35 @@ export interface Post {
   author: UserProfile;
 }
 
-export const usePosts = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+const formatAndFilter = (postsData: any[]): Post[] => {
+  return postsData
+    .map(post => ({
+      id: post.id,
+      content: post.content,
+      timestamp: new Date(post.timestamp),
+      expiresIn: post.expires_in,
+      author: {
+        username: post.profiles?.username ?? 'unknown',
+        displayName: post.profiles?.display_name ?? 'Unknown',
+        profilePicture:
+          post.profiles?.profile_picture ??
+          'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',
+      },
+    }))
+    .filter(post => {
+      const expireAt =
+        post.timestamp.getTime() + post.expiresIn * 60 * 60 * 1000;
+      return Date.now() < expireAt;
+    });
+};
 
-  const fetchPosts = async () => {
-    try {
-      const { data: postsData, error } = await supabase
+export const usePosts = () => {
+  const qc = useQueryClient();
+
+  const {data: posts = [],isLoading,isError,refetch,} = useQuery<Post[]>({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const { data: raw, error } = await supabase
         .from('posts')
         .select(`
           id, content, timestamp, expires_in,
@@ -23,87 +46,49 @@ export const usePosts = () => {
         `)
         .order('timestamp', { ascending: false });
       if (error) throw error;
-      if (postsData) {
-        const formatted = postsData.map((post: any) => ({
-          id: post.id,
-          content: post.content,
-          timestamp: new Date(post.timestamp),
-          expiresIn: post.expires_in,
-          author: {
-            username: post.profiles?.username || 'unknown',
-            displayName: post.profiles?.display_name || 'Unknown',
-            profilePicture: post.profiles?.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
-          }
-        })).filter(post => {
-          const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
-          return Date.now() < expiration;
-        });
-        setPosts(formatted);
-      }
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    }
-  };
+      return formatAndFilter(raw ?? []);
+    },
+    staleTime: 1000 * 60, // 1min
+  });
 
-  const createPost = async (postData: { content: string; expiresIn: number }) => {
-    try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('No user found');
-      const newPostData = {
-        content: postData.content,
-        timestamp: new Date().toISOString(),
-        expires_in: postData.expiresIn,
-        author_id: currentUser.id
-      };
-      const { data: post, error } = await supabase
+  const createPostMutation = useMutation({
+    mutationFn: async (input: { content: string; expiresIn: number }) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: newRaw, error } = await supabase
         .from('posts')
-        .insert(newPostData)
+        .insert({
+          content: input.content,
+          timestamp: new Date().toISOString(),
+          expires_in: input.expiresIn,
+          author_id: user.id,
+        })
         .select(`
-          *,
-          profiles (
-            username,
-            display_name,
-            profile_picture
-          )
+          id, content, timestamp, expires_in,
+          profiles ( username, display_name, profile_picture )
         `)
         .single();
       if (error) throw error;
-      if (post) {
-        const formatted = {
-          id: post.id,
-          content: post.content,
-          timestamp: new Date(post.timestamp),
-          expiresIn: post.expires_in,
-          author: {
-            username: post.profiles.username,
-            displayName: post.profiles.display_name,
-            profilePicture: post.profiles.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
-          }
-        };
-        setPosts(prev => [formatted, ...prev].filter(post => {
-          const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
-          return Date.now() < expiration;
-        }));
-        return formatted;
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-    }
+      return formatAndFilter([newRaw])[0];
+    },
+    onSuccess: newPost => {
+      qc.setQueryData<Post[]>(['posts'], prev =>
+        [newPost, ...(prev ?? [])].filter(p => {
+          const expireAt = p.timestamp.getTime() + p.expiresIn * 60 * 60 * 1000;
+          return Date.now() < expireAt;
+        })
+      );
+    },
+  });
+
+  return {
+    posts,
+    isLoading,
+    isError,
+    refetch,
+    createPost: createPostMutation.mutateAsync,
   };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPosts(posts => posts.filter(post => {
-        const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
-        return Date.now() < expiration;
-      }));
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return { posts, fetchPosts, createPost, setPosts };
 };
