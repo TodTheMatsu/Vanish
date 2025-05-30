@@ -207,7 +207,7 @@ export default function Landing() {
           transition: {delay: 0.5, duration: 1.5},
         }}
         viewport={{ once: true }}
-        className='flex text-white bg-white/10 backdrop-blur-xs items-center w-full md:w-[80%] rounded-2xl py-20 md:py-40 justify-center flex-col'>
+        className='flex text-white bg-zinc-950 backdrop-blur-xs items-center w-full  rounded-2xl py-20 md:py-40 justify-center flex-col'>
           <motion.h3
           initial={{ opacity: 0, y: -50 }}
           viewport={{ once: true }}
