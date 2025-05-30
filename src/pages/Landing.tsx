@@ -368,7 +368,7 @@ export default function Landing() {
           transition={{ duration: 1, delay: 0.2 }}
           className='text-center mb-16 z-10'
         >
-          <h3 className='text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-neutral-300 bg-clip-text text-transparent'>
+          <h3 className='text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-neutral-300 h-20 bg-clip-text text-transparent'>
             Simple Pricing
           </h3>
           <p className='text-xl md:text-2xl text-neutral-300 max-w-2xl mx-auto'>
