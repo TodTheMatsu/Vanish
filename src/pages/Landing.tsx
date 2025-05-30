@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { IoMdArrowDown } from 'react-icons/io';
 import { IconContext } from 'react-icons';
 import {IoMdTimer, IoMdLock, IoMdEye, IoMdPeople, IoMdTrash, IoMdPhonePortrait} from 'react-icons/io';
@@ -15,9 +16,30 @@ interface NavLinksProps {
 }
 
 const NavLinks = ({ navLinks }: NavLinksProps) => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className='absolute md:fixed top-[5%] right-[5%] md:right-[10%]'>
-      <motion.div className='grow text-neutral-500 z-10 text-lg p-3 max-h-[4vh] flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'>
+    <div className='absolute md:fixed top-[5%] z-10 right-[5%] md:right-[10%]'>
+      <motion.div 
+        className='grow text-neutral-500 text-lg p-3 max-h-[4vh] rounded-2xl flex flex-row items-center justify-center space-x-2 md:space-x-5 hover:border-white'
+        animate={{
+          backgroundColor: scrollY > 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0)',
+          backdropFilter: scrollY > 0 ? 'blur(16px)' : 'blur(0px)'
+        }}
+        transition={{
+          duration: 0.3,
+          ease: 'easeInOut'
+        }}
+      >
         {navLinks.map((link, index) => (
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
