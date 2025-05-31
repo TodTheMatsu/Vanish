@@ -130,26 +130,26 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full"
+            className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 w-full"
           >
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-              <div className="text-2xl font-bold text-white">{posts.length}</div>
-              <div className="text-sm text-neutral-400">Active Posts</div>
+            <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
+              <div className="text-lg md:text-2xl font-bold text-white">{posts.length}</div>
+              <div className="text-xs md:text-sm text-neutral-400">Posts</div>
             </div>
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-              <div className="text-2xl font-bold text-white">
+            <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
+              <div className="text-lg md:text-2xl font-bold text-white">
                 {posts.filter(post => {
                   const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
                   return expiration > Date.now();
                 }).length}
               </div>
-              <div className="text-sm text-neutral-400">Still Visible</div>
+              <div className="text-xs md:text-sm text-neutral-400">Visible</div>
             </div>
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-              <div className="text-2xl font-bold text-white">
+            <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
+              <div className="text-lg md:text-2xl font-bold text-white">
                 {new Set(posts.map(post => post.author.username)).size}
               </div>
-              <div className="text-sm text-neutral-400">Active Users</div>
+              <div className="text-xs md:text-sm text-neutral-400">Users</div>
             </div>
           </motion.div>
 
