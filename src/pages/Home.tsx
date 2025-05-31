@@ -6,13 +6,13 @@ import { PostList } from '../components/PostList';
 import CreatePostModal from '../components/CreatePostModal';
 import SettingsModal from '../components/SettingsModal';
 import { usePosts } from '../hooks/usePosts';
-import { useUserData } from '../hooks/useUserData';
+import { useUser } from '../UserContext';
 import { useSettings } from '../hooks/useSettings';
 
 export default function Home() {
   const navigate = useNavigate();
   const { posts, createPost } = usePosts();
-  const { user, setUser } = useUserData();
+  const { currentUser, updateUser } = useUser();
   const [newPost, setNewPost] = useState('');
   const [expiresIn, setExpiresIn] = useState(24);
   const [showPostCreation, setShowPostCreation] = useState(false);
@@ -31,8 +31,8 @@ export default function Home() {
     handleSaveSettings,
     handleLogout,
   } = useSettings({
-    user,
-    setUser,
+    user: currentUser,
+    setUser: updateUser,
     onClose: () => setShowSettings(false), // Close the modal
   });
 
@@ -84,11 +84,12 @@ export default function Home() {
       </div>
 
       <Sidebar
-        user={user}
         onNavigate={path => navigate(path)}
         onSettings={() => {
-          setTempUser(user);
-          setShowSettings(true);
+          if (currentUser) {
+            setTempUser(currentUser);
+            setShowSettings(true);
+          }
         }}
         onCreatePost={() => setShowPostCreation(true)}
       />
@@ -103,7 +104,7 @@ export default function Home() {
             className="absolute top-14  transform left-0 right-0 md:left-1/2 mx-auto z-30 p-4  bg-white/5 rounded-2xl border border-white/20 backdrop-blur-sm w-[90%] md:max-w-4xl"
           >
             <h1 className="text-xl md:text-3xl font-bold text-white">
-              {getGreeting()}, {user.displayName}!
+              {getGreeting()}, {currentUser?.displayName || 'User'}!
             </h1>
             <p className="text-sm md:text-base text-neutral-300 mt-2">
               Welcome back to Vanish. Share your thoughts that disappear in time.

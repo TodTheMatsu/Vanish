@@ -11,13 +11,12 @@ import {
   IoMenuOutline,
   IoCloseOutline
 } from 'react-icons/io5';
-import { UserProfile } from '../types/user';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchUsersModal from './SearchUsersModal';
 import { supabase } from '../supabaseClient';
+import { useUser } from '../UserContext';
 
 interface SidebarProps {
-  user: UserProfile;
   onNavigate: (path: string) => void;
   onSettings: () => void;
   onCreatePost?: () => void;
@@ -28,9 +27,10 @@ const navigationItems = [
   { path: '/messages', icon: IoMailSharp, label: 'Messages' },
 ];
 
-export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: SidebarProps) {
+export default function Sidebar({ onNavigate, onSettings, onCreatePost }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser: user, isLoading } = useUser();
   const [showSearch, setShowSearch] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -68,7 +68,9 @@ export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: 
   }, [isMobile, isOpen]);
 
   const goToProfile = () => {
-    navigate(`/profile/${user.username}`);
+    if (user) {
+      navigate(`/profile/${user.username}`);
+    }
   };
 
   const handleLogout = async () => {
@@ -86,7 +88,7 @@ export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: 
       return true;
     }
     return location.pathname === path || 
-           (path.includes('/profile') && location.pathname.includes('/profile'));
+           (path === `/profile/${user?.username}` && location.pathname.includes('/profile'));
   };
 
   // Toggle sidebar on mobile
@@ -136,23 +138,33 @@ export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: 
           
           {/* User Info - Only show when sidebar is open on mobile */}
           {(!isMobile || (isMobile && isOpen)) && (
-            <motion.div 
-              className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl hover:bg-neutral-800/50 transition duration-200 cursor-pointer"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={goToProfile}
-            >
-              <img 
-                src={user.profilePicture} 
-                alt="Profile" 
-                className="w-10 h-10 object-cover rounded-full shadow-md" 
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
-              />
-              <div className={`${isMobile ? (isOpen ? 'block' : 'hidden') : 'hidden md:block'} overflow-hidden`}>
-                <div className="font-bold text-white truncate">{user.displayName}</div>
-                <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
+            isLoading ? (
+              <div className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl">
+                <div className="w-10 h-10 bg-neutral-800 rounded-full animate-pulse"></div>
+                <div className={`${isMobile ? (isOpen ? 'block' : 'hidden') : 'hidden md:block'} flex-1`}>
+                  <div className="h-4 bg-neutral-800 w-24 rounded animate-pulse mb-2"></div>
+                  <div className="h-3 bg-neutral-800 w-16 rounded animate-pulse"></div>
+                </div>
               </div>
-            </motion.div>
+            ) : user && (
+              <motion.div 
+                className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl hover:bg-neutral-800/50 transition duration-200 cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={goToProfile}
+              >
+                <img 
+                  src={user.profilePicture} 
+                  alt="Profile" 
+                  className="w-10 h-10 object-cover rounded-full shadow-md" 
+                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
+                />
+                <div className={`${isMobile ? (isOpen ? 'block' : 'hidden') : 'hidden md:block'} overflow-hidden`}>
+                  <div className="font-bold text-white truncate">{user.displayName}</div>
+                  <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
+                </div>
+              </motion.div>
+            )
           )}
           
           {/* Create Post Button - Only show when sidebar is open on mobile */}
@@ -179,26 +191,28 @@ export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: 
           {(!isMobile || (isMobile && isOpen)) && (
             <div className="space-y-2 w-full mb-8">
               {/* Profile Button */}
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => {
-                  goToProfile();
-                  if (isMobile) setIsOpen(false);
-                }}
-                className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${
-                  isActive(`/profile/${user.username}`) 
-                    ? 'bg-white/10 font-medium' 
-                    : 'hover:bg-white/5'
-                }`}
-                aria-label="Go to profile"
-              >
-                <IoPersonOutline size={20} />
-                <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Profile</span>
-                {isActive(`/profile/${user.username}`) && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-auto mr-1"></div>
-                )}
-              </motion.button>
+              {user && (
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    goToProfile();
+                    if (isMobile) setIsOpen(false);
+                  }}
+                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${
+                    isActive(`/profile/${user.username}`) 
+                      ? 'bg-white/10 font-medium' 
+                      : 'hover:bg-white/5'
+                  }`}
+                  aria-label="Go to profile"
+                >
+                  <IoPersonOutline size={20} />
+                  <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Profile</span>
+                  {isActive(`/profile/${user.username}`) && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-auto mr-1"></div>
+                  )}
+                </motion.button>
+              )}
               
               {/* Search Users Button */}
               <motion.button

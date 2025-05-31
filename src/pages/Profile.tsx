@@ -3,11 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
 import { usePostsByUsername, usePosts } from '../hooks/usePosts';
 import Sidebar from '../components/Sidebar';
-import { supabase } from '../supabaseClient';
 import { PostList } from '../components/PostList';
 import SettingsModal from '../components/SettingsModal';
 import CreatePostModal from '../components/CreatePostModal';
 import { useSettings } from '../hooks/useSettings';
+import { useUser } from '../UserContext';
 
 export default function Profile() {
   // Handler for creating a post
@@ -21,7 +21,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user, loading, error, setUser, fetchUserData, isUpdating } = useUserData(routeUsername);
   const { data: posts = [], isLoading: postsLoading } = usePostsByUsername(routeUsername || '');
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const { currentUser, updateUser } = useUser();
   const [editingBio, setEditingBio] = useState(false);
   const [tempBio, setTempBio] = useState(user?.bio || '');
   const [editingBanner, setEditingBanner] = useState(false);
@@ -42,8 +42,8 @@ export default function Profile() {
     handleSaveSettings,
     handleLogout,
   } = useSettings({
-    user,
-    setUser,
+    user: currentUser,
+    setUser: updateUser,
     onClose: () => setShowSettings(false),
     fetchUserData: fetchUserData,
   });
@@ -55,41 +55,7 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Fetch authenticated (current) user for the sidebar
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      if (authError) {
-        console.error("Error fetching current user", authError);
-        return;
-      }
-
-      if (authUser) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('username, display_name, profile_picture')
-          .eq('user_id', authUser.id)
-          .single();
-
-        if (profileError) {
-          console.error("Error fetching profile data", profileError);
-          return;
-        }
-
-        if (profileData) {
-          const fullUser = {
-            ...authUser,
-            username: profileData.username,
-            displayName: profileData.display_name,
-            profilePicture: profileData.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
-          };
-          setCurrentUser(fullUser);
-        }
-      }
-    };
-
-    getCurrentUser();
-  }, []);
+  // This effect is no longer needed as we're using the global user context
 
   const handleSaveBio = async () => {
     try {
@@ -145,18 +111,11 @@ export default function Profile() {
 
   if (loading) return (
     <div className="flex min-h-screen w-screen bg-neutral-950">
-      {currentUser ? (
-        <Sidebar
-          user={currentUser}
-          onNavigate={(path: string) => navigate(path)}
-          onSettings={() => setShowSettings(true)}
-          onCreatePost={() => setShowPostCreation(true)}
-        />
-      ) : (
-        <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
-          <div className="animate-pulse h-6 bg-neutral-800 w-20 rounded"></div>
-        </div>
-      )}
+      <Sidebar
+        onNavigate={(path: string) => navigate(path)}
+        onSettings={() => setShowSettings(true)}
+        onCreatePost={() => setShowPostCreation(true)}
+      />
       <main className="flex-1 flex flex-col items-center p-8">
         <ProfileSkeleton />
       </main>
@@ -168,17 +127,11 @@ export default function Profile() {
   return (
     <>
       <div className="flex min-h-screen w-screen bg-neutral-950">
-        {currentUser ? (
-          <Sidebar
-            user={currentUser}
-            onNavigate={(path: string) => navigate(path)}
-            onSettings={() => setShowSettings(true)}
-          />
-        ) : (
-          <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
-            <div className="animate-pulse h-6 bg-neutral-800 w-20 rounded"></div>
-          </div>
-        )}
+        <Sidebar
+          onNavigate={(path: string) => navigate(path)}
+          onSettings={() => setShowSettings(true)}
+          onCreatePost={() => setShowPostCreation(true)}
+        />
         <main className="flex-1 flex flex-col items-center p-4 md:p-8">
           {/* Banner */}
           <div className="w-full max-w-3xl relative">

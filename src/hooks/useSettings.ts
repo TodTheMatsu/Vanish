@@ -6,14 +6,14 @@ import { UserProfile } from '../types/user';
 import { supabase } from '../supabaseClient';
 
 interface UseSettingsProps {
-  user: UserProfile;
-  setUser: React.Dispatch<React.SetStateAction<UserProfile>>;
+  user: UserProfile | undefined;
+  setUser: (user: Partial<UserProfile>) => Promise<void>;
   onClose?: () => void; // Optional close handler
   fetchUserData?: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<UserProfile, Error>>; // Optional fetch user data
 }
 
 export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettingsProps) => {
-  const [tempUser, setTempUser] = useState(user);
+  const [tempUser, setTempUser] = useState<UserProfile | undefined>(user);
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
   const [settingsError, setSettingsError] = useState('');
   const navigate = useNavigate();
@@ -32,17 +32,32 @@ export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettin
     } else {
       setSettingsError('');
     }
-    setTempUser(prev => ({ ...prev, username: val }));
+    if (tempUser) {
+      setTempUser(prev => ({ ...prev!, username: val }));
+    }
   };
 
-  const handleDisplayNameChange = (val: string) =>
-    setTempUser(prev => ({ ...prev, displayName: val }));
+  const handleDisplayNameChange = (val: string) => {
+    if (tempUser) {
+      setTempUser(prev => ({ ...prev!, displayName: val }));
+    }
+  };
 
-  const handleProfilePictureChange = (val: string) =>
-    setTempUser(prev => ({ ...prev, profilePicture: val }));
+  const handleProfilePictureChange = (val: string) => {
+    if (tempUser) {
+      setTempUser(prev => ({ ...prev!, profilePicture: val }));
+    }
+  };
 
   const handleSaveSettings = async () => {
     setIsSettingsLoading(true);
+    
+    if (!tempUser) {
+      setSettingsError('No user data to save');
+      setIsSettingsLoading(false);
+      return false;
+    }
+    
     if (!/^[a-z0-9]+$/.test(tempUser.username)) {
       setSettingsError('Username must only contain lowercase letters and numbers. No spaces or special characters.');
       setIsSettingsLoading(false);
@@ -72,9 +87,9 @@ export const useSettings = ({ user, setUser, onClose, fetchUserData }: UseSettin
         setSettingsError(error.message);
         return false;
       } else {
-        setUser(tempUser);
+        await setUser(tempUser);
         // Invalidate and refetch user data queries
-        queryClient.invalidateQueries({ queryKey: ['userData'] });
+        queryClient.invalidateQueries({ queryKey: ['userData', 'currentUser'] });
         if (fetchUserData) {
           await fetchUserData();
         }

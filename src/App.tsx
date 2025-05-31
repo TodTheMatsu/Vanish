@@ -6,12 +6,14 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile'; // import the profile page
 import { AuthProvider } from './AuthContext';
+import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <UserProvider>
           <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
             <Routes>
               <Route path="/" element={<Landing />} />
@@ -42,6 +44,7 @@ function App() {
               <Route path="/profile/:username" element={<Profile />} />
             </Routes>
           </div>
+        </UserProvider>
       </AuthProvider>
     </BrowserRouter>
   );
