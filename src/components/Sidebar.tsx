@@ -20,6 +20,7 @@ interface SidebarProps {
   user: UserProfile;
   onNavigate: (path: string) => void;
   onSettings: () => void;
+  onCreatePost?: () => void;
 }
 
 const navigationItems = [
@@ -27,7 +28,7 @@ const navigationItems = [
   { path: '/messages', icon: IoMailSharp, label: 'Messages' },
 ];
 
-export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) {
+export default function Sidebar({ user, onNavigate, onSettings, onCreatePost }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showSearch, setShowSearch] = useState(false);
@@ -160,7 +161,11 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                navigate('/home');
+                if (onCreatePost) {
+                  onCreatePost();
+                } else {
+                  navigate('/home');
+                }
                 if (isMobile) setIsOpen(false);
               }}
               className="flex items-center justify-center md:justify-start space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium"

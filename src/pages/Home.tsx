@@ -90,6 +90,7 @@ export default function Home() {
           setTempUser(user);
           setShowSettings(true);
         }}
+        onCreatePost={() => setShowPostCreation(true)}
       />
       
       {/* Welcome Header - Positioned outside main content flow */}
@@ -99,15 +100,15 @@ export default function Home() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-4 right-10 z-30 p-6 bg-white/5 rounded-2xl border border-white/20 backdrop-blur-sm max-w-4xl"
+            className="absolute top-14  transform left-0 right-0 md:left-1/2 mx-auto z-30 p-4  bg-white/5 rounded-2xl border border-white/20 backdrop-blur-sm w-[90%] md:max-w-4xl"
           >
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-xl md:text-3xl font-bold text-white">
               {getGreeting()}, {user.displayName}!
             </h1>
-            <p className="text-neutral-300 mt-2">
+            <p className="text-sm md:text-base text-neutral-300 mt-2">
               Welcome back to Vanish. Share your thoughts that disappear in time.
             </p>
-            <div className="flex items-center mt-3 text-sm text-neutral-400">
+            <div className="flex items-center mt-3 text-xs md:text-sm text-neutral-400">
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${
                   getTimeOfDay() === 'morning' ? 'bg-white' :
@@ -121,21 +122,21 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className="ml-16 md:ml-64 flex-1 p-4 relative z-10">
-        <div className="max-w-4xl mx-auto">
+      <div className=" md:ml-64 flex-1 p-4 relative z-10 flex justify-center">
+        <div className="w-full max-w-xl md:max-w-2xl lg:max-w-4xl flex flex-col items-center">
 
           {/* Stats Overview */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 w-full"
           >
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm">
+            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
               <div className="text-2xl font-bold text-white">{posts.length}</div>
               <div className="text-sm text-neutral-400">Active Posts</div>
             </div>
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm">
+            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
               <div className="text-2xl font-bold text-white">
                 {posts.filter(post => {
                   const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
@@ -144,7 +145,7 @@ export default function Home() {
               </div>
               <div className="text-sm text-neutral-400">Still Visible</div>
             </div>
-            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm">
+            <div className="p-4 bg-neutral-900/50 rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
               <div className="text-2xl font-bold text-white">
                 {new Set(posts.map(post => post.author.username)).size}
               </div>
@@ -158,11 +159,12 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="w-full"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-neutral-200">Recent Posts</h2>
+            <div className="flex items-center justify-center md:justify-between mb-6 w-full">
+              <h2 className="text-xl md:text-2xl font-bold text-neutral-200">Recent Posts</h2>
               {posts.length === 0 && (
-                <span className="text-sm text-neutral-500">No posts yet</span>
+                <span className="text-sm text-neutral-500 hidden md:block">No posts yet</span>
               )}
             </div>
             
@@ -170,7 +172,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16 px-8"
+                className="text-center py-16 px-8 w-full"
               >
                 <div className="text-6xl mb-4">📝</div>
                 <h3 className="text-xl font-semibold text-neutral-300 mb-2">No posts yet</h3>

@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useUserData } from '../hooks/useUserData';
-import { usePostsByUsername } from '../hooks/usePosts';
+import { usePostsByUsername, usePosts } from '../hooks/usePosts';
 import Sidebar from '../components/Sidebar';
 import { supabase } from '../supabaseClient';
 import { PostList } from '../components/PostList';
 import SettingsModal from '../components/SettingsModal';
+import CreatePostModal from '../components/CreatePostModal';
 import { useSettings } from '../hooks/useSettings';
 
 export default function Profile() {
+  // Handler for creating a post
+  const handleCreatePost = async () => {
+    if (!newPost.trim()) return;
+    await createPost({ content: newPost, expiresIn });
+    setNewPost('');
+  };
+
   const { username: routeUsername } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { user, loading, error, setUser, fetchUserData, isUpdating } = useUserData(routeUsername);
@@ -19,6 +27,10 @@ export default function Profile() {
   const [editingBanner, setEditingBanner] = useState(false);
   const [tempBannerUrl, setTempBannerUrl] = useState(user?.banner_url || '');
   const [showSettings, setShowSettings] = useState(false);
+  const [showPostCreation, setShowPostCreation] = useState(false);
+  const [newPost, setNewPost] = useState('');
+  const [expiresIn, setExpiresIn] = useState(24);
+  const { createPost } = usePosts();
 
   const {
     tempUser,
@@ -138,6 +150,7 @@ export default function Profile() {
           user={currentUser}
           onNavigate={(path: string) => navigate(path)}
           onSettings={() => setShowSettings(true)}
+          onCreatePost={() => setShowPostCreation(true)}
         />
       ) : (
         <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
@@ -341,6 +354,16 @@ export default function Profile() {
         onSave={handleSaveSettings}
         onClose={() => setShowSettings(false)}
         onLogout={handleLogout}
+      />
+      
+      <CreatePostModal
+        show={showPostCreation}
+        newPost={newPost}
+        expiresIn={expiresIn}
+        onChange={setNewPost}
+        onExpiresChange={setExpiresIn}
+        onSubmit={handleCreatePost}
+        onClose={() => setShowPostCreation(false)}
       />
     </>
   );
