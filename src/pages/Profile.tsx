@@ -102,8 +102,55 @@ export default function Profile() {
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  if (error || !user) return <div className="flex justify-center items-center h-screen">User not found.</div>;
+  // Loading skeleton for profile
+  const ProfileSkeleton = () => (
+    <div className="animate-pulse w-full max-w-[50%]">
+      <div className="w-full h-48 bg-neutral-800 rounded-md mb-4"></div>
+      <div className="flex flex-col items-center mt-16">
+        <div className="w-32 h-32 bg-neutral-700 rounded-full mb-4"></div>
+        <div className="h-6 bg-neutral-700 w-48 rounded mb-2"></div>
+        <div className="h-4 bg-neutral-700 w-32 rounded mb-4"></div>
+        <div className="h-20 bg-neutral-800 w-full rounded mb-4"></div>
+      </div>
+    </div>
+  );
+
+  // Error display component
+  const ErrorDisplay = ({ message }: { message: string }) => (
+    <div className="flex flex-col justify-center items-center h-screen text-white">
+      <div className="bg-red-500/20 border border-red-500 rounded-lg p-6 max-w-md">
+        <h3 className="text-xl font-bold mb-2">Error</h3>
+        <p>{message}</p>
+        <button 
+          onClick={() => navigate('/')} 
+          className="mt-4 bg-neutral-800 hover:bg-neutral-700 text-white py-2 px-4 rounded"
+        >
+          Return Home
+        </button>
+      </div>
+    </div>
+  );
+
+  if (loading) return (
+    <div className="flex min-h-screen w-screen bg-neutral-950">
+      {currentUser ? (
+        <Sidebar
+          user={currentUser}
+          onNavigate={(path: string) => navigate(path)}
+          onSettings={() => setShowSettings(true)}
+        />
+      ) : (
+        <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
+          <div className="animate-pulse h-6 bg-neutral-800 w-20 rounded"></div>
+        </div>
+      )}
+      <main className="flex-1 flex flex-col items-center p-8">
+        <ProfileSkeleton />
+      </main>
+    </div>
+  );
+  
+  if (error || !user) return <ErrorDisplay message={error || "User not found."} />;
 
   return (
     <>
@@ -116,16 +163,16 @@ export default function Profile() {
           />
         ) : (
           <div className="w-16 md:w-64 text-white bg-neutral-900 flex items-center justify-center">
-            Loading...
+            <div className="animate-pulse h-6 bg-neutral-800 w-20 rounded"></div>
           </div>
         )}
-        <main className="flex-1 flex flex-col items-center p-8">
+        <main className="flex-1 flex flex-col items-center p-4 md:p-8">
           {/* Banner */}
-          <div className="w-full max-w-[50%] relative">
+          <div className="w-full max-w-3xl relative">
             <img
               src={user.banner_url || 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif'}
               alt="Banner"
-              className="w-full h-48 object-cover rounded-md"
+              className="w-full h-48 md:h-64 object-cover rounded-md shadow-lg transition-all duration-300 hover:opacity-95"
               onError={e => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif';
@@ -136,7 +183,7 @@ export default function Profile() {
             {routeUsername === currentUser?.username && (
               <button
                 onClick={() => setEditingBanner(true)}
-                className="absolute top-2 right-2 bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
+                className="absolute top-2 right-2 bg-neutral-800/80 text-white rounded-md p-2 text-sm hover:bg-neutral-700 transition-colors duration-200 backdrop-blur-sm"
               >
                 Edit Banner
               </button>
@@ -146,7 +193,7 @@ export default function Profile() {
             <img
               src={user.profilePicture}
               alt="Profile"
-              className="absolute left-1/2 transform -translate-x-1/2 top-36 w-50 h-50 object-cover rounded-full border-4 border-neutral-800"
+              className="absolute left-1/2 transform -translate-x-1/2 top-36 w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border-4 border-neutral-800 shadow-lg transition-transform duration-300 hover:scale-105"
               onError={e => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
@@ -182,9 +229,25 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-neutral-900 rounded-lg shadow-lg p-8 pt-40 w-full max-w-1/2 flex flex-col items-center mt-4">
-            <h2 className="text-2xl font-bold text-white mb-2">{user.displayName}</h2>
+          <div className="bg-neutral-900 rounded-lg shadow-lg p-6 md:p-8 pt-24 md:pt-40 w-full max-w-3xl flex flex-col items-center mt-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{user.displayName}</h2>
             <p className="text-neutral-400 mb-4">@{user.username}</p>
+            
+            {/* User Stats */}
+            <div className="flex justify-center space-x-6 mb-6">
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{posts.filter(post => post.author.username === routeUsername).length}</p>
+                <p className="text-sm text-neutral-400">Posts</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{user.followers_count || 0}</p>
+                <p className="text-sm text-neutral-400">Followers</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-bold text-white">{user.following_count || 0}</p>
+                <p className="text-sm text-neutral-400">Following</p>
+              </div>
+            </div>
 
             {/* Bio */}
             <div className="w-full text-center">
@@ -219,7 +282,7 @@ export default function Profile() {
                   {routeUsername === currentUser?.username && (
                     <button
                       onClick={() => setEditingBio(true)}
-                      className="bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700"
+                      className="bg-neutral-800 text-white rounded-md p-2 text-sm hover:bg-neutral-700 transition-colors duration-200"
                     >
                       Edit Bio
                     </button>
@@ -231,11 +294,37 @@ export default function Profile() {
 
           {/* Posts */}
           <div className="w-full max-w-3xl text-white mt-8">
-            <h3 className="text-xl font-bold text-white mb-4">Posts</h3>
+            <h3 className="text-xl font-bold text-white mb-4 border-b border-neutral-800 pb-2">Posts</h3>
             {postsLoading ? (
-              <div className="text-center">Loading posts...</div>
-            ) : (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="animate-pulse bg-neutral-800 rounded-lg p-4">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <div className="w-10 h-10 bg-neutral-700 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-neutral-700 w-1/4 rounded mb-2"></div>
+                        <div className="h-3 bg-neutral-700 w-1/5 rounded"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-neutral-700 w-3/4 rounded mb-2"></div>
+                    <div className="h-4 bg-neutral-700 w-1/2 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : posts.filter(post => post.author.username === routeUsername).length > 0 ? (
               <PostList posts={posts.filter(post => post.author.username === routeUsername)} />
+            ) : (
+              <div className="text-center py-8 bg-neutral-900 rounded-lg">
+                <p className="text-neutral-400">No posts yet.</p>
+                {routeUsername === currentUser?.username && (
+                  <button 
+                    onClick={() => navigate('/')}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors duration-200"
+                  >
+                    Create Your First Post
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </main>
