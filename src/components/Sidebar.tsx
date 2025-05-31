@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   IoHomeSharp, 
   IoMailSharp, 
@@ -7,7 +7,9 @@ import {
   IoSearchSharp, 
   IoLogOutOutline,
   IoAddCircleOutline,
-  IoPersonOutline
+  IoPersonOutline,
+  IoMenuOutline,
+  IoCloseOutline
 } from 'react-icons/io5';
 import { UserProfile } from '../types/user';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -30,17 +32,39 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
   const location = useLocation();
   const [showSearch, setShowSearch] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Handle window resize for responsive behavior
   useEffect(() => {
     const handleResize = () => {
-      setIsCollapsed(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      // Auto-close sidebar when resizing to mobile
+      if (mobile && isOpen) {
+        setIsOpen(false);
+      }
     };
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isOpen]);
+
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (isMobile && isOpen) {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.sidebar') && !target.closest('.sidebar-toggle')) {
+          setIsOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMobile, isOpen]);
 
   const goToProfile = () => {
     navigate(`/profile/${user.username}`);
@@ -64,135 +88,197 @@ export default function Sidebar({ user, onNavigate, onSettings }: SidebarProps) 
            (path.includes('/profile') && location.pathname.includes('/profile'));
   };
 
+  // Toggle sidebar on mobile
+  const toggleSidebar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
+
   return (
     <>
-      <motion.div 
-        className="w-16 md:w-64 lg:w-80 bg-neutral-900 fixed h-screen flex flex-col justify-between items-center md:items-start p-4 shadow-lg z-10 overflow-y-auto"
-        initial={{ x: isCollapsed ? -60 : 0 }}
-        animate={{ x: 0 }}
-        transition={{ duration: 0.3 }}
-      >
+      {/* Mobile Toggle Button */}
+      {isMobile && (
+        <motion.button
+          className="sidebar-toggle fixed top-4 left-4 z-50 bg-neutral-800 text-white p-2 rounded-full shadow-lg"
+          onClick={toggleSidebar}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+        >
+          {isOpen ? <IoCloseOutline size={24} /> : <IoMenuOutline size={24} />}
+        </motion.button>
+      )}
+      
+      {/* Sidebar */}
+      <AnimatePresence>
+        <motion.div 
+          className={`sidebar fixed h-screen flex flex-col justify-between items-center md:items-start p-4 shadow-lg z-40 overflow-y-auto bg-neutral-900 ${
+            isMobile 
+              ? isOpen 
+                ? 'w-64 left-0' 
+                : 'w-0 -left-4'
+              : 'w-16 md:w-64 lg:w-80 left-0'
+          }`}
+          initial={isMobile ? { x: isOpen ? -240 : 0 } : { x: 0 }}
+          animate={isMobile ? { x: isOpen ? 0 : -240 } : { x: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
         <div className="w-full">
-          {/* App Logo/Name */}
-          <div className="mb-8 text-center md:text-left">
-            <h1 className="text-xl font-bold text-white hidden md:block">Vanish</h1>
-            <div className="md:hidden text-white text-2xl font-bold">V</div>
+          {/* App Logo */}
+          <div className="mb-8 text-center w-full">
+            <img 
+              src="https://i.postimg.cc/KYC6M5vT/Vanish-Logo.png" 
+              alt="Vanish Logo" 
+              className={`${isMobile && !isOpen ? 'hidden' : 'block'} h-10 md:h-24 mx-auto object-contain`}
+            />
           </div>
           
-          {/* User Info */}
-          <motion.div 
-            className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl hover:bg-neutral-800/50 transition duration-200 cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={goToProfile}
-          >
-            <img 
-              src={user.profilePicture} 
-              alt="Profile" 
-              className="w-10 h-10 object-cover rounded-full shadow-md" 
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
-            />
-            <div className="hidden md:block overflow-hidden">
-              <div className="font-bold text-white truncate">{user.displayName}</div>
-              <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
-            </div>
-          </motion.div>
-          
-          {/* Create Post Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/home')}
-            className="flex items-center justify-center md:justify-start space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium"
-          >
-            <IoAddCircleOutline size={20} />
-            <span className="hidden md:inline">Create Post</span>
-          </motion.button>
-           
-          {/* Navigation */}
-          <div className="space-y-2 w-full mb-8">
-            {/* Profile Button */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+          {/* User Info - Only show when sidebar is open on mobile */}
+          {(!isMobile || (isMobile && isOpen)) && (
+            <motion.div 
+              className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl hover:bg-neutral-800/50 transition duration-200 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={goToProfile}
-              className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${
-                isActive(`/profile/${user.username}`) 
-                  ? 'bg-white/10 font-medium' 
-                  : 'hover:bg-white/5'
-              }`}
-              aria-label="Go to profile"
             >
-              <IoPersonOutline size={20} />
-              <span className="hidden md:inline">Profile</span>
-              {isActive(`/profile/${user.username}`) && (
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-auto mr-1"></div>
-              )}
-            </motion.button>
-            
-            {/* Search Users Button */}
+              <img 
+                src={user.profilePicture} 
+                alt="Profile" 
+                className="w-10 h-10 object-cover rounded-full shadow-md" 
+                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
+              />
+              <div className={`${isMobile ? (isOpen ? 'block' : 'hidden') : 'hidden md:block'} overflow-hidden`}>
+                <div className="font-bold text-white truncate">{user.displayName}</div>
+                <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
+              </div>
+            </motion.div>
+          )}
+          
+          {/* Create Post Button - Only show when sidebar is open on mobile */}
+          {(!isMobile || (isMobile && isOpen)) && (
             <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setShowSearch(true)}
-              className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200"
-              aria-label="Search users"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                navigate('/home');
+                if (isMobile) setIsOpen(false);
+              }}
+              className="flex items-center justify-center md:justify-start space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium"
             >
-              <IoSearchSharp size={20} />
-              <span className="hidden md:inline">Search Users</span>
+              <IoAddCircleOutline size={20} />
+              <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Create Post</span>
             </motion.button>
-            
-            {/* Navigation Items */}
-            {navigationItems.map((item) => (
+          )}
+           
+          {/* Navigation - Only show when sidebar is open on mobile */}
+          {(!isMobile || (isMobile && isOpen)) && (
+            <div className="space-y-2 w-full mb-8">
+              {/* Profile Button */}
               <motion.button
-                key={item.path}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => onNavigate(item.path)}
+                onClick={() => {
+                  goToProfile();
+                  if (isMobile) setIsOpen(false);
+                }}
                 className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${
-                  isActive(item.path) 
+                  isActive(`/profile/${user.username}`) 
                     ? 'bg-white/10 font-medium' 
                     : 'hover:bg-white/5'
                 }`}
-                aria-label={item.label}
+                aria-label="Go to profile"
               >
-                <item.icon size={20} />
-                <span className="hidden md:inline">{item.label}</span>
-                {isActive(item.path) && (
+                <IoPersonOutline size={20} />
+                <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Profile</span>
+                {isActive(`/profile/${user.username}`) && (
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-auto mr-1"></div>
                 )}
               </motion.button>
-            ))}
-            
-            {/* Settings Button */}
+              
+              {/* Search Users Button */}
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  setShowSearch(true);
+                  if (isMobile) setIsOpen(false);
+                }}
+                className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200"
+                aria-label="Search users"
+              >
+                <IoSearchSharp size={20} />
+                <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Search Users</span>
+              </motion.button>
+              
+              {/* Navigation Items */}
+              {navigationItems.map((item) => (
+                <motion.button
+                  key={item.path}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    onNavigate(item.path);
+                    if (isMobile) setIsOpen(false);
+                  }}
+                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${
+                    isActive(item.path) 
+                      ? 'bg-white/10 font-medium' 
+                      : 'hover:bg-white/5'
+                  }`}
+                  aria-label={item.label}
+                >
+                  <item.icon size={20} />
+                  <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>{item.label}</span>
+                  {isActive(item.path) && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ml-auto mr-1"></div>
+                  )}
+                </motion.button>
+              ))}
+              
+              {/* Settings Button */}
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  onSettings();
+                  if (isMobile) setIsOpen(false);
+                }}
+                className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200"
+                aria-label="Settings"
+              >
+                <IoSettingsSharp size={20} />
+                <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'}`}>Settings</span>
+              </motion.button>
+            </div>
+          )}
+        </div>
+        
+        {/* Logout Button at bottom - Only show when sidebar is open on mobile */}
+          {(!isMobile || (isMobile && isOpen)) && (
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              onClick={onSettings}
-              className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200"
-              aria-label="Settings"
+              onClick={handleLogout}
+              className="flex items-center space-x-3 text-white cursor-pointer hover:bg-red-500/10 w-full p-3 rounded-xl transition-all duration-200 mt-auto"
+              aria-label="Logout"
             >
-              <IoSettingsSharp size={20} />
-              <span className="hidden md:inline">Settings</span>
+              <IoLogOutOutline size={20} className="text-red-400" />
+              <span className={`${isMobile ? (isOpen ? 'inline' : 'hidden') : 'hidden md:inline'} text-red-400`}>Logout</span>
             </motion.button>
-          </div>
-        </div>
-        
-        {/* Logout Button at bottom */}
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={handleLogout}
-          className="flex items-center space-x-3 text-white cursor-pointer hover:bg-red-500/10 w-full p-3 rounded-xl transition-all duration-200 mt-auto"
-          aria-label="Logout"
-        >
-          <IoLogOutOutline size={20} className="text-red-400" />
-          <span className="hidden md:inline text-red-400">Logout</span>
-        </motion.button>
+          )}
       </motion.div>
+      </AnimatePresence>
       
-      {/* Sidebar overlay for mobile */}
-      <div className="md:hidden fixed inset-0 bg-black/0 z-0 pointer-events-none"></div>
+      {/* Sidebar overlay for mobile - only visible when sidebar is open */}
+      {isMobile && isOpen && (
+        <motion.div 
+          className="fixed inset-0 bg-black/50 z-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setIsOpen(false)}
+        />
+      )}
       
       {/* Modals */}
       <SearchUsersModal show={showSearch} onClose={() => setShowSearch(false)} />
