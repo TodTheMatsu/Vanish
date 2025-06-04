@@ -197,10 +197,10 @@ export default function Home() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowPostCreation(true)}
-            className="fixed bottom-8 right-8 md:right-24 w-16 h-16 bg-white rounded-full shadow-2xl hover:shadow-white/25 flex items-center justify-center z-50 border border-neutral-300"
+            className="fixed bottom-8 right-8 md:right-24 w-16 h-16 bg-white rounded-full shadow-2xl hover:shadow-white/25 flex items-center justify-center z-50 border border-neutral-300 cursor-pointer"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+            transition={{type: "spring", stiffness: 200 }}
           >
             <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
