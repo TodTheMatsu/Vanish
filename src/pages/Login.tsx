@@ -41,7 +41,11 @@ export default function Login() {
       setIsLoading(false);
     } else {
       setErrorMsg('');
-      navigate('/home');
+      // Add a small delay to ensure user context is updated
+      setTimeout(() => {
+        navigate('/home');
+        setIsLoading(false);
+      }, 200);
     }
   };
 

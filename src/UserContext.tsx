@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from './types/user';
 import { userApi } from './api/userApi';
@@ -34,7 +34,25 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 1,
+    // Add this to refetch when auth state changes
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
+
+  // Listen for auth state changes and refetch user data
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Refetch user data when signed in
+        refetchUser();
+      } else if (event === 'SIGNED_OUT') {
+        // Clear user data when signed out
+        queryClient.removeQueries({ queryKey: ['currentUser'] });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [refetchUser, queryClient]);
 
   // Update user function
   const updateUser = async (updates: Partial<UserProfile>) => {

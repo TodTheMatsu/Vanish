@@ -37,7 +37,7 @@ export default function CreatePostModal({
             <button onClick={onClose} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
               X
             </button>
-            <h2 className="text-2xl font-bold mb-4">Create Post</h2>
+            <h2 className="text-2xl text-white font-bold mb-4">Create Post</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -56,7 +56,7 @@ export default function CreatePostModal({
                 <select
                   value={expiresIn}
                   onChange={(e) => onExpiresChange(Number(e.target.value))}
-                  className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1"
+                  className="bg-neutral-800 border border-neutral-700 rounded-md px-2 py-1 text-white"
                 >
                   <option value={0}>0 seconds</option>
                   <option value={5 / 60}>5 minutes</option>
@@ -71,7 +71,7 @@ export default function CreatePostModal({
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600"
+                  className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600 text-white"
                   type="submit"
                 >
                   Post

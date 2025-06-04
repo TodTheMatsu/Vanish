@@ -29,14 +29,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<string> => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     if (error) {
       return error.message;
     }
-    setIsAuthenticated(true);
+    
+    // Wait for the session to be established
+    if (data.session) {
+      setIsAuthenticated(true);
+      // Small delay to ensure auth state is propagated
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
     return "";
   };
 
