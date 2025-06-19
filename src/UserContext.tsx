@@ -6,6 +6,7 @@ import { supabase } from './supabaseClient';
 
 interface UserContextType {
   currentUser: UserProfile | undefined;
+  userId: string | undefined; // Add user ID from auth
   isLoading: boolean;
   error: Error | null;
   refetchUser: () => void;
@@ -19,7 +20,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   // Fetch the current authenticated user
   const {
-    data: currentUser,
+    data: userData,
     isLoading,
     error,
     refetch: refetchUser
@@ -30,14 +31,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (!authUser) {
         throw new Error('No authenticated user found');
       }
-      return userApi.fetchUser();
+      const userProfile = await userApi.fetchUserById(authUser.id);
+      return {
+        profile: userProfile,
+        userId: authUser.id
+      };
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: true, // Re-enable the query
+    staleTime: 1000 * 60 * 10, // 10 minutes - increase staleTime
+    gcTime: 1000 * 60 * 15, // 15 minutes - keep in cache longer
     retry: 1,
-    // Add this to refetch when auth state changes
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
+    refetchOnMount: false, // Don't refetch on every mount
+    refetchInterval: false, // Disable automatic refetching
+    refetchOnReconnect: false, // Don't refetch on network reconnect
   });
+
+  const currentUser = userData?.profile;
+  const userId = userData?.userId;
 
   // Listen for auth state changes and refetch user data
   useEffect(() => {
@@ -65,6 +76,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     <UserContext.Provider
       value={{
         currentUser,
+        userId,
         isLoading,
         error,
         refetchUser,

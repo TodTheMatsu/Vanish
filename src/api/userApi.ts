@@ -37,6 +37,31 @@ export const userApi = {
     };
   },
 
+  // Fetch current user data without additional auth call (for UserContext)
+  async fetchUserById(userId: string): Promise<UserProfile> {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('user_id, username, display_name, profile_picture, bio, banner_url')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!profile) {
+      throw new Error("Profile not found");
+    }
+
+    return {
+      username: profile.username,
+      displayName: profile.display_name,
+      profilePicture: profile.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',
+      bio: profile.bio || '',
+      banner_url: profile.banner_url || ''
+    };
+  },
+
   // Update user profile
   async updateUser(updates: Partial<UserProfile>): Promise<void> {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
