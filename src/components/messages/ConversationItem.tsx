@@ -1,6 +1,7 @@
 import React from 'react';
 import { Conversation } from '../../api/messagesApi';
 import { useUnreadCount } from '../../hooks/useMessages';
+import { useUser } from '../../UserContext';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -14,6 +15,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
   onClick
 }) => {
   const unreadCount = useUnreadCount(conversation.id);
+  const { userId: currentUserId } = useUser();
 
   // Get other participants (exclude current user)
   const otherParticipants = conversation.conversation_participants.filter(
@@ -31,7 +33,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
     } else {
       // For direct messages, show the other person's info
       const otherParticipant = otherParticipants.find(
-        p => p.user_id !== JSON.parse(localStorage.getItem('sb-user') || '{}')?.id
+        p => p.user_id !== currentUserId
       );
       
       if (otherParticipant) {

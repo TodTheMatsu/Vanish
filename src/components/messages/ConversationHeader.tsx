@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useConversations, useLeaveConversation } from '../../hooks/useMessages';
 import { ConversationPermissions } from '../../api/messagesApi';
+import { useUser } from '../../UserContext';
 
 interface ConversationHeaderProps {
   conversationId: string;
@@ -13,6 +14,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({ conversa
   // const { data: permissions } = useConversationPermissions(conversationId);
   const leaveConversation = useLeaveConversation();
   const [showMenu, setShowMenu] = useState(false);
+  const { userId: currentUserId } = useUser();
 
   const conversation = conversations?.find(c => c.id === conversationId);
   
@@ -34,7 +36,6 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({ conversa
       };
     } else {
       // For direct messages, show the other person's info
-      const currentUserId = JSON.parse(localStorage.getItem('sb-user') || '{}')?.id;
       const otherParticipant = conversation.conversation_participants.find(
         p => p.user_id !== currentUserId && !p.left_at
       );

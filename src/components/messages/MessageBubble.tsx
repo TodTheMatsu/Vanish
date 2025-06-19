@@ -1,6 +1,7 @@
 import React from 'react';
 import { Message, ConversationPermissions, SendMessageData } from '../../api/messagesApi';
 import { useDeleteMessage, useRetryMessage } from '../../hooks/useMessages';
+import { useUser } from '../../UserContext';
 
 // Extended interface for optimistic messages
 interface OptimisticMessage extends Message {
@@ -20,10 +21,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   // const { data: permissions } = useConversationPermissions(conversationId);
   const deleteMessage = useDeleteMessage();
   const retryMessage = useRetryMessage();
+  const { userId: currentUserId } = useUser();
   // Removed useMarkAsRead to prevent network spam
   
-  // Get current user ID
-  const currentUserId = JSON.parse(localStorage.getItem('sb-user') || '{}')?.id;
+  // Get current user ID from context instead of localStorage
   const isOwnMessage = message.sender_id === currentUserId;
   
   // Check if user can delete this message
