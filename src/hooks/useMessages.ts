@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { messagesApi, SendMessageData } from '../api/messagesApi';
+import { messagesApi, SendMessageData, Message } from '../api/messagesApi';
 import { useUser } from '../UserContext';
+import { useToast } from './useToast';
 
 /**
  * Hook to fetch all conversations for the current user
@@ -36,12 +37,20 @@ export const useMessages = (conversationId: string) => {
   });
 };
 
+// Extended Message interface for optimistic updates
+interface OptimisticMessage extends Message {
+  _isOptimistic?: boolean;
+  _failed?: boolean;
+  _originalData?: SendMessageData;
+}
+
 /**
  * Hook to send a message with optimistic updates
  */
 export const useSendMessage = () => {
   const queryClient = useQueryClient();
-  const { userId } = useUser();
+  const { userId, currentUser } = useUser();
+  const { addToast } = useToast();
   
   return useMutation({
     mutationFn: (messageData: SendMessageData) => messagesApi.sendMessage(messageData, userId!),
@@ -52,28 +61,162 @@ export const useSendMessage = () => {
       // Snapshot the previous value
       const previousMessages = queryClient.getQueryData(['messages', newMessage.conversationId]);
       
-      // Don't do optimistic updates for now to avoid the temp ID issue
-      // The message will appear after the mutation succeeds
+      // Create optimistic message
+      const optimisticMessage: OptimisticMessage = {
+        id: `temp-${Date.now()}-${Math.random()}`, // Temporary ID
+        conversation_id: newMessage.conversationId,
+        sender_id: userId!,
+        content: newMessage.content,
+        message_type: (newMessage.messageType || 'text') as 'text' | 'image' | 'file',
+        created_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + (newMessage.expirationHours || 24) * 60 * 60 * 1000).toISOString(),
+        read_by: { [userId!]: new Date().toISOString() },
+        screenshot_detected: false,
+        reply_to: newMessage.replyTo,
+        sender: {
+          id: userId!,
+          username: currentUser?.username || 'You',
+          display_name: currentUser?.displayName || currentUser?.username || 'You',
+          profile_picture: currentUser?.profilePicture || ''
+        },
+        // Mark as optimistic for UI handling
+        _isOptimistic: true,
+        _originalData: newMessage
+      };
       
-      return { previousMessages };
+      // Optimistically update the messages cache
+      queryClient.setQueryData(['messages', newMessage.conversationId], (oldData: unknown) => {
+        if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
+          return {
+            pages: [[optimisticMessage]],
+            pageParams: [0]
+          };
+        }
+        
+        const data = oldData as { pages: OptimisticMessage[][], pageParams: number[] };
+        
+        // Add optimistic message to the first page (most recent messages) at the end
+        // Since messages are displayed in chronological order, new messages go at the end
+        const newPages = [...data.pages];
+        newPages[0] = [...newPages[0], optimisticMessage];
+        
+        return {
+          ...data,
+          pages: newPages
+        };
+      });
+      
+      return { previousMessages, optimisticMessage };
     },
-    onSuccess: (_data, variables) => {
-      // Only invalidate, don't force refetch to avoid loops
-      queryClient.invalidateQueries({ queryKey: ['messages', variables.conversationId] });
+    onSuccess: (data, variables, context) => {
+      // Seamlessly replace the optimistic message with the real message data
+      queryClient.setQueryData(['messages', variables.conversationId], (oldData: unknown) => {
+        if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) return oldData;
+        
+        const cachedData = oldData as { pages: OptimisticMessage[][], pageParams: number[] };
+        
+        const newPages = cachedData.pages.map((page: OptimisticMessage[]) => 
+          page.map((msg: OptimisticMessage) => {
+            // Replace the optimistic message with the real message
+            if (msg.id === context?.optimisticMessage.id) {
+              return {
+                ...data,
+                // Keep the sender info from the optimistic message since it's already populated
+                sender: msg.sender
+              } as OptimisticMessage;
+            }
+            return msg;
+          })
+        );
+        
+        return {
+          ...cachedData,
+          pages: newPages
+        };
+      });
+      
+      // Update conversations list (but don't refetch messages since we just updated them)
       queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
       console.error('Failed to send message - detailed error:', error);
-    },
-    onSettled: () => {
-      // Remove this to avoid double invalidation
+      
+      // Show error toast
+      addToast('Failed to send message. Please try again.', 'error');
+      
+      // Mark optimistic message as failed instead of removing it
+      if (context?.optimisticMessage) {
+        queryClient.setQueryData(['messages', variables.conversationId], (oldData: unknown) => {
+          if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) return oldData;
+          
+          const data = oldData as { pages: OptimisticMessage[][], pageParams: number[] };
+          
+          const newPages = data.pages.map((page: OptimisticMessage[]) => 
+            page.map((msg: OptimisticMessage) => 
+              msg.id === context.optimisticMessage.id
+                ? { ...msg, _failed: true, _isOptimistic: false }
+                : msg
+            )
+          );
+          
+          return {
+            ...data,
+            pages: newPages
+          };
+        });
+      }
     }
   });
 };
 
 /**
- * Hook to create a new conversation
+ * Hook to retry a failed message
  */
+export const useRetryMessage = () => {
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
+  const { addToast } = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ messageId, conversationId, originalData }: { 
+      messageId: string; 
+      conversationId: string; 
+      originalData: SendMessageData; 
+    }) => {
+      // First, remove the failed message from the cache
+      queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+        if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) return oldData;
+        
+        const data = oldData as { pages: OptimisticMessage[][], pageParams: number[] };
+        
+        const newPages = data.pages.map((page: OptimisticMessage[]) => 
+          page.filter((msg: OptimisticMessage) => msg.id !== messageId)
+        );
+        
+        return {
+          ...data,
+          pages: newPages
+        };
+      });
+      
+      // Then send the message again
+      return messagesApi.sendMessage(originalData, userId!);
+    },
+    onSuccess: (_data, variables) => {
+      // Invalidate to fetch the real message
+      queryClient.invalidateQueries({ queryKey: ['messages', variables.conversationId] });
+      queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
+      addToast('Message sent successfully!', 'success', 3000);
+    },
+    onError: (error, variables) => {
+      console.error('Failed to retry message:', error);
+      addToast('Failed to retry message. Please try again.', 'error');
+      
+      // Re-add the failed message back to cache
+      queryClient.invalidateQueries({ queryKey: ['messages', variables.conversationId] });
+    }
+  });
+};
 export const useCreateConversation = () => {
   const queryClient = useQueryClient();
   const { userId } = useUser();

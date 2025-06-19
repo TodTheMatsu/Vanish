@@ -10,6 +10,7 @@ import Messages from './pages/Messages'; // import the messages page
 import { AuthProvider } from './AuthContext';
 import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ToastProvider } from './components/ToastProvider';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -27,30 +28,32 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <UserProvider>
-            <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/home" element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                } />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/messages" element={
-                  <ProtectedRoute>
-                    <Messages />
-                  </ProtectedRoute>
-                } />
-                <Route path="/messages/:conversationId" element={
-                  <ProtectedRoute>
-                    <Messages />
-                  </ProtectedRoute>
-                } />
-                {/* Add the route for the profile page */}
-                <Route path="/profile/:username" element={<Profile />} />
-              </Routes>
-            </div>
+            <ToastProvider>
+              <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/home" element={
+                    <ProtectedRoute>
+                      <Home />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/messages" element={
+                    <ProtectedRoute>
+                      <Messages />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/messages/:conversationId" element={
+                    <ProtectedRoute>
+                      <Messages />
+                    </ProtectedRoute>
+                  } />
+                  {/* Add the route for the profile page */}
+                  <Route path="/profile/:username" element={<Profile />} />
+                </Routes>
+              </div>
+            </ToastProvider>
           </UserProvider>
         </AuthProvider>
       </BrowserRouter>

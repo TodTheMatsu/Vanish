@@ -1,9 +1,16 @@
 import React from 'react';
-import { Message, ConversationPermissions } from '../../api/messagesApi';
-import { useDeleteMessage } from '../../hooks/useMessages';
+import { Message, ConversationPermissions, SendMessageData } from '../../api/messagesApi';
+import { useDeleteMessage, useRetryMessage } from '../../hooks/useMessages';
+
+// Extended interface for optimistic messages
+interface OptimisticMessage extends Message {
+  _isOptimistic?: boolean;
+  _failed?: boolean;
+  _originalData?: SendMessageData;
+}
 
 interface MessageBubbleProps {
-  message: Message;
+  message: OptimisticMessage;
   conversationId: string;
   permissions?: ConversationPermissions | null; // Add permissions prop
 }
@@ -12,6 +19,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   // Remove the individual useConversationPermissions call to prevent spam
   // const { data: permissions } = useConversationPermissions(conversationId);
   const deleteMessage = useDeleteMessage();
+  const retryMessage = useRetryMessage();
   // Removed useMarkAsRead to prevent network spam
   
   // Get current user ID
@@ -65,6 +73,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
     }
   };
 
+  const handleRetry = async () => {
+    if (message._originalData) {
+      try {
+        await retryMessage.mutateAsync({
+          messageId: message.id,
+          conversationId,
+          originalData: message._originalData
+        });
+      } catch (error) {
+        console.error('Failed to retry message:', error);
+      }
+    }
+  };
+
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -84,11 +106,25 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
 
   return (
     <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative ${
         isOwnMessage 
-          ? 'bg-purple-600 text-white' 
+          ? `${message._failed ? 'bg-red-600' : 'bg-purple-600'} text-white ${message._isOptimistic ? 'opacity-70' : ''}` 
           : 'bg-gray-700 text-white'
       }`}>
+        {/* Optimistic message indicator */}
+        {message._isOptimistic && (
+          <div className="absolute -bottom-1 -right-1">
+            <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+          </div>
+        )}
+
+        {/* Failed message indicator */}
+        {message._failed && (
+          <div className="absolute -bottom-1 -right-1">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+          </div>
+        )}
+        
         {/* Sender name (for group chats and not own messages) */}
         {!isOwnMessage && message.sender && (
           <div className="text-xs text-gray-300 mb-1">
@@ -117,7 +153,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
         <div className="flex items-center justify-between mt-2 text-xs opacity-75">
           <div className="flex items-center space-x-2">
             <span>{formatTime(message.created_at)}</span>
-            {message.edited_at && (
+            {message._isOptimistic && (
+              <span className="italic text-yellow-400">Sending...</span>
+            )}
+            {message._failed && (
+              <span className="italic text-red-300">Failed to send</span>
+            )}
+            {message.edited_at && !message._isOptimistic && !message._failed && (
               <span className="italic">(edited)</span>
             )}
             {message.screenshot_detected && (
@@ -125,48 +167,64 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
             )}
           </div>
           
-          {/* Expiration time */}
-          <div className={`text-xs ${
-            timeLeft.includes('m') && !timeLeft.includes('h') 
-              ? 'text-yellow-400' 
-              : 'text-gray-400'
-          }`}>
-            ⏰ {timeLeft}
-          </div>
+          {/* Expiration time - don't show for optimistic or failed messages */}
+          {!message._isOptimistic && !message._failed && (
+            <div className={`text-xs ${
+              timeLeft.includes('m') && !timeLeft.includes('h') 
+                ? 'text-yellow-400' 
+                : 'text-gray-400'
+            }`}>
+              ⏰ {timeLeft}
+            </div>
+          )}
         </div>
 
-        {/* Read receipts (for own messages) */}
-        {isOwnMessage && Object.keys(message.read_by).length > 1 && (
+        {/* Read receipts (for own messages) - don't show for optimistic or failed messages */}
+        {isOwnMessage && !message._isOptimistic && !message._failed && Object.keys(message.read_by).length > 1 && (
           <div className="text-xs text-gray-300 mt-1">
             Read by {Object.keys(message.read_by).length - 1} others
           </div>
         )}
 
         {/* Message actions */}
-        {(canDelete || canEdit) && (
-          <div className="flex justify-end mt-2 space-x-2">
-            {canEdit && (
-              <button
-                className="text-xs text-gray-300 hover:text-white"
-                onClick={() => {
-                  // TODO: Implement edit functionality
-                  console.log('Edit message:', message.id);
-                }}
-              >
-                Edit
-              </button>
-            )}
-            {canDelete && (
-              <button
-                className="text-xs text-red-400 hover:text-red-300"
-                onClick={handleDelete}
-                disabled={deleteMessage.isPending}
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        )}
+        <div className="flex justify-end mt-2 space-x-2">
+          {/* Retry button for failed messages */}
+          {message._failed && message._originalData && (
+            <button
+              className="text-xs text-yellow-400 hover:text-yellow-300"
+              onClick={handleRetry}
+              disabled={retryMessage.isPending}
+            >
+              {retryMessage.isPending ? 'Retrying...' : 'Retry'}
+            </button>
+          )}
+          
+          {/* Regular message actions - don't show for optimistic or failed messages */}
+          {!message._isOptimistic && !message._failed && (canDelete || canEdit) && (
+            <>
+              {canEdit && (
+                <button
+                  className="text-xs text-gray-300 hover:text-white"
+                  onClick={() => {
+                    // TODO: Implement edit functionality
+                    console.log('Edit message:', message.id);
+                  }}
+                >
+                  Edit
+                </button>
+              )}
+              {canDelete && (
+                <button
+                  className="text-xs text-red-400 hover:text-red-300"
+                  onClick={handleDelete}
+                  disabled={deleteMessage.isPending}
+                >
+                  Delete
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

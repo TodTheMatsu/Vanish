@@ -33,8 +33,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const handleSend = async (content: string, expirationHours?: number) => {
     if (!content.trim()) return;
 
-
-
     try {
       await sendMessage.mutateAsync({
         conversationId,
@@ -42,12 +40,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
         expirationHours
       });
       setShouldAutoScroll(true);
-
     } catch (error) {
-      console.error('Failed to send message - ChatWindow error:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      // Show user-friendly error
-      alert('Failed to send message. Please check console for details.');
+      // Error is handled by the toast notification in useSendMessage hook
+      console.error('Failed to send message:', error);
     }
   };
 
