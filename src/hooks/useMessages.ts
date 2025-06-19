@@ -94,20 +94,38 @@ export const useCreateConversation = () => {
 };
 
 /**
- * Hook to get user permissions for a conversation
+ * Hook to get user permissions for a conversation with minimum loading time
  */
 export const useConversationPermissions = (conversationId: string) => {
   const { userId } = useUser();
   
-  return useQuery({
+  const query = useQuery({
     queryKey: ['conversation-permissions', conversationId, userId],
-    queryFn: () => {
-      return messagesApi.getUserPermissions(conversationId, userId!);
+    queryFn: async () => {
+      // Add minimum loading time of 600ms for better UX (reduced from 800ms)
+      const startTime = Date.now();
+      const permissionsPromise = messagesApi.getUserPermissions(conversationId, userId!);
+      const minLoadingTime = new Promise(resolve => setTimeout(resolve, 600));
+      
+      const [permissions] = await Promise.all([permissionsPromise, minLoadingTime]);
+      
+      // Ensure we've waited at least 600ms
+      const elapsedTime = Date.now() - startTime;
+      if (elapsedTime < 600) {
+        await new Promise(resolve => setTimeout(resolve, 600 - elapsedTime));
+      }
+      
+      return permissions;
     },
     enabled: !!conversationId && !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false // Don't retry if user doesn't have permissions
   });
+
+  return {
+    ...query,
+    isLoadingPermissions: query.isLoading || query.isFetching
+  };
 };
 
 /**

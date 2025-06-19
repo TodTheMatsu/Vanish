@@ -119,68 +119,30 @@ export const messagesApi = {
   },
 
   /**
-   * Send a new message to a conversation
-   * RLS ensures user can only send to conversations they participate in
+   * Send a new message to a conversation using secure Edge Function
    */
-  async sendMessage(messageData: SendMessageData, userId: string): Promise<Message> {
-    const expirationHours = messageData.expirationHours || 24;
-    const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000);
+  async sendMessage(messageData: SendMessageData, _userId: string): Promise<Message> {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-message', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: {
+          conversationId: messageData.conversationId,
+          content: messageData.content,
+          messageType: messageData.messageType || 'text',
+          expirationHours: messageData.expirationHours || 24,
+          replyTo: messageData.replyTo || null
+        }
+      });
 
-    // Add a timeout to the database call
-    const insertPromise = supabase
-      .from('messages')
-      .insert([{
-        conversation_id: messageData.conversationId,
-        sender_id: userId,
-        content: messageData.content,
-        message_type: messageData.messageType || 'text',
-        expires_at: expiresAt.toISOString(),
-        reply_to: messageData.replyTo || null
-      }])
-      .select('*')
-      .single();
+      if (error) throw error;
 
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Database insert timeout after 10 seconds')), 10000)
-    );
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await Promise.race([insertPromise, timeoutPromise]) as { data: any; error: any };
-
-    if (result.error) {
-      throw result.error;
+      return data;
+    } catch (error) {
+      console.error('Error sending message via Edge Function:', error);
+      throw error;
     }
-    
-    const data = result.data;
-
-    // Get sender profile
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (profileError) console.warn('Could not fetch sender profile:', profileError);
-
-    // Transform the data to match our expected structure
-    const messageWithSender = {
-      ...data,
-      sender: profile || {
-        id: userId,
-        username: 'You',
-        display_name: 'You',
-        profile_picture: ''
-      }
-    };
-
-    // Update conversation last_message_at
-    // TEMPORARILY DISABLED: This might be causing the user fetch spam
-    // await supabase
-    //   .from('conversations')
-    //   .update({ last_message_at: new Date().toISOString() })
-    //   .eq('id', messageData.conversationId);
-
-    return messageWithSender;
   },
 
   /**

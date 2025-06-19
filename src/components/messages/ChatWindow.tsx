@@ -12,7 +12,7 @@ interface ChatWindowProps {
 export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useMessages(conversationId);
-  const { data: permissions } = useConversationPermissions(conversationId);
+  const { data: permissions, isLoadingPermissions } = useConversationPermissions(conversationId);
   const sendMessage = useSendMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
@@ -75,11 +75,26 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
     );
   }
 
+  // Show loading state while checking permissions
+  if (isLoadingPermissions) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <p className="text-gray-400">Checking permissions...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Only show access denied after loading is complete
   if (!permissions?.isParticipant) {
     return (
       <div className="flex flex-col h-full">
         <div className="flex-1 flex items-center justify-center text-gray-400">
-          <div className="text-center">
+          <div className="text-center animate-fade-in">
             <div className="text-4xl mb-4">🔒</div>
             <h3 className="text-xl font-semibold mb-2">Access Denied</h3>
             <p>You don't have permission to view this conversation</p>
