@@ -17,8 +17,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-  // Temporarily disable real-time updates to debug fetch spam
-  // useRealtimeMessages(conversationId);
+  // Enable real-time updates for incoming messages
+  useRealtimeMessages(conversationId);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

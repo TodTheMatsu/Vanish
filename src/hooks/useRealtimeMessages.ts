@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 /**
  * Hook to enable real-time updates for messages in a specific conversation
@@ -11,61 +12,145 @@ export const useRealtimeMessages = (conversationId: string) => {
   useEffect(() => {
     if (!conversationId) return;
 
-    console.log(`Setting up real-time subscription for conversation: ${conversationId}`);
+    let messageSubscription: RealtimeChannel | null = null;
 
-    // Subscribe to new messages in this conversation
-    const messageSubscription = supabase
-      .channel(`messages:${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`
-        },
-        (payload) => {
-          console.log('New message received:', payload);
-          // RLS ensures we only get messages we're allowed to see
-          queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`
-        },
-        (payload) => {
-          console.log('Message updated:', payload);
-          // Handle message updates (read status, edits)
-          queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`
-        },
-        (payload) => {
-          console.log('Message deleted:', payload);
-          // Handle message deletions
-          queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
-        }
-      )
-      .subscribe((status) => {
-        console.log(`Message subscription status for ${conversationId}:`, status);
+    const setupAuthenticatedSubscription = async () => {
+      // Get the current session for authentication
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        console.error('No authenticated session for real-time subscription:', sessionError);
+        return;
+      }
+
+      // Ensure the supabase client has the current session
+      await supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token
       });
 
+      // Subscribe to new messages in this conversation with authentication
+      messageSubscription = supabase
+        .channel(`messages:${conversationId}`)
+        .on('broadcast', { event: 'new_message' }, (payload) => {
+          if (payload.payload && payload.payload.message && payload.payload.conversationId === conversationId) {
+            const newMessage = payload.payload.message;
+            const senderId = payload.payload.senderId;
+            
+            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+              // Type guard for infinite query data structure
+              if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
+                return oldData;
+              }
+              
+              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              if (!data.pages) return oldData;
+              
+              const messageId = newMessage.id;
+              
+              // Check if this is replacing an optimistic message from the same sender
+              let foundOptimistic = false;
+              const newPages = data.pages.map(page => 
+                (page as unknown[]).map(message => {
+                  const msg = message as { id: string, sender_id: string, _isOptimistic?: boolean };
+                  // Replace optimistic message with real message
+                  if (msg._isOptimistic && msg.sender_id === senderId && !foundOptimistic) {
+                    foundOptimistic = true;
+                    return newMessage;
+                  }
+                  return message;
+                })
+              );
+              
+              // If we didn't replace an optimistic message, check if message already exists
+              if (!foundOptimistic) {
+                const messageExists = data.pages.some(page => 
+                  (page as unknown[]).some(message => 
+                    (message as { id: string }).id === messageId
+                  )
+                );
+                
+                // Only add if message doesn't already exist
+                if (!messageExists) {
+                  // Add new message to the first page (most recent messages)
+                  if (newPages.length > 0) {
+                    newPages[0] = [...(newPages[0] as unknown[]), newMessage];
+                  } else {
+                    newPages[0] = [newMessage];
+                  }
+                }
+              }
+              
+              return {
+                ...data,
+                pages: newPages
+              };
+            });
+            
+            // Still invalidate conversations to update last message, etc.
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+          }
+        })
+        .on('broadcast', { event: 'message_updated' }, (payload) => {
+          if (payload.payload && payload.payload.message && payload.payload.conversationId === conversationId) {
+            const updatedMessage = payload.payload.message;
+            
+            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+              if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
+                return oldData;
+              }
+              
+              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              if (!data.pages) return oldData;
+              
+              const newPages = data.pages.map(page => 
+                (page as unknown[]).map(message => 
+                  (message as { id: string }).id === updatedMessage.id ? updatedMessage : message
+                )
+              );
+              
+              return {
+                ...data,
+                pages: newPages
+              };
+            });
+          }
+        })
+        .on('broadcast', { event: 'message_deleted' }, (payload) => {
+          if (payload.payload && payload.payload.messageId && payload.payload.conversationId === conversationId) {
+            const deletedMessageId = payload.payload.messageId;
+            
+            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+              if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
+                return oldData;
+              }
+              
+              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              if (!data.pages) return oldData;
+              
+              const newPages = data.pages.map(page => 
+                (page as unknown[]).filter(message => 
+                  (message as { id: string }).id !== deletedMessageId
+                )
+              );
+              
+              return {
+                ...data,
+                pages: newPages
+              };
+            });
+          }
+        })
+        .subscribe();
+    };
+
+    // Set up the authenticated subscription
+    setupAuthenticatedSubscription();
+
     return () => {
-      console.log(`Cleaning up real-time subscription for conversation: ${conversationId}`);
-      messageSubscription.unsubscribe();
+      if (messageSubscription) {
+        messageSubscription.unsubscribe();
+      }
     };
   }, [conversationId, queryClient]);
 };
@@ -77,49 +162,59 @@ export const useRealtimeConversations = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log('Setting up real-time subscription for conversations');
+    let conversationSubscription: RealtimeChannel | null = null;
 
-    // Subscribe to conversation updates
-    const conversationSubscription = supabase
-      .channel('conversations')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conversations'
-        },
-        (payload) => {
-          console.log('Conversation changed:', payload);
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'conversation_participants'
-        },
-        (payload) => {
-          console.log('Conversation participants changed:', payload);
-          queryClient.invalidateQueries({ queryKey: ['conversations'] });
-          // Also invalidate permissions for affected conversation
-          if (payload.new && typeof payload.new === 'object' && 'conversation_id' in payload.new) {
-            queryClient.invalidateQueries({ queryKey: ['conversation-permissions', payload.new.conversation_id] });
+    const setupAuthenticatedConversationSubscription = async () => {
+      // Get the current session for authentication
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        console.error('No authenticated session for conversation real-time subscription:', sessionError);
+        return;
+      }
+
+      // Subscribe to conversation updates
+      conversationSubscription = supabase
+        .channel('conversations')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'conversations'
+          },
+          (_payload) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
           }
-          if (payload.old && typeof payload.old === 'object' && 'conversation_id' in payload.old) {
-            queryClient.invalidateQueries({ queryKey: ['conversation-permissions', payload.old.conversation_id] });
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'conversation_participants'
+          },
+          (payload) => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            // Also invalidate permissions for affected conversation
+            if (payload.new && typeof payload.new === 'object' && 'conversation_id' in payload.new) {
+              queryClient.invalidateQueries({ queryKey: ['conversation-permissions', payload.new.conversation_id] });
+            }
+            if (payload.old && typeof payload.old === 'object' && 'conversation_id' in payload.old) {
+              queryClient.invalidateQueries({ queryKey: ['conversation-permissions', payload.old.conversation_id] });
+            }
           }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Conversation subscription status:', status);
-      });
+        )
+        .subscribe();
+    };
+
+    // Set up the authenticated subscription
+    setupAuthenticatedConversationSubscription();
 
     return () => {
-      console.log('Cleaning up real-time subscription for conversations');
-      conversationSubscription.unsubscribe();
+      if (conversationSubscription) {
+        conversationSubscription.unsubscribe();
+      }
     };
   }, [queryClient]);
 };
@@ -257,4 +352,83 @@ export const useMessageExpiration = (conversationId: string) => {
       clearInterval(interval);
     };
   }, [conversationId, queryClient]);
+};
+
+/**
+ * Debug function to test if real-time is working
+ */
+export const testRealtimeConnection = async () => {
+  console.log('🔍 Testing real-time connection...');
+  
+  const testChannel = supabase.channel('test-connection');
+  
+  testChannel.on('broadcast', { event: 'ping' }, (payload) => {
+    console.log('🏓 Pong received:', payload);
+  });
+  
+  testChannel.subscribe((status) => {
+    console.log('Test channel status:', status);
+    
+    if (status === 'SUBSCRIBED') {
+      console.log('✅ Sending test ping...');
+      testChannel.send({
+        type: 'broadcast',
+        event: 'ping', 
+        payload: { message: 'Hello from test!', timestamp: new Date().toISOString() }
+      });
+      
+      setTimeout(() => {
+        testChannel.unsubscribe();
+        console.log('Test channel unsubscribed');
+      }, 5000);
+    } else if (status === 'CHANNEL_ERROR') {
+      console.error('❌ Test channel failed to subscribe');
+    }
+  });
+};
+
+/**
+ * Debug function to test postgres_changes specifically
+ */
+export const testPostgresChanges = (conversationId?: string) => {
+  console.log('🔍 Testing postgres_changes for messages table...');
+  
+  const testChannel = supabase.channel('test-postgres-changes');
+  
+  // Test both with and without conversation filter
+  testChannel.on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public', 
+      table: 'messages'
+    },
+    (payload) => {
+      console.log('📥 Postgres changes event received (all messages):', payload);
+    }
+  );
+
+  if (conversationId) {
+    testChannel.on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public', 
+        table: 'messages',
+        filter: `conversation_id=eq.${conversationId}`
+      },
+      (payload) => {
+        console.log('📥 Postgres changes event received (filtered):', payload);
+      }
+    );
+  }
+  
+  testChannel.subscribe((status) => {
+    console.log('Postgres changes test channel status:', status);
+    if (status === 'SUBSCRIBED') {
+      console.log('✅ Postgres changes subscription active - try sending a message now');
+    }
+  });
+  
+  return () => testChannel.unsubscribe();
 };

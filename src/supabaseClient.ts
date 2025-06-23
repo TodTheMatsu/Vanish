@@ -13,6 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     persistSession: true,
     storage: localStorage,
   },
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
   global: {
     headers: {
       'apikey': supabaseKey

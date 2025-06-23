@@ -14,8 +14,8 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
     selectedConversationId || null
   );
 
-  // Temporarily disable real-time updates to debug fetch spam
-  // useRealtimeConversations();
+  // Enable real-time updates for conversations
+  useRealtimeConversations();
 
   return (
     <div className="flex h-full bg-gray-900">

@@ -138,6 +138,28 @@ export const messagesApi = {
 
       if (error) throw error;
 
+      // After successful message creation, send broadcast for real-time updates
+      try {
+        const broadcastPayload = {
+          type: 'new_message',
+          message: data,
+          conversationId: messageData.conversationId,
+          senderId: data.sender_id,
+          timestamp: new Date().toISOString()
+        };
+
+        // Send to conversation-specific channel
+        await supabase.channel(`messages:${messageData.conversationId}`)
+          .send({
+            type: 'broadcast',
+            event: 'new_message',
+            payload: broadcastPayload
+          });
+      } catch (broadcastError) {
+        // Don't throw here - message was saved successfully, broadcast is just for real-time
+        console.error('Failed to send message broadcast (message still saved):', broadcastError);
+      }
+
       return data;
     } catch (error) {
       console.error('Error sending message via Edge Function:', error);
@@ -330,12 +352,40 @@ export const messagesApi = {
    * RLS ensures proper permissions
    */
   async deleteMessage(messageId: string): Promise<void> {
+    // First get the message data before deleting
+    const { data: messageToDelete, error: fetchError } = await supabase
+      .from('messages')
+      .select('*, conversation_id')
+      .eq('id', messageId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
     const { error } = await supabase
       .from('messages')
       .delete()
       .eq('id', messageId);
 
-    if (error) throw error;
+    if (error) throw error;        // After successful deletion, send broadcast
+        if (messageToDelete) {
+          try {
+            const broadcastPayload = {
+              type: 'message_deleted',
+              messageId: messageId,
+              conversationId: messageToDelete.conversation_id,
+              timestamp: new Date().toISOString()
+            };
+
+            await supabase.channel(`messages:${messageToDelete.conversation_id}`)
+              .send({
+                type: 'broadcast',
+                event: 'message_deleted',
+                payload: broadcastPayload
+              });
+          } catch (broadcastError) {
+            console.error('Failed to send message deletion broadcast:', broadcastError);
+          }
+        }
   },
 
   /**
@@ -343,15 +393,45 @@ export const messagesApi = {
    * RLS ensures proper permissions
    */
   async editMessage(messageId: string, newContent: string): Promise<void> {
-    const { error } = await supabase
+    // Get the conversation_id before updating
+    const { data: messageData, error: fetchError } = await supabase
+      .from('messages')
+      .select('conversation_id')
+      .eq('id', messageId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const { data: updatedMessage, error } = await supabase
       .from('messages')
       .update({ 
         content: newContent,
         edited_at: new Date().toISOString()
       })
-      .eq('id', messageId);
+      .eq('id', messageId)
+      .select()
+      .single();
 
-    if (error) throw error;
+    if (error) throw error;        // After successful update, send broadcast
+        if (updatedMessage && messageData) {
+          try {
+            const broadcastPayload = {
+              type: 'message_updated',
+              message: updatedMessage,
+              conversationId: messageData.conversation_id,
+              timestamp: new Date().toISOString()
+            };
+
+            await supabase.channel(`messages:${messageData.conversation_id}`)
+              .send({
+                type: 'broadcast',
+                event: 'message_updated',
+                payload: broadcastPayload
+              });
+          } catch (broadcastError) {
+            console.error('Failed to send message update broadcast:', broadcastError);
+          }
+        }
   },
 
   /**
