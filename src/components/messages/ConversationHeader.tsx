@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useConversations, useLeaveConversation } from '../../hooks/useMessages';
 import { ConversationPermissions } from '../../api/messagesApi';
 import { useUser } from '../../UserContext';
+import { IoPersonOutline, IoPeopleOutline, IoTimeOutline } from 'react-icons/io5';
 
 interface ConversationHeaderProps {
   conversationId: string;
@@ -39,7 +40,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
       return {
         name: conversation.name || 'Group Chat',
         subtitle: `${conversation.conversation_participants.filter(p => !p.left_at).length} members`,
-        avatar: '👥'
+        avatar: <IoPeopleOutline className="text-lg text-neutral-300" />
       };
     } else {
       // For direct messages, show the other person's info
@@ -58,7 +59,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
       return {
         name: 'Unknown User',
         subtitle: 'Direct message',
-        avatar: '👤'
+        avatar: <IoPersonOutline className="text-lg text-neutral-300" />
       };
     }
   };
@@ -115,7 +116,9 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
               {conversation.expires_at && (
                 <>
                   <span>•</span>
-                  <span className="text-yellow-400">⏰ Auto-expires</span>
+                  <span className="text-yellow-400 flex items-center">
+                    <IoTimeOutline className="mr-1" /> Auto-expires
+                  </span>
                 </>
               )}
               {permissions?.isAdmin && (

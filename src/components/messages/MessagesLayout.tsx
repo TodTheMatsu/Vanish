@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ConversationList } from './ConversationList';
 import { ChatWindow } from './ChatWindow';
 import { useRealtimeConversations } from '../../hooks/useRealtimeMessages';
+import { IoChatbubbleOutline } from 'react-icons/io5';
 
 interface MessagesLayoutProps {
   selectedConversationId?: string;
@@ -53,15 +54,14 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
         ) : (
           <div className="flex items-center justify-center h-full text-gray-400 p-6">
             <div className="text-center max-w-md">
-              <div className="text-6xl md:text-8xl mb-6">💬</div>
+              <div className="text-6xl md:text-8xl mb-6 text-neutral-400">
+                <IoChatbubbleOutline className="mx-auto" />
+              </div>
               <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white">
                 Welcome to Vanish Messages
               </h3>
               <p className="text-base md:text-lg mb-2">
                 Select a conversation to start chatting
-              </p>
-              <p className="text-sm md:text-base text-gray-500">
-                Messages automatically disappear after 24 hours
               </p>
               {/* Mobile: Show button to open conversation list */}
               <button

@@ -2,6 +2,7 @@ import React from 'react';
 import { Message, ConversationPermissions, SendMessageData } from '../../api/messagesApi';
 import { useDeleteMessage, useRetryMessage } from '../../hooks/useMessages';
 import { useUser } from '../../UserContext';
+import { IoTimeOutline, IoCameraOutline } from 'react-icons/io5';
 
 // Extended interface for optimistic messages
 interface OptimisticMessage extends Message {
@@ -164,18 +165,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
               <span className="italic">(edited)</span>
             )}
             {message.screenshot_detected && (
-              <span className="text-yellow-400" title="Screenshot detected">📸</span>
+              <span className="text-yellow-400 flex items-center" title="Screenshot detected">
+                <IoCameraOutline />
+              </span>
             )}
           </div>
           
           {/* Expiration time - don't show for optimistic or failed messages */}
           {!message._isOptimistic && !message._failed && (
-            <div className={`text-xs ${
+            <div className={`text-xs flex items-center ${
               timeLeft.includes('m') && !timeLeft.includes('h') 
                 ? 'text-yellow-400' 
                 : isOwnMessage ? 'text-black/60' : 'text-neutral-400'
             }`}>
-              ⏰ {timeLeft}
+              <IoTimeOutline className="mr-1" /> {timeLeft}
             </div>
           )}
         </div>

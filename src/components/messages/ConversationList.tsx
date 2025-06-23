@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useConversations } from '../../hooks/useMessages';
 import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
+import { IoChatbubbleOutline } from 'react-icons/io5';
 
 interface ConversationListProps {
   selectedConversationId: string | null;
@@ -83,7 +84,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         ) : (
           <div className="flex items-center justify-center h-full text-neutral-400">
             <div className="text-center p-8">
-              <div className="text-6xl mb-4">💬</div>
+              <div className="text-6xl mb-4 text-neutral-400">
+                <IoChatbubbleOutline className="mx-auto" />
+              </div>
               <h3 className="text-xl font-semibold text-neutral-300 mb-2">No conversations yet</h3>
               <p className="text-neutral-500 mb-6">Start messaging with other users!</p>
               <button

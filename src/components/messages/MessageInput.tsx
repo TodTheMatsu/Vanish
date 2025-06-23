@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { IoCloseOutline, IoTimeOutline, IoSendOutline } from 'react-icons/io5';
+import { ImSpinner8 } from 'react-icons/im';
 
 interface MessageInputProps {
   onSend: (content: string, expirationHours?: number) => void;
@@ -50,9 +52,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               onClick={() => setShowSettings(false)}
               className="text-neutral-400 hover:text-white hover:bg-neutral-700 p-1 rounded-lg transition-all duration-200"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <IoCloseOutline className="w-4 h-4" />
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -74,7 +74,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       )}
 
       {/* Message Input */}
-      <form onSubmit={handleSubmit} className="flex items-end space-x-2">
+      <form onSubmit={handleSubmit} className="flex items-start space-x-2">
         <div className="flex-1">
           <textarea
             value={message}
@@ -83,16 +83,17 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 resize-none text-sm sm:text-base backdrop-blur-sm transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 resize-none text-sm sm:text-base backdrop-blur-sm transition-all duration-200 overflow-hidden"
             style={{
-              minHeight: '40px',
+              minHeight: '48px',
               maxHeight: '120px',
-              height: 'auto'
+              height: '48px'
             }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
-              target.style.height = 'auto';
-              target.style.height = target.scrollHeight + 'px';
+              target.style.height = '48px';
+              const newHeight = Math.min(Math.max(target.scrollHeight, 48), 120);
+              target.style.height = newHeight + 'px';
             }}
           />
         </div>
@@ -101,38 +102,26 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         <button
           type="button"
           onClick={() => setShowSettings(!showSettings)}
-          className={`p-2 sm:p-3 rounded-xl transition-all duration-200 ${
+          className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-200 flex-shrink-0 ${
             showSettings 
               ? 'bg-white text-black shadow-lg' 
               : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:border-neutral-600'
           }`}
           title="Message Settings"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" 
-            />
-          </svg>
+          <IoTimeOutline className="w-5 h-5" />
         </button>
 
         {/* Send Button */}
         <button
           type="submit"
           disabled={!message.trim() || disabled}
-          className="px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-neutral-200 disabled:bg-neutral-700 disabled:cursor-not-allowed text-black disabled:text-neutral-500 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 disabled:shadow-none"
+          className="w-12 h-12 flex items-center justify-center bg-white hover:bg-neutral-200 disabled:bg-neutral-700 disabled:cursor-not-allowed text-black disabled:text-neutral-500 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 disabled:shadow-none flex-shrink-0"
         >
           {disabled ? (
-            <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
+            <ImSpinner8 className="w-5 h-5 animate-spin" />
           ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+            <IoSendOutline className="w-5 h-5" />
           )}
         </button>
       </form>
@@ -140,9 +129,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       {/* Current expiration display */}
       {!showSettings && (
         <div className="mt-2 text-xs sm:text-sm text-neutral-400 flex items-center">
-          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <IoTimeOutline className="w-3 h-3 mr-1" />
           Messages expire in {expirationOptions.find(o => o.value === expirationHours)?.label || '24 hours'}
         </div>
       )}

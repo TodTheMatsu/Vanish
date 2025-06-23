@@ -4,6 +4,7 @@ import { useRealtimeMessages } from '../../hooks/useRealtimeMessages';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
 import { ConversationHeader } from './ConversationHeader';
+import { IoLockClosedOutline, IoHandRightOutline } from 'react-icons/io5';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -96,7 +97,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       <div className="flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm">
         <div className="flex-1 flex items-center justify-center text-neutral-400">
           <div className="text-center animate-fade-in p-8">
-            <div className="text-6xl mb-4">🔒</div>
+            <div className="text-6xl mb-4 text-neutral-400">
+              <IoLockClosedOutline className="mx-auto" />
+            </div>
             <h3 className="text-xl font-semibold text-neutral-300 mb-2">Access Denied</h3>
             <p className="text-neutral-500">You don't have permission to view this conversation</p>
           </div>
@@ -143,7 +146,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         ) : (
           <div className="flex items-center justify-center h-full text-neutral-400">
             <div className="text-center p-8">
-              <div className="text-6xl mb-4">👋</div>
+              <div className="text-6xl mb-4 text-neutral-400">
+                <IoHandRightOutline className="mx-auto" />
+              </div>
               <h3 className="text-xl font-semibold text-neutral-300 mb-2">No messages yet</h3>
               <p className="text-neutral-500">Say hello to start the conversation!</p>
             </div>

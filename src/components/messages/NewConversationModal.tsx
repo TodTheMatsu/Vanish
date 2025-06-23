@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCreateConversation, useSearchUsers } from '../../hooks/useMessages';
+import { IoCloseOutline } from 'react-icons/io5';
 
 interface NewConversationModalProps {
   onClose: () => void;
@@ -163,7 +164,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
                     onClick={() => handleUserSelect(user)}
                     className="ml-2 text-black/60 hover:text-black transition-colors"
                   >
-                    ×
+                    <IoCloseOutline />
                   </button>
                 </span>
               ))}

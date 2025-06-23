@@ -2,6 +2,7 @@ import React from 'react';
 import { Conversation } from '../../api/messagesApi';
 import { useUnreadCount } from '../../hooks/useMessages';
 import { useUser } from '../../UserContext';
+import { IoPersonOutline, IoPeopleOutline, IoTimeOutline } from 'react-icons/io5';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -27,7 +28,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
     if (conversation.type === 'group') {
       return {
         name: conversation.name || 'Group Chat',
-        avatar: '👥',
+        avatar: <IoPeopleOutline className="text-lg text-neutral-300" />,
         isGroup: true
       };
     } else {
@@ -46,7 +47,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
       
       return {
         name: 'Unknown User',
-        avatar: '👤',
+        avatar: <IoPersonOutline className="text-lg text-neutral-300" />,
         isGroup: false
       };
     }
@@ -81,7 +82,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
       <div className="flex items-center space-x-3">
         {/* Avatar */}
         <div className="relative">
-          {isGroup || !avatar || avatar.startsWith('http') ? (
+          {isGroup || !avatar || (typeof avatar === 'string' && avatar.startsWith('http')) ? (
             <div className="w-12 h-12 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xl">
               {typeof avatar === 'string' && avatar.startsWith('http') ? (
                 <img
@@ -95,7 +96,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
             </div>
           ) : (
             <div className="w-12 h-12 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xl">
-              👤
+              <IoPersonOutline className="text-neutral-300" />
             </div>
           )}
           
@@ -130,10 +131,10 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
             
             {/* Expiration indicator */}
             {conversation.expires_at && (
-              <div className={`text-xs ${
+              <div className={`text-xs flex items-center ${
                 isSelected ? 'text-yellow-300' : 'text-yellow-500'
               }`}>
-                ⏰
+                <IoTimeOutline className="text-sm" />
               </div>
             )}
           </div>
