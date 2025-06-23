@@ -169,90 +169,38 @@ export const messagesApi = {
 
   /**
    * Create a new conversation with participants
-   * RLS ensures proper permissions are enforced
+   * Simplified approach to avoid RLS recursion
    */
   async createConversation(conversationData: CreateConversationData): Promise<Conversation> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
-    // Start transaction by creating conversation
-    const { data: conversation, error: convError } = await supabase
-      .from('conversations')
-      .insert([{
-        type: conversationData.type,
-        name: conversationData.name,
-        created_by: user.id,
-        expires_at: conversationData.expirationHours 
-          ? new Date(Date.now() + conversationData.expirationHours * 60 * 60 * 1000).toISOString()
-          : null
-      }])
-      .select()
-      .single();
-
-    if (convError) throw convError;
-
-    // Add participants (creator as admin, others as members)
-    const participants = [
-      {
-        conversation_id: conversation.id,
-        user_id: user.id,
-        role: 'admin'
-      },
-      ...conversationData.participantIds.map(userId => ({
-        conversation_id: conversation.id,
-        user_id: userId,
-        role: 'member' as const
-      }))
-    ];
-
-    const { error: participantsError } = await supabase
-      .from('conversation_participants')
-      .insert(participants);
-
-    if (participantsError) throw participantsError;
-
-    // Fetch the complete conversation with participants
-    const { data: completeConversation, error: fetchError } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('id', conversation.id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    // Get participants for this conversation
-    const { data: conversationParticipants, error: partError } = await supabase
-      .from('conversation_participants')
-      .select('*')
-      .eq('conversation_id', conversation.id)
-      .is('left_at', null);
-
-    if (partError) throw partError;
-
-    // Get user profiles for participants
-    const userIds = conversationParticipants?.map(p => p.user_id) || [];
-    const { data: profiles, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .in('user_id', userIds);
-
-    if (profileError) throw profileError;
-
-    // Transform the data to match our expected structure
-    const finalConversation = {
-      ...completeConversation,
-      conversation_participants: (conversationParticipants || []).map(participant => ({
-        ...participant,
-        user: (profiles || []).find(profile => profile.user_id === participant.user_id) || {
-          id: participant.user_id,
-          username: 'Unknown',
-          display_name: 'Unknown User',
-          profile_picture: ''
+    try {
+      // Get the current session/access token
+      const { data: { session } } = await supabase.auth.getSession();
+      // Call the Edge Function instead of direct table insert
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-conversation`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          },
+          body: JSON.stringify({
+            ...conversationData,
+            created_by: user.id
+          })
         }
-      }))
-    };
-
-    return finalConversation;
+      );
+      const result = await response.json();
+      if (!response.ok) throw result.error || result;
+      // Return the conversation object from the Edge Function
+      return result.conversation;
+    } catch (error) {
+      console.error('Error in createConversation:', error);
+      throw error;
+    }
   },
 
   /**
