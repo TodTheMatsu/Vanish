@@ -132,7 +132,7 @@ export default function Profile() {
           onSettings={() => setShowSettings(true)}
           onCreatePost={() => setShowPostCreation(true)}
         />
-        <main className="flex-1 flex flex-col items-center p-4 md:p-8">
+        <main className="flex-1 flex flex-col items-center p-4 md:p-8 pb-14 md:pb-8">
           {/* Banner */}
           <div className="w-full max-w-3xl relative">
             <img

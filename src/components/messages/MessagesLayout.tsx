@@ -38,7 +38,7 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
         />
       </div>
       {/* Mobile: show ConversationList or ChatWindow */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:relative">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:relative pb-14 md:pb-0">
         {/* Mobile: ConversationList */}
         {showList && (
           <div className="block md:hidden h-full w-full bg-neutral-900/95 backdrop-blur-sm">

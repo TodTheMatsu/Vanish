@@ -123,7 +123,7 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 flex flex-col items-center justify-start p-4 pt-8 relative z-10">
+        <div className="flex-1 flex flex-col items-center justify-start p-4 pt-8 pb-14 md:pb-8 relative z-10">
           <div className="w-full max-w-xl md:max-w-2xl lg:max-w-4xl flex flex-col items-center">
             {/* Stats Overview */}
             <motion.div
