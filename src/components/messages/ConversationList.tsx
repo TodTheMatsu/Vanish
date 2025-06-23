@@ -3,6 +3,7 @@ import { useConversations } from '../../hooks/useMessages';
 import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
 import { IoChatbubbleOutline } from 'react-icons/io5';
+import { AnimatePresence } from 'framer-motion';
 
 interface ConversationListProps {
   selectedConversationId: string | null;
@@ -101,15 +102,17 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       </div>
 
       {/* New Conversation Modal */}
-      {showNewConversationModal && (
-        <NewConversationModal
-          onClose={() => setShowNewConversationModal(false)}
-          onConversationCreated={(conversationId: string) => {
-            setShowNewConversationModal(false);
-            onSelectConversation(conversationId);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {showNewConversationModal && (
+          <NewConversationModal
+            onClose={() => setShowNewConversationModal(false)}
+            onConversationCreated={(conversationId: string) => {
+              setShowNewConversationModal(false);
+              onSelectConversation(conversationId);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

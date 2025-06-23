@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useCreateConversation, useSearchUsers } from '../../hooks/useMessages';
 import { IoCloseOutline } from 'react-icons/io5';
+import { motion } from 'framer-motion';
 
 interface NewConversationModalProps {
   onClose: () => void;
@@ -45,9 +46,21 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
     }
   };
 
-  const modalContent = (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl backdrop-blur-sm">
+  const modal = (
+    <motion.div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.div
+        className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl backdrop-blur-sm"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.25 }}
+      >
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-white">New Conversation</h3>
           <button
@@ -189,9 +202,9 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
             {createConversation.isPending ? 'Creating...' : 'Create'}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 
-  return ReactDOM.createPortal(modalContent, document.body);
+  return ReactDOM.createPortal(modal, document.body);
 };
