@@ -2,17 +2,20 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { useToast } from './useToast';
 
 /**
  * Hook to enable real-time updates for messages in a specific conversation
  */
 export const useRealtimeMessages = (conversationId: string) => {
   const queryClient = useQueryClient();
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!conversationId) return;
 
     let messageSubscription: RealtimeChannel | null = null;
+    let conversationSubscription: RealtimeChannel | null = null;
 
     const setupAuthenticatedSubscription = async () => {
       // Get the current session for authentication
@@ -142,6 +145,27 @@ export const useRealtimeMessages = (conversationId: string) => {
           }
         })
         .subscribe();
+
+      // Subscribe to conversation-level events (member_left, conversation_deleted)
+      conversationSubscription = supabase
+        .channel(`conversations:${conversationId}`)
+        .on('broadcast', { event: 'member_left' }, (payload) => {
+          if (payload.payload && payload.payload.conversationId === conversationId) {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.invalidateQueries({ queryKey: ['conversation-permissions', conversationId] });
+            addToast('A member has left the conversation.', 'info');
+          }
+        })
+        .on('broadcast', { event: 'conversation_deleted' }, (payload) => {
+          if (payload.payload && payload.payload.conversationId === conversationId) {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            queryClient.removeQueries({ queryKey: ['messages', conversationId] });
+            queryClient.removeQueries({ queryKey: ['conversation-permissions', conversationId] });
+            addToast('This conversation has been deleted.', 'warning');
+            // Optionally, redirect the user here
+          }
+        })
+        .subscribe();
     };
 
     // Set up the authenticated subscription
@@ -150,6 +174,9 @@ export const useRealtimeMessages = (conversationId: string) => {
     return () => {
       if (messageSubscription) {
         messageSubscription.unsubscribe();
+      }
+      if (conversationSubscription) {
+        conversationSubscription.unsubscribe();
       }
     };
   }, [conversationId, queryClient]);

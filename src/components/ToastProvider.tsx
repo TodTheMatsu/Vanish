@@ -1,5 +1,6 @@
 import React, { useState, useCallback, ReactNode } from 'react';
 import { Toast, ToastContext } from '../hooks/useToast';
+import { IoCheckmarkCircle, IoCloseCircle, IoWarning, IoInformationCircle } from 'react-icons/io5';
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -46,40 +47,41 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: string) => void }> = ({
   const getToastStyles = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-600 text-white';
+        return 'bg-white/10 border-l-4 border-green-300/60 text-green-100';
       case 'error':
-        return 'bg-red-600 text-white';
+        return 'bg-white/10 border-l-4 border-red-300/60 text-red-100';
       case 'warning':
-        return 'bg-yellow-600 text-white';
+        return 'bg-white/10 border-l-4 border-yellow-200/60 text-yellow-100';
       case 'info':
-        return 'bg-blue-600 text-white';
+        return 'bg-white/10 border-l-4 border-blue-300/60 text-blue-100';
       default:
-        return 'bg-gray-600 text-white';
+        return 'bg-white/10 border-l-4 border-neutral-500/60 text-neutral-200';
     }
   };
 
   const getIcon = () => {
     switch (toast.type) {
       case 'success':
-        return '✅';
+        return <IoCheckmarkCircle className="text-green-200 text-2xl" style={{filter: 'drop-shadow(0 0 2px #22d3ee88)'}} />;
       case 'error':
-        return '❌';
+        return <IoCloseCircle className="text-red-200 text-2xl" style={{filter: 'drop-shadow(0 0 2px #f8717188)'}} />;
       case 'warning':
-        return '⚠️';
+        return <IoWarning className="text-yellow-100 text-2xl" style={{filter: 'drop-shadow(0 0 2px #fde68a88)'}} />;
       case 'info':
-        return 'ℹ️';
+        return <IoInformationCircle className="text-blue-200 text-2xl" style={{filter: 'drop-shadow(0 0 2px #60a5fa88)'}} />;
       default:
-        return '';
+        return null;
     }
   };
 
   return (
-    <div className={`flex items-center p-4 rounded-lg shadow-lg min-w-80 animate-slide-in ${getToastStyles()}`}>
-      <span className="mr-2 text-lg">{getIcon()}</span>
-      <span className="flex-1">{toast.message}</span>
+    <div className={`flex items-center p-4 rounded-xl shadow-2xl min-w-80 animate-slide-in backdrop-blur-md border ${getToastStyles()}`} style={{background: 'rgba(30,30,40,0.85)'}}>
+      <span className="mr-3">{getIcon()}</span>
+      <span className="flex-1 font-medium">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
-        className="ml-2 text-white hover:text-gray-200"
+        className="ml-2 text-neutral-300 hover:text-white text-lg px-2 py-1 rounded transition-colors"
+        aria-label="Close toast"
       >
         ✕
       </button>

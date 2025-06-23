@@ -250,19 +250,17 @@ export const messagesApi = {
   },
 
   /**
-   * Leave a conversation (sets left_at timestamp)
+   * Leave a conversation (sets left_at timestamp) via Edge Function
    */
   async leaveConversation(conversationId: string): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const { error } = await supabase
-      .from('conversation_participants')
-      .update({ left_at: new Date().toISOString() })
-      .eq('conversation_id', conversationId)
-      .eq('user_id', user.id);
-
+    const { data, error } = await supabase.functions.invoke('leave-conversation', {
+      headers: {
+        Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+      },
+      body: { conversationId }
+    });
     if (error) throw error;
+    if (data && data.error) throw new Error(data.error);
   },
 
   /**
