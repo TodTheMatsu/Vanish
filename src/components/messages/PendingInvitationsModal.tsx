@@ -64,9 +64,14 @@ export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = (
                             {inviter?.user?.display_name?.[0] || inviter?.user?.username?.[0] || '?'}
                           </div>
                         )}
-                        <span className="text-white font-medium">
-                          {inv.name || inviter?.user?.display_name || inviter?.user?.username || 'Direct Message'}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-white font-medium">
+                            {inv.name || inviter?.user?.display_name || inviter?.user?.username || 'Direct Message'}
+                          </span>
+                          {inviter?.user?.username && (
+                            <span className="text-xs text-neutral-400">@{inviter.user.username}</span>
+                          )}
+                        </div>
                         <span className="text-xs text-neutral-400 ml-2">Invited by {inviter?.user?.display_name || inviter?.user?.username || 'Unknown'}</span>
                       </div>
                       <button
