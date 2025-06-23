@@ -194,7 +194,7 @@ export default function Home() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowPostCreation(true)}
-              className="fixed bottom-8 right-8 md:right-24 w-16 h-16 bg-white rounded-full shadow-2xl hover:shadow-white/25 flex items-center justify-center z-50 border border-neutral-300 cursor-pointer"
+              className="hidden md:flex fixed bottom-8 right-8 md:right-24 w-16 h-16 bg-white rounded-full shadow-2xl hover:shadow-white/25 items-center justify-center z-50 border border-neutral-300 cursor-pointer"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{type: "spring", stiffness: 200 }}

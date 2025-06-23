@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile'; // import the profile page
 import Messages from './pages/Messages'; // import the messages page
+import Settings from './pages/Settings';
 import { AuthProvider } from './AuthContext';
 import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -51,6 +52,11 @@ function App() {
                   } />
                   {/* Add the route for the profile page */}
                   <Route path="/profile/:username" element={<Profile />} />
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <Settings />
+                    </ProtectedRoute>
+                  } />
                 </Routes>
               </div>
             </ToastProvider>
