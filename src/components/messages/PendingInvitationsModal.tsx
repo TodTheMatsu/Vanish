@@ -72,7 +72,6 @@ export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = (
                             <span className="text-xs text-neutral-400">@{inviter.user.username}</span>
                           )}
                         </div>
-                        <span className="text-xs text-neutral-400 ml-2">Invited by {inviter?.user?.display_name || inviter?.user?.username || 'Unknown'}</span>
                       </div>
                       <button
                         className="bg-white text-black px-4 py-1 rounded hover:bg-neutral-200 font-semibold disabled:opacity-60"

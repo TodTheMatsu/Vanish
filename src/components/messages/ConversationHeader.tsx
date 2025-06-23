@@ -120,7 +120,8 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
                   </span>
                 </>
               )}
-              {permissions?.isAdmin && (
+              {/* Only show Admin for group chats */}
+              {conversation.type === 'group' && permissions?.isAdmin && (
                 <>
                   <span>•</span>
                   <span className="text-white">Admin</span>
