@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ConversationList } from './ConversationList';
 import { ChatWindow } from './ChatWindow';
 import { useRealtimeConversations } from '../../hooks/useRealtimeMessages';
 import { IoChatbubbleOutline } from 'react-icons/io5';
+import { ConversationList } from './ConversationList';
+import { useNavigate } from 'react-router-dom';
 
 interface MessagesLayoutProps {
   selectedConversationId?: string;
@@ -15,35 +16,24 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
     selectedConversationId || null
   );
   const [showConversationList, setShowConversationList] = useState(true);
+  const navigate = useNavigate();
 
   // Enable real-time updates for conversations
   useRealtimeConversations();
 
   return (
     <div className="flex h-full bg-gradient-to-br from-black via-neutral-900 to-black relative overflow-hidden">
-      {/* Mobile: Overlay sidebar, Desktop: Fixed sidebar */}
-      <div className={`
-        ${showConversationList ? 'block' : 'hidden'}
-        fixed inset-y-0 left-0 z-50 w-full bg-neutral-900/95 backdrop-blur-sm
-        md:relative md:block md:w-80 md:flex-shrink-0
-        lg:w-96 xl:w-[400px]
-        border-r border-neutral-800
-        transition-transform duration-300 ease-in-out
-      `}>
+      {/* ConversationList sidebar */}
+      <div className="hidden md:block md:w-80 lg:w-96 xl:w-[400px] border-r border-neutral-800 bg-neutral-900/95 backdrop-blur-sm">
         <ConversationList
-          selectedConversationId={selectedConversation}
-          onSelectConversation={(conversationId) => {
-            setSelectedConversation(conversationId);
-            // Hide conversation list on mobile when selecting a conversation
-            if (window.innerWidth < 768) {
-              setShowConversationList(false);
-            }
+          selectedConversationId={selectedConversation || selectedConversationId || null}
+          onSelectConversation={id => {
+            setSelectedConversation(id);
+            navigate(`/messages/${id}`);
           }}
-          onClose={() => setShowConversationList(false)}
         />
       </div>
-
-      {/* Chat Window - Always takes remaining space */}
+      {/* Chat window */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {selectedConversation ? (
           <ChatWindow 
@@ -58,30 +48,13 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
                 <IoChatbubbleOutline className="mx-auto" />
               </div>
               <h3 className="text-xl md:text-2xl font-semibold mb-3 text-white">
-                Welcome to Vanish Messages
+                Select a conversation to start messaging
               </h3>
-              <p className="text-base md:text-lg mb-2">
-                Select a conversation to start chatting
-              </p>
-              {/* Mobile: Show button to open conversation list */}
-              <button
-                onClick={() => setShowConversationList(true)}
-                className="md:hidden mt-6 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
-              >
-                View Conversations
-              </button>
+              <p className="text-neutral-400">Your messages will appear here.</p>
             </div>
           </div>
         )}
       </div>
-
-      {/* Mobile backdrop */}
-      {showConversationList && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setShowConversationList(false)}
-        />
-      )}
     </div>
   );
 };

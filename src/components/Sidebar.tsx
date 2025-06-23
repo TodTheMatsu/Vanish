@@ -115,12 +115,12 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
       {/* Sidebar */}
       <AnimatePresence>
         <motion.div 
-          className={`sidebar fixed h-screen flex flex-col justify-between items-center md:items-start p-4 shadow-lg z-40 overflow-y-auto bg-neutral-900 ${
+          className={`sidebar h-screen flex flex-col justify-between items-center md:items-start p-4 shadow-lg z-40 overflow-y-auto bg-neutral-900 ${
             isMobile 
               ? isOpen 
-                ? 'w-64 left-0' 
-                : 'w-0 -left-4'
-              : 'w-16 md:w-64 lg:w-80 left-0'
+                ? 'fixed top-0 left-0 w-64' 
+                : 'hidden' 
+              : 'relative w-64 min-w-[16rem] max-w-xs'
           }`}
           initial={isMobile ? { x: isOpen ? -240 : 0 } : { x: 0 }}
           animate={isMobile ? { x: isOpen ? 0 : -240 } : { x: 0 }}
