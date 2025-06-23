@@ -300,40 +300,23 @@ export const messagesApi = {
    * RLS ensures proper permissions
    */
   async deleteMessage(messageId: string): Promise<void> {
-    // First get the message data before deleting
-    const { data: messageToDelete, error: fetchError } = await supabase
-      .from('messages')
-      .select('*, conversation_id')
-      .eq('id', messageId)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    const { error } = await supabase
-      .from('messages')
-      .delete()
-      .eq('id', messageId);
-
-    if (error) throw error;        // After successful deletion, send broadcast
-        if (messageToDelete) {
-          try {
-            const broadcastPayload = {
-              type: 'message_deleted',
-              messageId: messageId,
-              conversationId: messageToDelete.conversation_id,
-              timestamp: new Date().toISOString()
-            };
-
-            await supabase.channel(`messages:${messageToDelete.conversation_id}`)
-              .send({
-                type: 'broadcast',
-                event: 'message_deleted',
-                payload: broadcastPayload
-              });
-          } catch (broadcastError) {
-            console.error('Failed to send message deletion broadcast:', broadcastError);
-          }
-        }
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+    const response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-message`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`
+        },
+        body: JSON.stringify({ messageId, userId: user.id })
+      }
+    );
+    const result = await response.json();
+    if (!response.ok) throw result.error || result;
+    return;
   },
 
   /**
