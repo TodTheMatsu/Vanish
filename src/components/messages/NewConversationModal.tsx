@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { useCreateConversation, useSearchUsers } from '../../hooks/useMessages';
 import { IoCloseOutline } from 'react-icons/io5';
 
@@ -44,7 +45,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
     }
   };
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl backdrop-blur-sm">
         <div className="flex justify-between items-center mb-4">
@@ -191,4 +192,6 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 };

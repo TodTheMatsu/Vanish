@@ -5,6 +5,7 @@ import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
 import { ConversationHeader } from './ConversationHeader';
 import { IoLockClosedOutline, IoHandRightOutline } from 'react-icons/io5';
+import { useConversations } from '../../hooks/useMessages';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -23,6 +24,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const sendMessage = useSendMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const { data: conversations } = useConversations();
+  const conversation = conversations?.find(c => c.id === conversationId);
 
   // Enable real-time updates for incoming messages
   useRealtimeMessages(conversationId);
@@ -137,9 +140,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             {allMessages.map((message) => (
               <MessageBubble
                 key={message.id}
-                message={message as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+                message={message}
                 conversationId={conversationId}
-                permissions={permissions} // Pass permissions from ChatWindow
+                permissions={permissions}
+                conversationType={conversation?.type}
               />
             ))}
           </>
