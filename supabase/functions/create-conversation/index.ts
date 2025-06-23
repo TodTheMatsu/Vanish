@@ -39,14 +39,16 @@ serve(async (req) => {
       {
         conversation_id: conversation.id,
         user_id: created_by,
-        role: 'admin'
+        role: 'admin',
+        status: 'accepted'
       },
       ...participantIds
-        .filter((id: string) => id !== created_by)
-        .map((userId: string) => ({
+        .filter((id) => id !== created_by)
+        .map((userId) => ({
           conversation_id: conversation.id,
           user_id: userId,
-          role: 'member'
+          role: 'member',
+          status: 'pending'
         }))
     ];
 

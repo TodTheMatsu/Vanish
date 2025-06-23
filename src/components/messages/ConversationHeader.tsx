@@ -18,13 +18,12 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   showBackButton = false
 }) => {
   const { data: conversations } = useConversations();
-  // Remove the individual useConversationPermissions call to prevent duplicate calls
-  // const { data: permissions } = useConversationPermissions(conversationId);
+  const safeConversations = Array.isArray(conversations) ? conversations : [];
   const leaveConversation = useLeaveConversation();
   const [showMenu, setShowMenu] = useState(false);
   const { userId: currentUserId } = useUser();
 
-  const conversation = conversations?.find(c => c.id === conversationId);
+  const conversation = safeConversations.find(c => c.id === conversationId);
   
   if (!conversation) {
     return (
@@ -48,11 +47,11 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
         p => p.user_id !== currentUserId && !p.left_at
       );
       
-      if (otherParticipant) {
+      if (otherParticipant && otherParticipant.user) {
         return {
-          name: otherParticipant.user.display_name || otherParticipant.user.username,
-          subtitle: `@${otherParticipant.user.username}`,
-          avatar: otherParticipant.user.profile_picture
+          name: otherParticipant.user.display_name || otherParticipant.user.username || 'Unknown User',
+          subtitle: otherParticipant.user.username ? `@${otherParticipant.user.username}` : 'Direct message',
+          avatar: otherParticipant.user.profile_picture || <IoPersonOutline className="text-lg text-neutral-300" />
         };
       }
       

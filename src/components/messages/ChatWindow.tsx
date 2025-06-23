@@ -25,7 +25,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const { data: conversations } = useConversations();
-  const conversation = conversations?.find(c => c.id === conversationId);
+  const safeConversations = Array.isArray(conversations) ? conversations : [];
+  const conversation = safeConversations.find(c => c.id === conversationId);
 
   // Enable real-time updates for incoming messages
   useRealtimeMessages(conversationId);

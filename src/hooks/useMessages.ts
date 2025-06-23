@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { messagesApi, SendMessageData, Message } from '../api/messagesApi';
 import { useUser } from '../UserContext';
 import { useToast } from './useToast';
+import { supabase } from '../supabaseClient';
 
 /**
  * Hook to fetch all conversations for the current user
@@ -429,4 +430,37 @@ export const useUnreadCount = (conversationId: string) => {
   }
   
   return unreadCount;
+};
+
+/**
+ * Hook to fetch pending invitations for the current user
+ */
+export const usePendingInvitations = () => {
+  return useQuery({
+    queryKey: ['pending-invitations'],
+    queryFn: () => messagesApi.fetchPendingInvitations(),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchInterval: false
+  });
+};
+
+/**
+ * Mutation hook to accept a pending invitation
+ */
+export const useAcceptInvitation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (conversation_id: string) => {
+      const { data, error } = await supabase.functions.invoke('accept-invitation', {
+        body: { conversation_id }
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pending-invitations'] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    }
+  });
 };

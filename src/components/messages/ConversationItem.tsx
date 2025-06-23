@@ -37,10 +37,10 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
         p => p.user_id !== currentUserId
       );
       
-      if (otherParticipant) {
+      if (otherParticipant && otherParticipant.user) {
         return {
-          name: otherParticipant.user.display_name || otherParticipant.user.username,
-          avatar: otherParticipant.user.profile_picture,
+          name: otherParticipant.user.display_name || otherParticipant.user.username || 'Unknown User',
+          avatar: otherParticipant.user.profile_picture || <IoPersonOutline className="text-lg text-neutral-300" />,
           isGroup: false
         };
       }

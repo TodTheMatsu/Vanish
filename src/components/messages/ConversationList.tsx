@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useConversations } from '../../hooks/useMessages';
 import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
-import { IoChatbubbleOutline } from 'react-icons/io5';
+import { PendingInvitationsModal } from './PendingInvitationsModal';
+import { IoChatbubbleOutline, IoMailOpenOutline } from 'react-icons/io5';
 import { AnimatePresence } from 'framer-motion';
 
 interface ConversationListProps {
@@ -18,6 +19,18 @@ export const ConversationList: React.FC<ConversationListProps> = ({
 }) => {
   const { data: conversations, isLoading, error } = useConversations();
   const [showNewConversationModal, setShowNewConversationModal] = useState(false);
+  const [showPendingModal, setShowPendingModal] = useState(false);
+
+  // Debug: print type and structure of conversations
+  console.log('Frontend conversations:', conversations, 'Type:', typeof conversations, 'IsArray:', Array.isArray(conversations));
+  if (conversations && !Array.isArray(conversations)) {
+    return (
+      <div className="p-4 text-red-400">
+        <p>Conversations data is not an array. Type: {typeof conversations}</p>
+        <pre>{JSON.stringify(conversations, null, 2)}</pre>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -58,15 +71,27 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           )}
           <h2 className="text-xl font-semibold text-white">Messages</h2>
         </div>
-        <button
-          onClick={() => setShowNewConversationModal(true)}
-          className="bg-white text-black hover:bg-neutral-200 p-2 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25"
-          title="New Conversation"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={() => setShowNewConversationModal(true)}
+            className="bg-white text-black hover:bg-neutral-200 p-2 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25"
+            title="New Conversation"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+
+          {/* Pending Invitations Button */}
+          <button
+            onClick={() => setShowPendingModal(true)}
+            className="ml-2 bg-white text-black px-3 py-1 rounded-lg font-semibold hover:bg-neutral-200 transition-all flex items-center gap-2"
+            title="View Pending Invitations"
+          >
+            <IoMailOpenOutline className="text-xl" />
+            Invitations
+          </button>
+        </div>
       </div>
 
       {/* Conversations List */}
@@ -85,9 +110,6 @@ export const ConversationList: React.FC<ConversationListProps> = ({
         ) : (
           <div className="flex items-center justify-center h-full text-neutral-400">
             <div className="text-center p-8">
-              <div className="text-6xl mb-4 text-neutral-400">
-                <IoChatbubbleOutline className="mx-auto" />
-              </div>
               <h3 className="text-xl font-semibold text-neutral-300 mb-2">No conversations yet</h3>
               <p className="text-neutral-500 mb-6">Start messaging with other users!</p>
               <button
@@ -112,6 +134,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             }}
           />
         )}
+        <PendingInvitationsModal isOpen={showPendingModal} onClose={() => setShowPendingModal(false)} />
       </AnimatePresence>
     </div>
   );

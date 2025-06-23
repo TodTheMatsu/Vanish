@@ -86,10 +86,26 @@ export const messagesApi = {
 
       if (error) throw error;
 
-      return data || [];
+      // Defensive: If data is a string, try to parse it
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) return parsed;
+          console.error('fetchConversations: Parsed data is not an array:', parsed);
+          return [];
+        } catch (e) {
+          console.error('fetchConversations: Failed to parse string data:', data, e);
+          return [];
+        }
+      }
+      if (!Array.isArray(data)) {
+        console.error('fetchConversations: Expected array, got:', typeof data, data);
+        return [];
+      }
+      return data;
     } catch (error) {
       console.error('Error fetching conversations via Edge Function:', error);
-      throw error;
+      return [];
     }
   },
 
@@ -373,13 +389,50 @@ export const messagesApi = {
       .or(`username.ilike.%${query}%,display_name.ilike.%${query}%`)
       .limit(10);
 
-    if (error) throw error;
-    
-    return (data || []).map(profile => ({
-      id: profile.user_id,
-      username: profile.username,
-      display_name: profile.display_name,
-      profile_picture: profile.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'
+    if (error) {
+      console.error('Error searching users:', error);
+      return [];
+    }
+    // Map user_id to id for consistency
+    return (data || []).map((user: any) => ({
+      id: user.user_id,
+      username: user.username,
+      display_name: user.display_name,
+      profile_picture: user.profile_picture
     }));
-  }
+  },
+
+  /**
+   * Fetch pending invitations for the current user using secure Edge Function
+   */
+  async fetchPendingInvitations(): Promise<Conversation[]> {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-conversations', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: { status: 'pending' }
+      });
+      if (error) throw error;
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          if (Array.isArray(parsed)) return parsed;
+          console.error('fetchPendingInvitations: Parsed data is not an array:', parsed);
+          return [];
+        } catch (e) {
+          console.error('fetchPendingInvitations: Failed to parse string data:', data, e);
+          return [];
+        }
+      }
+      if (!Array.isArray(data)) {
+        console.error('fetchPendingInvitations: Expected array, got:', typeof data, data);
+        return [];
+      }
+      return data;
+    } catch (error) {
+      console.error('Error fetching pending invitations via Edge Function:', error);
+      return [];
+    }
+  },
 };
