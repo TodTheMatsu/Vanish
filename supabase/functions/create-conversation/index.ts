@@ -18,6 +18,28 @@ serve(async (req) => {
   );
 
   try {
+    // Prevent duplicate DMs
+    if (type === 'direct' && participantIds.length === 1) {
+      const userA = created_by;
+      const userB = participantIds[0];
+      // Find all direct conversations where either user is a participant
+      const { data: possibleConvos, error: findError } = await supabase
+        .from('conversations')
+        .select('id, conversation_participants(user_id, left_at, status)')
+        .eq('type', 'direct');
+      if (findError) throw findError;
+      // Check for a DM with exactly these two users, both not left
+      const existing = (possibleConvos || []).find((c: any) => {
+        const participants = (c.conversation_participants || []).filter((p: any) => !p.left_at);
+        if (participants.length !== 2) return false;
+        const ids = participants.map((p: any) => p.user_id).sort();
+        return ids[0] === userA && ids[1] === userB;
+      });
+      if (existing) {
+        return new Response(JSON.stringify({ conversation: { id: existing.id, existing: true } }), { status: 200, headers: corsHeaders });
+      }
+    }
+
     // Start transaction
     const { data: conversation, error: convError } = await supabase
       .from('conversations')
