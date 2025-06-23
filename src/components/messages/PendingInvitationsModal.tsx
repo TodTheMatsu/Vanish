@@ -45,20 +45,40 @@ export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = (
               <div className="text-neutral-400 text-center">Loading...</div>
             ) : pendingInvitations && pendingInvitations.length > 0 ? (
               <div className="space-y-3">
-                {pendingInvitations.map((inv) => (
-                  <div key={inv.id} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
-                    <span className="text-white font-medium">
-                      {inv.name || inv.conversation_participants?.find(p => p.user)?.user?.display_name || 'Direct Message'}
-                    </span>
-                    <button
-                      className="bg-white text-black px-4 py-1 rounded hover:bg-neutral-200 font-semibold disabled:opacity-60"
-                      disabled={acceptInvitation.isPending}
-                      onClick={() => acceptInvitation.mutate(inv.id)}
-                    >
-                      {acceptInvitation.isPending ? 'Accepting...' : 'Accept'}
-                    </button>
-                  </div>
-                ))}
+                {pendingInvitations.map((inv) => {
+                  // Find inviter (admin or created_by)
+                  const inviter = inv.conversation_participants?.find(
+                    p => p.role === 'admin' && p.user
+                  );
+                  return (
+                    <div key={inv.id} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
+                      <div className="flex items-center gap-3">
+                        {inviter?.user?.profile_picture ? (
+                          <img
+                            src={inviter.user.profile_picture}
+                            alt={inviter.user.display_name || inviter.user.username}
+                            className="w-8 h-8 rounded-full object-cover border border-white/20"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center text-white text-lg font-bold">
+                            {inviter?.user?.display_name?.[0] || inviter?.user?.username?.[0] || '?'}
+                          </div>
+                        )}
+                        <span className="text-white font-medium">
+                          {inv.name || inviter?.user?.display_name || inviter?.user?.username || 'Direct Message'}
+                        </span>
+                        <span className="text-xs text-neutral-400 ml-2">Invited by {inviter?.user?.display_name || inviter?.user?.username || 'Unknown'}</span>
+                      </div>
+                      <button
+                        className="bg-white text-black px-4 py-1 rounded hover:bg-neutral-200 font-semibold disabled:opacity-60"
+                        disabled={acceptInvitation.isPending}
+                        onClick={() => acceptInvitation.mutate(inv.id)}
+                      >
+                        {acceptInvitation.isPending ? 'Accepting...' : 'Accept'}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="text-neutral-400 text-center">No pending invitations.</div>
