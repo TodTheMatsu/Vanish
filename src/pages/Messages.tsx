@@ -5,7 +5,7 @@ export default function Messages() {
   const { conversationId } = useParams<{ conversationId?: string }>();
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className="fixed inset-0 bg-gray-900 overflow-hidden">
       <MessagesLayout selectedConversationId={conversationId} />
     </div>
   );

@@ -98,7 +98,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   if (expired) {
     return (
       <div className="flex justify-center">
-        <div className="text-gray-500 text-sm italic">
+        <div className="text-neutral-500 text-sm italic bg-neutral-800/30 px-3 py-1 rounded-full backdrop-blur-sm">
           Message expired
         </div>
       </div>
@@ -106,47 +106,47 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   }
 
   return (
-    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative ${
+    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-2`}>
+      <div className={`max-w-[85%] sm:max-w-md md:max-w-lg lg:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl relative backdrop-blur-sm border ${
         isOwnMessage 
-          ? `${message._failed ? 'bg-red-600' : 'bg-purple-600'} text-white ${message._isOptimistic ? 'opacity-70' : ''}` 
-          : 'bg-gray-700 text-white'
+          ? `${message._failed ? 'bg-red-600/80 border-red-500/50' : 'bg-white text-black border-white/20'} ${message._isOptimistic ? 'opacity-70' : ''} shadow-lg` 
+          : 'bg-neutral-800/80 text-white border-neutral-700/50 shadow-lg'
       }`}>
         {/* Optimistic message indicator */}
         {message._isOptimistic && (
           <div className="absolute -bottom-1 -right-1">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+            <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
           </div>
         )}
 
         {/* Failed message indicator */}
         {message._failed && (
           <div className="absolute -bottom-1 -right-1">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-red-400 rounded-full shadow-lg"></div>
           </div>
         )}
         
         {/* Sender name (for group chats and not own messages) */}
         {!isOwnMessage && message.sender && (
-          <div className="text-xs text-gray-300 mb-1">
+          <div className="text-xs text-neutral-400 mb-1 font-medium">
             {message.sender.display_name || message.sender.username}
           </div>
         )}
 
         {/* Reply context */}
         {message.reply_to_message && (
-          <div className="bg-gray-600 bg-opacity-50 rounded p-2 mb-2 text-sm">
-            <div className="text-gray-300 text-xs">
+          <div className="bg-neutral-700/50 rounded-lg p-2 mb-2 text-sm border-l-2 border-neutral-500">
+            <div className="text-neutral-300 text-xs font-medium">
               {message.reply_to_message.sender?.display_name || 'Unknown User'}
             </div>
-            <div className="text-gray-200 truncate">
+            <div className="text-neutral-200 truncate">
               {message.reply_to_message.content}
             </div>
           </div>
         )}
 
         {/* Message content */}
-        <div className="break-words">
+        <div className="break-words text-sm sm:text-base leading-relaxed">
           {message.content}
         </div>
 
@@ -173,7 +173,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
             <div className={`text-xs ${
               timeLeft.includes('m') && !timeLeft.includes('h') 
                 ? 'text-yellow-400' 
-                : 'text-gray-400'
+                : isOwnMessage ? 'text-black/60' : 'text-neutral-400'
             }`}>
               ⏰ {timeLeft}
             </div>
@@ -182,7 +182,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
 
         {/* Read receipts (for own messages) - don't show for optimistic or failed messages */}
         {isOwnMessage && !message._isOptimistic && !message._failed && Object.keys(message.read_by).length > 1 && (
-          <div className="text-xs text-gray-300 mt-1">
+          <div className="text-xs text-black/60 mt-1">
             Read by {Object.keys(message.read_by).length - 1} others
           </div>
         )}
@@ -192,7 +192,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
           {/* Retry button for failed messages */}
           {message._failed && message._originalData && (
             <button
-              className="text-xs text-yellow-400 hover:text-yellow-300"
+              className="text-xs text-yellow-400 hover:text-yellow-300 transition-colors"
               onClick={handleRetry}
               disabled={retryMessage.isPending}
             >
@@ -205,7 +205,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
             <>
               {canEdit && (
                 <button
-                  className="text-xs text-gray-300 hover:text-white"
+                  className={`text-xs transition-colors ${
+                    isOwnMessage ? 'text-black/70 hover:text-black' : 'text-neutral-400 hover:text-white'
+                  }`}
                   onClick={() => {
                     // TODO: Implement edit functionality
                     console.log('Edit message:', message.id);
@@ -216,7 +218,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
               )}
               {canDelete && (
                 <button
-                  className="text-xs text-red-400 hover:text-red-300"
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
                   onClick={handleDelete}
                   disabled={deleteMessage.isPending}
                 >

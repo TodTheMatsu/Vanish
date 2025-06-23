@@ -44,13 +44,13 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl backdrop-blur-sm">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-white">New Conversation</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white"
+            className="text-neutral-400 hover:text-white hover:bg-neutral-800 p-1 rounded-lg transition-all duration-200"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -60,7 +60,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
 
         {/* Conversation Type */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-neutral-300 mb-2">
             Conversation Type
           </label>
           <div className="flex space-x-4">
@@ -70,7 +70,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
                 value="direct"
                 checked={conversationType === 'direct'}
                 onChange={(e) => setConversationType(e.target.value as 'direct' | 'group')}
-                className="mr-2"
+                className="mr-2 text-white"
               />
               <span className="text-white">Direct Message</span>
             </label>
@@ -80,7 +80,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
                 value="group"
                 checked={conversationType === 'group'}
                 onChange={(e) => setConversationType(e.target.value as 'direct' | 'group')}
-                className="mr-2"
+                className="mr-2 text-white"
               />
               <span className="text-white">Group Chat</span>
             </label>
@@ -90,7 +90,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
         {/* Group Name (if group) */}
         {conversationType === 'group' && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
               Group Name
             </label>
             <input
@@ -98,14 +98,14 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="Enter group name"
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 transition-all duration-200"
             />
           </div>
         )}
 
         {/* Search Users */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-neutral-300 mb-2">
             Search Users
           </label>
           <input
@@ -113,7 +113,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by username or display name"
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 transition-all duration-200"
           />
         </div>
 
@@ -125,17 +125,17 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
                 <div
                   key={user.id}
                   onClick={() => handleUserSelect(user)}
-                  className={`p-2 rounded cursor-pointer transition-colors ${
+                  className={`p-2 rounded-xl cursor-pointer transition-all duration-200 ${
                     selectedUsers.find(u => u.id === user.id)
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                      ? 'bg-white/10 backdrop-blur-sm border border-white/20 text-white shadow-lg'
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700'
                   }`}
                 >
                   <div className="flex items-center space-x-2">
                     <img
                       src={user.profile_picture}
                       alt={user.username}
-                      className="w-8 h-8 rounded-full object-cover"
+                      className="w-8 h-8 rounded-full object-cover border border-neutral-600"
                     />
                     <div>
                       <p className="font-medium">{user.display_name || user.username}</p>
@@ -151,17 +151,17 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
         {/* Selected Users */}
         {selectedUsers.length > 0 && (
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-300 mb-2">Selected Users:</p>
+            <p className="text-sm font-medium text-neutral-300 mb-2">Selected Users:</p>
             <div className="flex flex-wrap gap-2">
               {selectedUsers.map((user) => (
                 <span
                   key={user.id}
-                  className="bg-purple-600 text-white px-2 py-1 rounded-full text-sm flex items-center"
+                  className="bg-white text-black px-3 py-1 rounded-full text-sm flex items-center shadow-lg"
                 >
                   {user.display_name || user.username}
                   <button
                     onClick={() => handleUserSelect(user)}
-                    className="ml-2 text-purple-200 hover:text-white"
+                    className="ml-2 text-black/60 hover:text-black transition-colors"
                   >
                     ×
                   </button>
@@ -175,14 +175,14 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
         <div className="flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+            className="px-4 py-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all duration-200"
           >
             Cancel
           </button>
           <button
             onClick={handleCreateConversation}
             disabled={selectedUsers.length === 0 || createConversation.isPending}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+            className="px-4 py-2 bg-white hover:bg-neutral-200 disabled:bg-neutral-700 text-black disabled:text-neutral-500 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 disabled:shadow-none"
           >
             {createConversation.isPending ? 'Creating...' : 'Create'}
           </button>

@@ -72,17 +72,17 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`p-3 rounded-lg cursor-pointer transition-all ${
+      className={`p-3 rounded-xl cursor-pointer transition-all duration-200 ${
         isSelected
-          ? 'bg-purple-600 text-white'
-          : 'hover:bg-gray-800 text-gray-300'
+          ? 'bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg'
+          : 'hover:bg-neutral-800/50 border border-transparent hover:border-neutral-700'
       }`}
     >
       <div className="flex items-center space-x-3">
         {/* Avatar */}
         <div className="relative">
           {isGroup || !avatar || avatar.startsWith('http') ? (
-            <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-xl">
+            <div className="w-12 h-12 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xl">
               {typeof avatar === 'string' && avatar.startsWith('http') ? (
                 <img
                   src={avatar}
@@ -94,14 +94,14 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
               )}
             </div>
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-xl">
+            <div className="w-12 h-12 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xl">
               👤
             </div>
           )}
           
           {/* Unread count badge */}
           {unreadCount > 0 && (
-            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <div className="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">
               {unreadCount > 9 ? '9+' : unreadCount}
             </div>
           )}
@@ -110,13 +110,11 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
         {/* Conversation info */}
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center">
-            <h3 className={`font-medium truncate ${
-              isSelected ? 'text-white' : 'text-white'
-            }`}>
+            <h3 className="font-medium truncate text-white">
               {name}
             </h3>
             <span className={`text-xs ${
-              isSelected ? 'text-purple-200' : 'text-gray-500'
+              isSelected ? 'text-neutral-300' : 'text-neutral-500'
             }`}>
               {formatTime(conversation.last_message_at)}
             </span>
@@ -124,7 +122,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
           
           <div className="flex items-center justify-between mt-1">
             <p className={`text-sm truncate ${
-              isSelected ? 'text-purple-200' : 'text-gray-400'
+              isSelected ? 'text-neutral-300' : 'text-neutral-400'
             }`}>
               {isGroup && `${otherParticipants.length} members`}
               {!isGroup && 'Direct message'}
@@ -133,7 +131,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
             {/* Expiration indicator */}
             {conversation.expires_at && (
               <div className={`text-xs ${
-                isSelected ? 'text-purple-200' : 'text-yellow-500'
+                isSelected ? 'text-yellow-300' : 'text-yellow-500'
               }`}>
                 ⏰
               </div>

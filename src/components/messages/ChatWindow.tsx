@@ -7,9 +7,15 @@ import { ConversationHeader } from './ConversationHeader';
 
 interface ChatWindowProps {
   conversationId: string;
+  onShowConversationList?: () => void;
+  showBackButton?: boolean;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({ 
+  conversationId, 
+  onShowConversationList,
+  showBackButton = false 
+}) => {
   
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useMessages(conversationId);
   const { data: permissions, isLoadingPermissions } = useConversationPermissions(conversationId);
@@ -59,12 +65,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="p-4 border-b border-gray-700">
-          <div className="animate-pulse h-6 bg-gray-700 rounded w-32"></div>
+      <div className="flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm">
+        <div className="p-4 border-b border-neutral-800">
+          <div className="animate-pulse h-6 bg-neutral-800 rounded w-32"></div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
       </div>
     );
@@ -73,11 +79,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   // Show loading state while checking permissions
   if (isLoadingPermissions) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Checking permissions...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+            <p className="text-neutral-400">Checking permissions...</p>
           </div>
         </div>
       </div>
@@ -87,12 +93,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   // Only show access denied after loading is complete
   if (!permissions?.isParticipant) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="flex-1 flex items-center justify-center text-gray-400">
-          <div className="text-center animate-fade-in">
-            <div className="text-4xl mb-4">🔒</div>
-            <h3 className="text-xl font-semibold mb-2">Access Denied</h3>
-            <p>You don't have permission to view this conversation</p>
+      <div className="flex flex-col h-full bg-neutral-900/50 backdrop-blur-sm">
+        <div className="flex-1 flex items-center justify-center text-neutral-400">
+          <div className="text-center animate-fade-in p-8">
+            <div className="text-6xl mb-4">🔒</div>
+            <h3 className="text-xl font-semibold text-neutral-300 mb-2">Access Denied</h3>
+            <p className="text-neutral-500">You don't have permission to view this conversation</p>
           </div>
         </div>
       </div>
@@ -100,19 +106,25 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-neutral-900/30 backdrop-blur-sm">
       {/* Header */}
-      <ConversationHeader conversationId={conversationId} permissions={permissions} />
+      <ConversationHeader 
+        conversationId={conversationId} 
+        permissions={permissions}
+        onShowConversationList={onShowConversationList}
+        showBackButton={showBackButton}
+      />
 
       {/* Messages */}
       <div 
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-1"
         onScroll={handleScroll}
       >
         {/* Load more indicator */}
         {isFetchingNextPage && (
-          <div className="text-center py-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500 mx-auto"></div>
+          <div className="text-center py-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mx-auto"></div>
+            <p className="text-neutral-400 text-sm mt-2">Loading more messages...</p>
           </div>
         )}
 
@@ -129,10 +141,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId }) => {
             ))}
           </>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            <div className="text-center">
-              <div className="text-3xl mb-2">👋</div>
-              <p>No messages yet. Say hello!</p>
+          <div className="flex items-center justify-center h-full text-neutral-400">
+            <div className="text-center p-8">
+              <div className="text-6xl mb-4">👋</div>
+              <h3 className="text-xl font-semibold text-neutral-300 mb-2">No messages yet</h3>
+              <p className="text-neutral-500">Say hello to start the conversation!</p>
             </div>
           </div>
         )}

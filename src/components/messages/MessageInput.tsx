@@ -40,30 +40,30 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   ];
 
   return (
-    <div className="border-t border-gray-700 p-4">
+    <div className="border-t border-neutral-800 p-3 sm:p-4 bg-neutral-900/80 backdrop-blur-sm">
       {/* Expiration Settings */}
       {showSettings && (
-        <div className="mb-3 p-3 bg-gray-800 rounded-lg">
+        <div className="mb-3 p-3 bg-neutral-800/50 border border-neutral-700 rounded-xl backdrop-blur-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Message Expiration</span>
+            <span className="text-sm font-medium text-neutral-300">Message Expiration</span>
             <button
               onClick={() => setShowSettings(false)}
-              className="text-gray-400 hover:text-white"
+              className="text-neutral-400 hover:text-white hover:bg-neutral-700 p-1 rounded-lg transition-all duration-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {expirationOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setExpirationHours(option.value)}
-                className={`px-3 py-2 rounded text-sm transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                   expirationHours === option.value
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-white text-black shadow-lg'
+                    : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600 border border-neutral-600'
                 }`}
               >
                 {option.label}
@@ -83,7 +83,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 resize-none text-sm sm:text-base backdrop-blur-sm transition-all duration-200"
             style={{
               minHeight: '40px',
               maxHeight: '120px',
@@ -101,10 +101,10 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         <button
           type="button"
           onClick={() => setShowSettings(!showSettings)}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`p-2 sm:p-3 rounded-xl transition-all duration-200 ${
             showSettings 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-white text-black shadow-lg' 
+              : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:border-neutral-600'
           }`}
           title="Message Settings"
         >
@@ -122,7 +122,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         <button
           type="submit"
           disabled={!message.trim() || disabled}
-          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+          className="px-3 sm:px-4 py-2 sm:py-3 bg-white hover:bg-neutral-200 disabled:bg-neutral-700 disabled:cursor-not-allowed text-black disabled:text-neutral-500 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 disabled:shadow-none"
         >
           {disabled ? (
             <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* Current expiration display */}
       {!showSettings && (
-        <div className="mt-2 text-xs text-gray-400 flex items-center">
+        <div className="mt-2 text-xs sm:text-sm text-neutral-400 flex items-center">
           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
