@@ -346,11 +346,36 @@ export const useRemoveParticipant = () => {
  */
 export const useDeleteMessage = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: messagesApi.deleteMessage,
-    onSuccess: () => {
-      // Refresh all messages - we don't know which conversation it affects
+    onMutate: async (messageId: string) => {
+      // Find all conversations in cache
+      const allQueries = queryClient.getQueryCache().findAll({ queryKey: ['messages'] });
+      let previousMessages: Record<string, unknown> = {};
+      // Remove the message optimistically from all conversations
+      allQueries.forEach((query) => {
+        const conversationId = query.queryKey[1];
+        previousMessages[conversationId] = query.state.data;
+        queryClient.setQueryData(['messages', conversationId], (oldData: any) => {
+          if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) return oldData;
+          const data = oldData as { pages: any[][], pageParams: any[] };
+          const newPages = data.pages.map(page => page.filter((msg: any) => msg.id !== messageId));
+          return { ...data, pages: newPages };
+        });
+      });
+      return { previousMessages };
+    },
+    onError: (_error, _messageId, context) => {
+      // Restore previous messages if deletion fails
+      if (context?.previousMessages) {
+        Object.entries(context.previousMessages).forEach(([conversationId, data]) => {
+          queryClient.setQueryData(['messages', conversationId], data);
+        });
+      }
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     }
   });
