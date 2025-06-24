@@ -19,6 +19,7 @@ interface SidebarProps {
   onNavigate: (path: string) => void;
   onSettings: () => void;
   onCreatePost?: () => void;
+  minimized?: boolean;
 }
 
 const navigationItems = [
@@ -26,7 +27,45 @@ const navigationItems = [
   { path: '/messages', icon: IoMailSharp, label: 'Messages' },
 ];
 
-export default function Sidebar({ onNavigate, onSettings, onCreatePost }: SidebarProps) {
+// SidebarProfileButton: Reusable profile button for sidebar
+function SidebarProfileButton({ user, isLoading, minimized, onClick }: { user: any, isLoading: boolean, minimized: boolean, onClick: () => void }) {
+  if (isLoading) {
+    return (
+      <div className={`flex items-center ${minimized ? 'justify-center' : 'space-x-3'} mb-8 w-full border border-neutral-800 p-3 rounded-xl`}>
+        <div className="w-10 h-10 bg-neutral-800 rounded-full animate-pulse"></div>
+        {!minimized && (
+          <div className="flex-1">
+            <div className="h-4 bg-neutral-800 w-24 rounded animate-pulse mb-2"></div>
+            <div className="h-3 bg-neutral-800 w-16 rounded animate-pulse"></div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  if (!user) return null;
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center ${minimized ? 'justify-center' : 'space-x-3'} text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 hover:bg-neutral-800/50 mb-8 border border-neutral-800`}
+      aria-label="Profile"
+    >
+      <img
+        src={user.profilePicture}
+        alt="Profile"
+        className="w-10 h-10 object-cover rounded-full flex-shrink-0 shadow-md"
+        onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif'; }}
+      />
+      {!minimized && (
+        <div className="overflow-hidden text-left">
+          <div className="font-bold text-white truncate">{user.displayName}</div>
+          <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
+        </div>
+      )}
+    </button>
+  );
+}
+
+export default function Sidebar({ onNavigate, onSettings, onCreatePost, minimized = false }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser: user, isLoading } = useUser();
@@ -195,98 +234,72 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
       {/* Desktop Sidebar */}
       {!isMobile && (
         <AnimatePresence>
-          <motion.div 
-            className={`sidebar h-screen flex flex-col justify-between items-center md:items-start p-4 shadow-lg z-40 overflow-y-auto bg-neutral-900 relative w-64 min-w-[16rem] max-w-xs`}
-            initial={{ x: 0 }}
-            animate={{ x: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+          <motion.div
+            className={`sidebar h-screen flex flex-col justify-between items-center p-4 shadow-lg z-40 overflow-y-auto bg-neutral-900 relative`}
+            initial={false}
+            animate={{ width: minimized ? '6rem' : '16rem' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
             {/* Top: Logo and User Info */}
-            <div className="w-full">
+            <div className={`w-full flex flex-col ${minimized ? 'items-center' : 'items-start'}`}>
               {/* App Logo */}
               <div className="mb-8 text-center w-full">
-                <img 
-                  src="https://i.postimg.cc/KYC6M5vT/Vanish-Logo.png" 
-                  alt="Vanish Logo" 
-                  className="h-10 md:h-24 mx-auto object-contain"
+                <img
+                  src="https://i.postimg.cc/KYC6M5vT/Vanish-Logo.png"
+                  alt="Vanish Logo"
+                  className="mx-auto object-contain h-10 transition-all duration-300"
                 />
               </div>
-              {/* User Info */}
-              {isLoading ? (
-                <div className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl">
-                  <div className="w-10 h-10 bg-neutral-800 rounded-full animate-pulse"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-neutral-800 w-24 rounded animate-pulse mb-2"></div>
-                    <div className="h-3 bg-neutral-800 w-16 rounded animate-pulse"></div>
-                  </div>
-                </div>
-              ) : user && (
-                <motion.div 
-                  className="flex items-center space-x-3 mb-8 w-full border border-neutral-800 p-3 rounded-xl hover:bg-neutral-800/50 transition duration-200 cursor-pointer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={goToProfile}
-                >
-                  <img 
-                    src={user.profilePicture} 
-                    alt="Profile" 
-                    className="w-10 h-10 object-cover rounded-full shadow-md" 
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
-                  />
-                  <div className="overflow-hidden">
-                    <div className="font-bold text-white truncate">{user.displayName}</div>
-                    <div className="text-sm text-neutral-400 truncate">@{user.username}</div>
-                  </div>
-                </motion.div>
-              )}
+              {/* Profile button always at top */}
+              <SidebarProfileButton user={user} isLoading={isLoading} minimized={minimized} onClick={goToProfile} />
               {/* Divider */}
-              <div className="border-b border-neutral-800 my-4" />
+              <div className="border-b border-neutral-800 my-4 w-full" />
               {/* Main Navigation */}
-              <div className="space-y-2 mb-4">
+              <div className="space-y-2 mb-4 w-full">
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => onNavigate('/home')}
-                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${isActive('/home') ? 'bg-white/10 font-medium' : 'hover:bg-white/5'}`}
+                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${isActive('/home') ? 'bg-white/10 font-medium' : 'hover:bg-white/5'} ${minimized ? 'justify-center' : ''}`}
                   aria-label="Home"
                 >
                   <IoHomeSharp size={20} />
-                  <span className="hidden md:inline">Home</span>
+                  {!minimized && <span>Home</span>}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => onNavigate('/messages')}
-                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${isActive('/messages') ? 'bg-white/10 font-medium' : 'hover:bg-white/5'}`}
+                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${isActive('/messages') ? 'bg-white/10 font-medium' : 'hover:bg-white/5'} ${minimized ? 'justify-center' : ''}`}
                   aria-label="Messages"
                 >
                   <IoMailSharp size={20} />
-                  <span className="hidden md:inline">Messages</span>
+                  {!minimized && <span>Messages</span>}
                 </motion.button>
               </div>
               {/* Divider */}
-              <div className="border-b border-neutral-800 my-4" />
+              <div className="border-b border-neutral-800 my-4 w-full" />
               {/* Search Button */}
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setShowSearch(true)}
-                className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200 mb-4"
+                className={`flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200 mb-4 ${minimized ? 'justify-center' : ''}`}
                 aria-label="Search users"
               >
                 <IoSearchSharp size={20} />
-                <span className="hidden md:inline">Search Users</span>
+                {!minimized && <span>Search Users</span>}
               </motion.button>
               {/* Create Post Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleCreatePost}
-                className="flex items-center justify-center md:justify-start space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium"
+                className={`flex items-center justify-center space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium`}
                 aria-label="Create Post"
               >
                 <IoAddCircleOutline size={20} />
-                <span className="hidden md:inline">Create Post</span>
+                {!minimized && <span>Create Post</span>}
               </motion.button>
             </div>
             {/* Bottom: Settings and Logout */}
@@ -295,21 +308,21 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={onSettings}
-                className="flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200"
+                className={`flex items-center space-x-3 text-white cursor-pointer hover:bg-white/5 w-full p-3 rounded-xl transition-all duration-200 ${minimized ? 'justify-center' : ''}`}
                 aria-label="Settings"
               >
                 <IoSettingsSharp size={20} />
-                <span className="hidden md:inline">Settings</span>
+                {!minimized && <span>Settings</span>}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={handleLogout}
-                className="flex items-center space-x-3 text-white cursor-pointer hover:bg-red-500/10 w-full p-3 rounded-xl transition-all duration-200"
+                className={`flex items-center space-x-3 text-white cursor-pointer hover:bg-red-500/10 w-full p-3 rounded-xl transition-all duration-200 ${minimized ? 'justify-center' : ''}`}
                 aria-label="Logout"
               >
                 <IoLogOutOutline size={20} className="text-red-400" />
-                <span className="hidden md:inline text-red-400">Logout</span>
+                {!minimized && <span className="text-red-400">Logout</span>}
               </motion.button>
             </div>
           </motion.div>

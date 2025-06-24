@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessagesLayout } from '../components/messages/MessagesLayout';
 import Sidebar from '../components/Sidebar';
 import SettingsModal from '../components/SettingsModal';
@@ -12,7 +12,16 @@ export default function Messages() {
   const navigate = useNavigate();
   const { currentUser, updateUser } = useUser();
   const [showSettings, setShowSettings] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true); 
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const {
     tempUser,
@@ -40,6 +49,7 @@ export default function Messages() {
       <ConversationSubscriptions />
       {showSidebar && (
         <Sidebar
+          minimized={isDesktop}
           onNavigate={path => navigate(path)}
           onSettings={() => {
             if (currentUser) {
