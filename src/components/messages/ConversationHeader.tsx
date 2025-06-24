@@ -78,15 +78,6 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
 
   return (
     <div className="p-4 border-b border-neutral-800 flex items-center bg-neutral-900/80 backdrop-blur-sm">
-      {/* Home button on the far left */}
-      <button
-        onClick={() => window.location.href = '/'}
-        className="mr-4 p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xl flex items-center justify-center"
-        title="Go to Home"
-      >
-        <IoHomeOutline />
-      </button>
-
       {/* Conversation info */}
       <div className="flex items-center space-x-3 flex-1">
         {/* Name and info */}
