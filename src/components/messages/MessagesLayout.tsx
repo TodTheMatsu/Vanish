@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatWindow } from './ChatWindow';
 import { useRealtimeConversations } from '../../hooks/useRealtimeMessages';
 import { IoChatbubbleOutline } from 'react-icons/io5';
@@ -7,10 +7,12 @@ import { useNavigate } from 'react-router-dom';
 
 interface MessagesLayoutProps {
   selectedConversationId?: string;
+  onMobileViewChange?: (view: 'list' | 'chat') => void;
 }
 
 export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
-  selectedConversationId
+  selectedConversationId,
+  onMobileViewChange
 }) => {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(
     selectedConversationId || null
@@ -25,6 +27,15 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
   const showList = isMobile && !selectedConversation;
   const showChat = isMobile && selectedConversation;
 
+  // Notify parent of mobile view changes
+  useEffect(() => {
+    if (onMobileViewChange && isMobile) {
+      if (showList) onMobileViewChange('list');
+      if (showChat) onMobileViewChange('chat');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showList, showChat, isMobile]);
+
   return (
     <div className="flex h-full bg-gradient-to-br from-black via-neutral-900 to-black relative overflow-hidden">
       {/* Desktop ConversationList sidebar */}
@@ -38,7 +49,9 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
         />
       </div>
       {/* Mobile: show ConversationList or ChatWindow */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden md:relative pb-14 md:pb-0">
+      <div
+        className={`flex-1 flex flex-col min-w-0 overflow-hidden md:relative ${showList ? 'pb-14' : ''} md:pb-0`}
+      >
         {/* Mobile: ConversationList */}
         {showList && (
           <div className="block md:hidden h-full w-full bg-neutral-900/95 backdrop-blur-sm">

@@ -12,6 +12,7 @@ export default function Messages() {
   const navigate = useNavigate();
   const { currentUser, updateUser } = useUser();
   const [showSettings, setShowSettings] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true); 
 
   const {
     tempUser,
@@ -29,21 +30,31 @@ export default function Messages() {
     onClose: () => setShowSettings(false),
   });
 
+  // Listen for mobile chat/list state from MessagesLayout
+  const handleMobileViewChange = (view: 'list' | 'chat') => {
+    setShowSidebar(view === 'list');
+  };
+
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex relative overflow-hidden">
       <ConversationSubscriptions />
-      <Sidebar
-        onNavigate={path => navigate(path)}
-        onSettings={() => {
-          if (currentUser) {
-            setTempUser(currentUser);
-            setShowSettings(true);
-          }
-        }}
-        onCreatePost={() => {}}
-      />
+      {showSidebar && (
+        <Sidebar
+          onNavigate={path => navigate(path)}
+          onSettings={() => {
+            if (currentUser) {
+              setTempUser(currentUser);
+              setShowSettings(true);
+            }
+          }}
+          onCreatePost={() => {}}
+        />
+      )}
       <div className="flex-1 min-w-0">
-        <MessagesLayout selectedConversationId={conversationId} />
+        <MessagesLayout
+          selectedConversationId={conversationId}
+          onMobileViewChange={handleMobileViewChange}
+        />
       </div>
       <SettingsModal
         show={showSettings}
