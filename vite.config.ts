@@ -8,9 +8,6 @@ export default defineConfig({
     tailwindcss(),
     react(),
     VitePWA({
-      srcDir: 'src',
-      filename: 'custom-sw.js',
-      strategies: 'injectManifest',
       registerType: 'autoUpdate',
       manifest: {
         name: 'Vanish',
