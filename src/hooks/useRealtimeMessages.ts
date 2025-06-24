@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { useToast } from './useToast';
+import type { OptimisticMessage } from './useMessages';
 
 /**
  * Hook to enable real-time updates for messages in a specific conversation
@@ -40,13 +41,13 @@ export const useRealtimeMessages = (conversationId: string) => {
             const newMessage = payload.payload.message;
             const senderId = payload.payload.senderId;
             
-            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+            queryClient.setQueryData(['messages', conversationId], (oldData: { pages: OptimisticMessage[][], pageParams: unknown[] } | undefined) => {
               // Type guard for infinite query data structure
               if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
                 return oldData;
               }
               
-              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              const data = oldData as { pages: OptimisticMessage[][], pageParams: unknown[] };
               if (!data.pages) return oldData;
               
               const messageId = newMessage.id;
@@ -54,8 +55,8 @@ export const useRealtimeMessages = (conversationId: string) => {
               // Check if this is replacing an optimistic message from the same sender
               let foundOptimistic = false;
               const newPages = data.pages.map(page => 
-                (page as unknown[]).map(message => {
-                  const msg = message as { id: string, sender_id: string, _isOptimistic?: boolean };
+                page.map(message => {
+                  const msg = message;
                   // Replace optimistic message with real message
                   if (msg._isOptimistic && msg.sender_id === senderId && !foundOptimistic) {
                     foundOptimistic = true;
@@ -68,8 +69,8 @@ export const useRealtimeMessages = (conversationId: string) => {
               // If we didn't replace an optimistic message, check if message already exists
               if (!foundOptimistic) {
                 const messageExists = data.pages.some(page => 
-                  (page as unknown[]).some(message => 
-                    (message as { id: string }).id === messageId
+                  page.some(message => 
+                    message.id === messageId
                   )
                 );
                 
@@ -77,7 +78,7 @@ export const useRealtimeMessages = (conversationId: string) => {
                 if (!messageExists) {
                   // Add new message to the first page (most recent messages)
                   if (newPages.length > 0) {
-                    newPages[0] = [...(newPages[0] as unknown[]), newMessage];
+                    newPages[0] = [...newPages[0], newMessage];
                   } else {
                     newPages[0] = [newMessage];
                   }
@@ -98,17 +99,17 @@ export const useRealtimeMessages = (conversationId: string) => {
           if (payload.payload && payload.payload.message && payload.payload.conversationId === conversationId) {
             const updatedMessage = payload.payload.message;
             
-            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+            queryClient.setQueryData(['messages', conversationId], (oldData: { pages: OptimisticMessage[][], pageParams: unknown[] } | undefined) => {
               if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
                 return oldData;
               }
               
-              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              const data = oldData as { pages: OptimisticMessage[][], pageParams: unknown[] };
               if (!data.pages) return oldData;
               
               const newPages = data.pages.map(page => 
-                (page as unknown[]).map(message => 
-                  (message as { id: string }).id === updatedMessage.id ? updatedMessage : message
+                page.map(message => 
+                  message.id === updatedMessage.id ? updatedMessage : message
                 )
               );
               
@@ -123,17 +124,17 @@ export const useRealtimeMessages = (conversationId: string) => {
           if (payload.payload && payload.payload.messageId && payload.payload.conversationId === conversationId) {
             const deletedMessageId = payload.payload.messageId;
             
-            queryClient.setQueryData(['messages', conversationId], (oldData: unknown) => {
+            queryClient.setQueryData(['messages', conversationId], (oldData: { pages: OptimisticMessage[][], pageParams: unknown[] } | undefined) => {
               if (!oldData || typeof oldData !== 'object' || !('pages' in oldData)) {
                 return oldData;
               }
               
-              const data = oldData as { pages: unknown[][], pageParams: unknown[] };
+              const data = oldData as { pages: OptimisticMessage[][], pageParams: unknown[] };
               if (!data.pages) return oldData;
               
               const newPages = data.pages.map(page => 
-                (page as unknown[]).filter(message => 
-                  (message as { id: string }).id !== deletedMessageId
+                page.filter(message => 
+                  message.id !== deletedMessageId
                 )
               );
               
@@ -179,7 +180,7 @@ export const useRealtimeMessages = (conversationId: string) => {
         conversationSubscription.unsubscribe();
       }
     };
-  }, [conversationId, queryClient]);
+  }, [conversationId, queryClient, addToast]);
 };
 
 /**
@@ -210,7 +211,7 @@ export const useRealtimeConversations = () => {
             schema: 'public',
             table: 'conversations'
           },
-          (_payload) => {
+          () => {
             queryClient.invalidateQueries({ queryKey: ['conversations'] });
           }
         )

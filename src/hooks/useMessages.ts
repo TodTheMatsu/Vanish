@@ -38,8 +38,8 @@ export const useMessages = (conversationId: string) => {
   });
 };
 
-// Extended Message interface for optimistic updates
-interface OptimisticMessage extends Message {
+// Export OptimisticMessage for use in other hooks
+export interface OptimisticMessage extends Message {
   _isOptimistic?: boolean;
   _failed?: boolean;
   _originalData?: SendMessageData;
