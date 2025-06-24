@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { IoCloseOutline, IoTimeOutline, IoSendOutline } from 'react-icons/io5';
 import { ImSpinner8 } from 'react-icons/im';
 
@@ -16,6 +16,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   const [message, setMessage] = useState('');
   const [expirationHours, setExpirationHours] = useState(24);
   const [showSettings, setShowSettings] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +78,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
       <form onSubmit={handleSubmit} className="flex items-start space-x-2">
         <div className="flex-1">
           <textarea
+            ref={inputRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -94,6 +96,14 @@ export const MessageInput: React.FC<MessageInputProps> = ({
               target.style.height = '48px';
               const newHeight = Math.min(Math.max(target.scrollHeight, 48), 120);
               target.style.height = newHeight + 'px';
+            }}
+            onFocus={() => {
+              // Scroll input into view on mobile
+              if (window.innerWidth < 768 && inputRef.current) {
+                setTimeout(() => {
+                  inputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+              }
             }}
           />
         </div>
