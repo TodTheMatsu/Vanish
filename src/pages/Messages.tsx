@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import SettingsModal from '../components/SettingsModal';
 import { useUser } from '../UserContext';
 import { useSettings } from '../hooks/useSettings';
+import { ConversationSubscriptions } from '../components/ConversationSubscriptions';
 
 export default function Messages() {
   const { conversationId } = useParams<{ conversationId?: string }>();
@@ -30,6 +31,7 @@ export default function Messages() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex relative overflow-hidden">
+      <ConversationSubscriptions />
       <Sidebar
         onNavigate={path => navigate(path)}
         onSettings={() => {

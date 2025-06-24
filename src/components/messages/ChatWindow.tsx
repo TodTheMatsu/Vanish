@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useMessages, useSendMessage, useConversationPermissions } from '../../hooks/useMessages';
-import { useRealtimeMessages } from '../../hooks/useRealtimeMessages';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
 import { ConversationHeader } from './ConversationHeader';
@@ -27,9 +26,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const { data: conversations } = useConversations();
   const safeConversations = Array.isArray(conversations) ? conversations : [];
   const conversation = safeConversations.find(c => c.id === conversationId);
-
-  // Enable real-time updates for incoming messages
-  useRealtimeMessages(conversationId);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
