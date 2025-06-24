@@ -38,7 +38,7 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
   }, [showList, showChat, isMobile]);
 
   return (
-    <div className="flex h-full bg-gradient-to-br from-black via-neutral-900 to-black relative overflow-hidden">
+    <div className="flex h-full bg-gradient-to-br from-black via-neutral-900 to-black relative overflow-hidden md:h-screen">
       {/* Desktop ConversationList sidebar */}
       <div className="hidden md:block md:w-80 lg:w-96 xl:w-[400px] border-r border-neutral-800 bg-neutral-900/95 backdrop-blur-sm">
         <ConversationList
