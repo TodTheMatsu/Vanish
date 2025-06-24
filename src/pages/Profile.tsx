@@ -176,7 +176,7 @@ export default function Profile() {
             <img
               src={user.profilePicture}
               alt="Profile"
-              className="absolute left-1/2 transform -translate-x-1/2 top-36 w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border-4 border-neutral-800 shadow-lg transition-transform duration-300 hover:scale-105"
+              className="absolute left-1/2 z-20 transform -translate-x-1/2 top-36 w-24 h-24 md:w-32 md:h-32 object-cover rounded-full border-4 border-neutral-800 shadow-lg transition-transform duration-300 hover:scale-105"
               onError={e => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=default';
@@ -184,7 +184,7 @@ export default function Profile() {
             />
 
             {editingBanner && (
-              <div className="mt-4">
+              <div className="mt-4 ">
                 <input
                   type="text"
                   placeholder="Banner URL"
@@ -212,7 +212,7 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-neutral-900 rounded-lg shadow-lg p-6 md:p-8 pt-24 md:pt-40 w-full max-w-3xl flex flex-col items-center mt-4 relative z-10">
+          <div className="bg-neutral-900 rounded-lg shadow-lg p-6 md:p-8 pt-10 w-full max-w-3xl flex flex-col items-center mt-4 relative z-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{user.displayName}</h2>
             <p className="text-neutral-400 mb-4">@{user.username}</p>
             {/* Follower/Following counts and Follow button */}
@@ -241,16 +241,16 @@ export default function Profile() {
             </div>
             
             {/* User Stats */}
-            <div className="flex justify-center space-x-6 mb-6">
-              <div className="text-center">
+            <div className="flex w-full justify-center space-x-6 mb-6">
+              <div className="text-center flex-1">
                 <p className="text-xl font-bold text-white">{posts.filter(post => post.author.username === routeUsername).length}</p>
                 <p className="text-sm text-neutral-400">Posts</p>
               </div>
-              <div className="text-center">
+              <div className="text-center flex-1">
                 <p className="text-xl font-bold text-white">{followerCount ?? 0}</p>
                 <p className="text-sm text-neutral-400">Followers</p>
               </div>
-              <div className="text-center">
+              <div className="text-center flex-1">
                 <p className="text-xl font-bold text-white">{followingCount ?? 0}</p>
                 <p className="text-sm text-neutral-400">Following</p>
               </div>
