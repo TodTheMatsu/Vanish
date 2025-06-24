@@ -12,7 +12,7 @@ export default defineConfig({
       manifest: {
         name: 'Vanish',
         short_name: 'Vanish',
-        start_url: '/',
+        start_url: '/home',
         display: 'standalone',
         background_color: '#000000',
         theme_color: '#000000',
