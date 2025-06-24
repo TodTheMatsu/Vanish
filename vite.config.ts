@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     VitePWA({
       srcDir: 'src',
-      filename: 'custom-sw.js',
+      filename: 'pwa-sw.js',
       strategies: 'injectManifest',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
