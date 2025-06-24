@@ -118,6 +118,7 @@ function MobilePwaBlocker({ installPromptEvent, onInstallClick }: { installPromp
 function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [showInstalledMsg, setShowInstalledMsg] = useState(false);
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -132,6 +133,7 @@ function App() {
   useEffect(() => {
     const onAppInstalled = () => {
       setIsInstalled(true);
+      setShowInstalledMsg(true);
     };
     window.addEventListener('appinstalled', onAppInstalled);
 
@@ -152,6 +154,14 @@ function App() {
     };
   }, []);
 
+  // Hide installed message after 3 seconds
+  useEffect(() => {
+    if (showInstalledMsg) {
+      const timer = setTimeout(() => setShowInstalledMsg(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showInstalledMsg]);
+
   const shouldBlock = useMemo(() => {
     return isMobile() && !isInStandaloneMode() && !isInstalled;
   }, [isInstalled]);
@@ -167,6 +177,46 @@ function App() {
 
   if (shouldBlock) {
     return <MobilePwaBlocker installPromptEvent={installPromptEvent} onInstallClick={handleInstallClick} />;
+  }
+
+  if (showInstalledMsg) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #18181b 0%, #23272f 100%)',
+        color: 'white',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+        textAlign: 'center',
+      }}>
+        <div style={{
+          background: 'rgba(30, 32, 38, 0.98)',
+          borderRadius: 24,
+          boxShadow: '0 8px 32px 0 rgba(0,0,0,0.35)',
+          padding: '40px 32px 32px 32px',
+          maxWidth: 380,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          border: '1px solid #23272f',
+        }}>
+          <img src="/web-app-manifest-192x192.png" alt="App Icon" style={{ width: 72, height: 72, borderRadius: 16, marginBottom: 24 }} />
+          <h2 style={{ fontSize: 24, marginBottom: 12, fontWeight: 700, letterSpacing: -1, color: '#a7f3d0' }}>App installed!</h2>
+          <p style={{ fontSize: 17, color: '#cbd5e1', lineHeight: 1.5 }}>
+            Please open it from your home screen for the best experience.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
