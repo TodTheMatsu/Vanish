@@ -20,7 +20,6 @@
 - `src/` — All React app code
   - `src/api/` — API calls (calls Edge Functions or Supabase directly)
   - `src/components/` — React UI components
-    - `ConversationSubscriptions.tsx` — Handles global real-time conversation subscriptions
   - `src/pages/`, `src/hooks/`, etc. — App logic and UI
 - `public/` — Static assets for the frontend
 - `.env` — Environment variables for frontend (Supabase URL/keys)
