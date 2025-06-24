@@ -126,7 +126,7 @@ const AnimatedWords = ({ baseOpacity, text }: AnimatedTextProps) => {
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const text = 'Vanish';
   const baseOpacity = 1;
   const vanishDescription = 'Vanish is a privacy-focused social media platform that gives you complete control over your digital footprint. Unlike traditional social networks that store your data indefinitely, Vanish automatically deletes your messages after a set period of time, ensuring your conversations remain private and temporary.';
@@ -148,6 +148,13 @@ export default function Landing() {
   const scrollToAbout = () => {
     scrollToSection('about-section');
   };
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate('/home', { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   return (
     <>
