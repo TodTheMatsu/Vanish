@@ -12,6 +12,7 @@ import { AuthProvider } from './AuthContext';
 import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider';
+import { OneSignalInitializer } from './OneSignalInitializer';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -29,6 +30,7 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <UserProvider>
+            <OneSignalInitializer />
             <ToastProvider>
               <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
                 <Routes>
