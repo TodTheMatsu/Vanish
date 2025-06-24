@@ -29,6 +29,7 @@ export const userApi = {
     }
 
     return {
+      user_id: profile.user_id,
       username: profile.username,
       displayName: profile.display_name,
       profilePicture: profile.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',
@@ -54,6 +55,7 @@ export const userApi = {
     }
 
     return {
+      user_id: profile.user_id,
       username: profile.username,
       displayName: profile.display_name,
       profilePicture: profile.profile_picture || 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',

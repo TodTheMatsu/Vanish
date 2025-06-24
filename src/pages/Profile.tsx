@@ -8,6 +8,7 @@ import SettingsModal from '../components/SettingsModal';
 import CreatePostModal from '../components/CreatePostModal';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../UserContext';
+import { useFollow, useFollowerCount, useFollowingCount } from '../hooks/useFollow';
 
 export default function Profile() {
   // Handler for creating a post
@@ -47,6 +48,22 @@ export default function Profile() {
     onClose: () => setShowSettings(false),
     fetchUserData: fetchUserData,
   });
+
+  // --- Follower system hooks ---
+  const myUserId = currentUser?.user_id;
+  const targetUserId = user?.user_id;
+
+  const {
+    isFollowing,
+    isLoading: followLoading,
+    follow,
+    unfollow,
+    followPending,
+    unfollowPending,
+  } = useFollow(myUserId, targetUserId);
+
+  const { data: followerCount } = useFollowerCount(targetUserId);
+  const { data: followingCount } = useFollowingCount(targetUserId);
 
   useEffect(() => {
     if (user) {
@@ -139,7 +156,7 @@ export default function Profile() {
               src={user.banner_url || 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif'}
               alt="Banner"
               className="w-full h-48 md:h-64 object-cover rounded-md shadow-lg transition-all duration-300 hover:opacity-95"
-              onError={e => {
+            onError={e => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9vc203MHhsNWZjZzBoZG84a3I1dDN0d2swZHliMTV1YjVpenRhdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8592ghhkChZtlPckIT/giphy.gif';
               }}
@@ -195,9 +212,33 @@ export default function Profile() {
             )}
           </div>
 
-          <div className="bg-neutral-900 rounded-lg shadow-lg p-6 md:p-8 pt-24 md:pt-40 w-full max-w-3xl flex flex-col items-center mt-4">
+          <div className="bg-neutral-900 rounded-lg shadow-lg p-6 md:p-8 pt-24 md:pt-40 w-full max-w-3xl flex flex-col items-center mt-4 relative z-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{user.displayName}</h2>
             <p className="text-neutral-400 mb-4">@{user.username}</p>
+            {/* Follower/Following counts and Follow button */}
+            <div className="flex items-center gap-4 mb-4">
+              {myUserId && targetUserId && myUserId !== targetUserId && (
+                followLoading ? (
+                  <button disabled className="bg-neutral-700 text-white rounded-md px-4 py-2">Loading...</button>
+                ) : isFollowing ? (
+                  <button
+                    onClick={() => unfollow()}
+                    disabled={unfollowPending}
+                    className="bg-neutral-700 text-white rounded-md px-4 py-2 hover:bg-neutral-600"
+                  >
+                    Unfollow
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => follow()}
+                    disabled={followPending}
+                    className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700"
+                  >
+                    Follow
+                  </button>
+                )
+              )}
+            </div>
             
             {/* User Stats */}
             <div className="flex justify-center space-x-6 mb-6">
@@ -206,11 +247,11 @@ export default function Profile() {
                 <p className="text-sm text-neutral-400">Posts</p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-white">{user.followers_count || 0}</p>
+                <p className="text-xl font-bold text-white">{followerCount ?? 0}</p>
                 <p className="text-sm text-neutral-400">Followers</p>
               </div>
               <div className="text-center">
-                <p className="text-xl font-bold text-white">{user.following_count || 0}</p>
+                <p className="text-xl font-bold text-white">{followingCount ?? 0}</p>
                 <p className="text-sm text-neutral-400">Following</p>
               </div>
             </div>
