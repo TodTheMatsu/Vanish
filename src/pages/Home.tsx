@@ -45,12 +45,19 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  // Hide welcome message after 5 seconds
+  // Hide welcome message after 5 seconds, only once per session
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const hasWelcomed = sessionStorage.getItem('vanish-welcome-shown');
+    if (!hasWelcomed) {
+      setShowWelcome(true);
+      const timer = setTimeout(() => {
+        setShowWelcome(false);
+        sessionStorage.setItem('vanish-welcome-shown', 'true');
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else {
       setShowWelcome(false);
-    }, 5000);
-    return () => clearTimeout(timer);
+    }
   }, []);
 
   // Handlers for creating a post
