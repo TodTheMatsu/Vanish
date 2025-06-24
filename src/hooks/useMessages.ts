@@ -273,22 +273,6 @@ export const useConversationPermissions = (conversationId: string) => {
 };
 
 /**
- * Hook to mark messages as read
- */
-export const useMarkAsRead = () => {
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
-  
-  return useMutation({
-    mutationFn: (messageId: string) => messagesApi.markAsRead(messageId, userId!),
-    onSuccess: () => {
-      // Update message read status in cache
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-    }
-  });
-};
-
-/**
  * Hook to leave a conversation
  */
 export const useLeaveConversation = () => {
@@ -302,42 +286,6 @@ export const useLeaveConversation = () => {
       queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
       queryClient.removeQueries({ queryKey: ['messages', conversationId] });
       queryClient.removeQueries({ queryKey: ['conversation-permissions', conversationId] });
-    }
-  });
-};
-
-/**
- * Hook to add a participant to a conversation
- */
-export const useAddParticipant = () => {
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
-  
-  return useMutation({
-    mutationFn: ({ conversationId, userId }: { conversationId: string; userId: string }) =>
-      messagesApi.addParticipant(conversationId, userId),
-    onSuccess: (_data, { conversationId }) => {
-      // Refresh conversation data to show new participant
-      queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
-      queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
-    }
-  });
-};
-
-/**
- * Hook to remove a participant from a conversation
- */
-export const useRemoveParticipant = () => {
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
-  
-  return useMutation({
-    mutationFn: ({ conversationId, userId }: { conversationId: string; userId: string }) =>
-      messagesApi.removeParticipant(conversationId, userId),
-    onSuccess: (_data, { conversationId }) => {
-      // Refresh conversation data
-      queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
-      queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
     }
   });
 };
@@ -377,22 +325,6 @@ export const useDeleteMessage = () => {
     },
     onSettled: () => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-    }
-  });
-};
-
-/**
- * Hook to edit a message
- */
-export const useEditMessage = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ messageId, content }: { messageId: string; content: string }) =>
-      messagesApi.editMessage(messageId, content),
-    onSuccess: () => {
-      // Refresh messages to show edit
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     }
   });
