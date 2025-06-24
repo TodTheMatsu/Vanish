@@ -81,6 +81,11 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
     }
   };
 
+  // Handler for Create Post button (navigates to /home and opens modal)
+  const handleCreatePost = () => {
+    navigate('/home', { state: { openCreatePost: true } });
+  };
+
   // Check if a navigation item is active
   const isActive = (path: string) => {
     if (path === '/home' && location.pathname === '/') {
@@ -114,7 +119,7 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
           {/* Centered Post Button */}
           <div className="relative flex-1 flex justify-center items-center h-full">
             <button
-              onClick={onCreatePost}
+              onClick={handleCreatePost}
               className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg border-4 border-neutral-900 w-14 h-14 flex flex-col items-center justify-center z-10"
               aria-label="Create Post"
               style={{ boxShadow: '0 4px 24px 0 rgba(0,0,0,0.25)' }}
@@ -276,7 +281,7 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost }: Sideba
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onCreatePost}
+                onClick={handleCreatePost}
                 className="flex items-center justify-center md:justify-start space-x-2 text-white bg-blue-600 hover:bg-blue-700 w-full p-3 rounded-xl mb-8 transition-colors duration-200 font-medium"
                 aria-label="Create Post"
               >

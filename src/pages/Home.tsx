@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { PostList } from '../components/PostList';
 import CreatePostModal from '../components/CreatePostModal';
@@ -11,6 +11,7 @@ import { useSettings } from '../hooks/useSettings';
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { posts, createPost } = usePosts();
   const { currentUser, updateUser } = useUser();
   const [newPost, setNewPost] = useState('');
@@ -73,6 +74,14 @@ export default function Home() {
     if (hour < 18) return 'afternoon';
     return 'evening';
   };
+
+  useEffect(() => {
+    if (location.state?.openCreatePost) {
+      setShowPostCreation(true);
+      // Clear the state so it doesn't trigger again on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
