@@ -8,9 +8,6 @@ export default defineConfig({
     tailwindcss(),
     react(),
     VitePWA({
-      srcDir: 'src',
-      filename: 'pwa-sw.js',
-      strategies: 'injectManifest',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       manifest: {
