@@ -4,6 +4,7 @@ import { useRealtimeConversations } from '../../hooks/useRealtimeMessages';
 import { IoChatbubbleOutline } from 'react-icons/io5';
 import { ConversationList } from './ConversationList';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MessagesLayoutProps {
   selectedConversationId?: string;
@@ -48,32 +49,44 @@ export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
           }}
         />
       </div>
-      {/* Mobile: show ConversationList or ChatWindow */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 overflow-hidden md:relative ${showList ? 'pb-14' : ''} md:pb-0`}
-      >
-        {/* Mobile: ConversationList */}
-        {showList && (
-          <div className="block md:hidden h-full w-full bg-neutral-900/95 backdrop-blur-sm">
-            <ConversationList
-              selectedConversationId={null}
-              onSelectConversation={id => {
-                setSelectedConversation(id);
-                navigate(`/messages/${id}`);
-              }}
-            />
-          </div>
-        )}
-        {/* Mobile: ChatWindow with back button */}
-        {showChat && (
-          <div className="block md:hidden h-full w-full">
-            <ChatWindow
-              conversationId={selectedConversation}
-              onShowConversationList={() => setSelectedConversation(null)}
-              showBackButton={true}
-            />
-          </div>
-        )}
+      {/* Mobile: show ConversationList or ChatWindow with animation */}
+      <div className={`flex-1 flex flex-col min-w-0 overflow-hidden md:relative ${showList ? 'pb-14' : ''} md:pb-0`}>
+        <AnimatePresence initial={false} mode="wait">
+          {showList && (
+            <motion.div
+              key="conversation-list"
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.25 }}
+              className="block md:hidden h-full w-full bg-neutral-900/95 backdrop-blur-sm absolute inset-0"
+            >
+              <ConversationList
+                selectedConversationId={null}
+                onSelectConversation={id => {
+                  setSelectedConversation(id);
+                  navigate(`/messages/${id}`);
+                }}
+              />
+            </motion.div>
+          )}
+          {showChat && (
+            <motion.div
+              key="chat-window"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
+              transition={{ duration: 0.25 }}
+              className="block md:hidden h-full w-full absolute inset-0"
+            >
+              <ChatWindow
+                conversationId={selectedConversation}
+                onShowConversationList={() => setSelectedConversation(null)}
+                showBackButton={true}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Desktop: ChatWindow or placeholder */}
         <div className="hidden md:flex flex-1 flex-col min-w-0 overflow-hidden">
           {selectedConversation ? (

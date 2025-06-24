@@ -5,6 +5,7 @@ import { MessageInput } from './MessageInput';
 import { ConversationHeader } from './ConversationHeader';
 import { IoLockClosedOutline, IoHandRightOutline } from 'react-icons/io5';
 import { useConversations } from '../../hooks/useMessages';
+import { motion } from 'framer-motion';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -135,13 +136,20 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         {allMessages.length > 0 ? (
           <>
             {allMessages.map((message) => (
-              <MessageBubble
+              <motion.div
                 key={message.id}
-                message={message}
-                conversationId={conversationId}
-                permissions={permissions}
-                conversationType={conversation?.type}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.18 }}
+              >
+                <MessageBubble
+                  message={message}
+                  conversationId={conversationId}
+                  permissions={permissions}
+                  conversationType={conversation?.type}
+                />
+              </motion.div>
             ))}
           </>
         ) : (

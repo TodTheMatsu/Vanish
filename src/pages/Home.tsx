@@ -50,9 +50,9 @@ export default function Home() {
     const hasWelcomed = sessionStorage.getItem('vanish-welcome-shown');
     if (!hasWelcomed) {
       setShowWelcome(true);
+      sessionStorage.setItem('vanish-welcome-shown', 'true'); // Save immediately
       const timer = setTimeout(() => {
         setShowWelcome(false);
-        sessionStorage.setItem('vanish-welcome-shown', 'true');
       }, 5000);
       return () => clearTimeout(timer);
     } else {

@@ -4,7 +4,7 @@ import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
 import { PendingInvitationsModal } from './PendingInvitationsModal';
 import { IoChatbubbleOutline, IoMailOpenOutline } from 'react-icons/io5';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface ConversationListProps {
   selectedConversationId: string | null;
@@ -98,14 +98,23 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       <div className="flex-1 overflow-y-auto">
         {conversations && conversations.length > 0 ? (
           <div className="space-y-1 p-2">
-            {conversations.map((conversation) => (
-              <ConversationItem
-                key={conversation.id}
-                conversation={conversation}
-                isSelected={selectedConversationId === conversation.id}
-                onClick={() => onSelectConversation(conversation.id)}
-              />
-            ))}
+            <AnimatePresence initial={false}>
+              {conversations.map((conversation) => (
+                <motion.div
+                  key={conversation.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <ConversationItem
+                    conversation={conversation}
+                    isSelected={selectedConversationId === conversation.id}
+                    onClick={() => onSelectConversation(conversation.id)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-neutral-400">
