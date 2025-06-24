@@ -19,7 +19,8 @@ export function useOneSignal() {
         serviceWorkerPath: '/onesignal/OneSignalSDKWorker.js',
         serviceWorkerParam:{
           scope: '/onesignal/',
-        }
+        },
+        autoRegister: true,
       });
       await OneSignal.login(userId);
     })();
