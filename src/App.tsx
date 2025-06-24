@@ -13,6 +13,7 @@ import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider';
 import { OneSignalInitializer } from './OneSignalInitializer';
+import { ConversationSubscriptions } from './components/ConversationSubscriptions';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -32,6 +33,7 @@ function App() {
           <UserProvider>
             <OneSignalInitializer />
             <ToastProvider>
+              <ConversationSubscriptions />
               <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
                 <Routes>
                   <Route path="/" element={<Landing />} />
