@@ -117,7 +117,6 @@ function MobilePwaBlocker({ installPromptEvent, onInstallClick }: { installPromp
 
 function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
-  const [isInstalled, setIsInstalled] = useState(false);
   const [showInstalledMsg, setShowInstalledMsg] = useState(false);
 
   useEffect(() => {
@@ -132,16 +131,13 @@ function App() {
   // Listen for appinstalled event and standalone mode changes
   useEffect(() => {
     const onAppInstalled = () => {
-      setIsInstalled(true);
       setShowInstalledMsg(true);
     };
     window.addEventListener('appinstalled', onAppInstalled);
 
     // Listen for display-mode changes (for iOS and others)
     const checkStandalone = () => {
-      if (isInStandaloneMode()) {
-        setIsInstalled(true);
-      }
+      // No-op, but could be used for future logic
     };
     window.addEventListener('visibilitychange', checkStandalone);
     window.addEventListener('resize', checkStandalone);
@@ -162,9 +158,10 @@ function App() {
     }
   }, [showInstalledMsg]);
 
+  // Only allow access if in standalone mode
   const shouldBlock = useMemo(() => {
-    return isMobile() && !isInStandaloneMode() && !isInstalled;
-  }, [isInstalled]);
+    return isMobile() && !isInStandaloneMode();
+  }, []);
 
   const handleInstallClick = () => {
     if (installPromptEvent) {
@@ -176,47 +173,46 @@ function App() {
   };
 
   if (shouldBlock) {
-    return <MobilePwaBlocker installPromptEvent={installPromptEvent} onInstallClick={handleInstallClick} />;
-  }
-
-  if (showInstalledMsg) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'linear-gradient(135deg, #18181b 0%, #23272f 100%)',
-        color: 'white',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        textAlign: 'center',
-      }}>
+    if (showInstalledMsg) {
+      return (
         <div style={{
-          background: 'rgba(30, 32, 38, 0.98)',
-          borderRadius: 24,
-          boxShadow: '0 8px 32px 0 rgba(0,0,0,0.35)',
-          padding: '40px 32px 32px 32px',
-          maxWidth: 380,
-          width: '100%',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #18181b 0%, #23272f 100%)',
+          color: 'white',
+          zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          border: '1px solid #23272f',
+          justifyContent: 'center',
+          padding: 24,
+          textAlign: 'center',
         }}>
-          <img src="/web-app-manifest-192x192.png" alt="App Icon" style={{ width: 72, height: 72, borderRadius: 16, marginBottom: 24 }} />
-          <h2 style={{ fontSize: 24, marginBottom: 12, fontWeight: 700, letterSpacing: -1, color: '#a7f3d0' }}>App installed!</h2>
-          <p style={{ fontSize: 17, color: '#cbd5e1', lineHeight: 1.5 }}>
-            Please open it from your home screen for the best experience.
-          </p>
+          <div style={{
+            background: 'rgba(30, 32, 38, 0.98)',
+            borderRadius: 24,
+            boxShadow: '0 8px 32px 0 rgba(0,0,0,0.35)',
+            padding: '40px 32px 32px 32px',
+            maxWidth: 380,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            border: '1px solid #23272f',
+          }}>
+            <img src="/web-app-manifest-192x192.png" alt="App Icon" style={{ width: 72, height: 72, borderRadius: 16, marginBottom: 24 }} />
+            <h2 style={{ fontSize: 24, marginBottom: 12, fontWeight: 700, letterSpacing: -1, color: '#a7f3d0' }}>App installed!</h2>
+            <p style={{ fontSize: 17, color: '#cbd5e1', lineHeight: 1.5 }}>
+              Please open it from your home screen for the best experience.
+            </p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+    return <MobilePwaBlocker installPromptEvent={installPromptEvent} onInstallClick={handleInstallClick} />;
   }
 
   return (
