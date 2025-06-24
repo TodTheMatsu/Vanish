@@ -117,6 +117,7 @@ function MobilePwaBlocker({ installPromptEvent, onInstallClick }: { installPromp
 
 function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -127,9 +128,33 @@ function App() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  const shouldBlock = useMemo(() => {
-    return isMobile() && !isInStandaloneMode();
+  // Listen for appinstalled event and standalone mode changes
+  useEffect(() => {
+    const onAppInstalled = () => {
+      setIsInstalled(true);
+    };
+    window.addEventListener('appinstalled', onAppInstalled);
+
+    // Listen for display-mode changes (for iOS and others)
+    const checkStandalone = () => {
+      if (isInStandaloneMode()) {
+        setIsInstalled(true);
+      }
+    };
+    window.addEventListener('visibilitychange', checkStandalone);
+    window.addEventListener('resize', checkStandalone);
+    checkStandalone();
+
+    return () => {
+      window.removeEventListener('appinstalled', onAppInstalled);
+      window.removeEventListener('visibilitychange', checkStandalone);
+      window.removeEventListener('resize', checkStandalone);
+    };
   }, []);
+
+  const shouldBlock = useMemo(() => {
+    return isMobile() && !isInStandaloneMode() && !isInstalled;
+  }, [isInstalled]);
 
   const handleInstallClick = () => {
     if (installPromptEvent) {
