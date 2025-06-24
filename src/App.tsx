@@ -118,6 +118,7 @@ function MobilePwaBlocker({ installPromptEvent, onInstallClick }: { installPromp
 function App() {
   const [installPromptEvent, setInstallPromptEvent] = useState<any>(null);
   const [showInstalledMsg, setShowInstalledMsg] = useState(false);
+  const [installInitiated, setInstallInitiated] = useState(false);
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -128,10 +129,12 @@ function App() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  // Listen for appinstalled event and standalone mode changes
+  // Listen for appinstalled event and only show message if install was initiated from this session
   useEffect(() => {
     const onAppInstalled = () => {
-      setShowInstalledMsg(true);
+      if (installInitiated) {
+        setShowInstalledMsg(true);
+      }
     };
     window.addEventListener('appinstalled', onAppInstalled);
 
@@ -148,7 +151,7 @@ function App() {
       window.removeEventListener('visibilitychange', checkStandalone);
       window.removeEventListener('resize', checkStandalone);
     };
-  }, []);
+  }, [installInitiated]);
 
   // Hide installed message after 3 seconds
   useEffect(() => {
@@ -165,6 +168,7 @@ function App() {
 
   const handleInstallClick = () => {
     if (installPromptEvent) {
+      setInstallInitiated(true);
       installPromptEvent.prompt();
       installPromptEvent.userChoice?.then(() => {
         setInstallPromptEvent(null);
