@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useConversations, useLeaveConversation } from '../../hooks/useMessages';
 import { ConversationPermissions } from '../../api/messagesApi';
 import { useUser } from '../../UserContext';
-import { IoPersonOutline, IoPeopleOutline, IoTimeOutline, IoHomeOutline } from 'react-icons/io5';
+import { IoPersonOutline, IoPeopleOutline, IoTimeOutline, IoHomeOutline, IoArrowBack } from 'react-icons/io5';
 
 interface ConversationHeaderProps {
   conversationId: string;
@@ -78,6 +78,16 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
 
   return (
     <div className="p-4 border-b border-neutral-800 flex items-center bg-neutral-900/80 backdrop-blur-sm">
+      {/* Mobile Back Button */}
+      {showBackButton && onShowConversationList && (
+        <button
+          className="md:hidden mr-3 p-2 rounded-lg hover:bg-neutral-800 transition-colors"
+          onClick={onShowConversationList}
+          aria-label="Return to conversation list"
+        >
+          <IoArrowBack className="text-2xl text-white" />
+        </button>
+      )}
       {/* Conversation info */}
       <div className="flex items-center space-x-3 flex-1">
         {/* Name and info */}
