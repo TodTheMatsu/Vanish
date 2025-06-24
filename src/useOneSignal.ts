@@ -16,8 +16,6 @@ export function useOneSignal() {
       await OneSignal.init({
         appId: oneSignalAppId,
         allowLocalhostAsSecureOrigin: true,
-        serviceWorkerPath: '/OneSignalSDKWorker.js',
-        serviceWorkerParam: { scope: '/' },
       });
       await OneSignal.login(userId);
     })();
