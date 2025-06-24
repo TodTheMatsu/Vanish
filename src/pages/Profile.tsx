@@ -126,13 +126,13 @@ export default function Profile() {
 
   return (
     <>
-      <div className="flex min-h-screen w-screen bg-neutral-950">
+      <div className="flex md:h-screen w-screen bg-neutral-950">
         <Sidebar
           onNavigate={(path: string) => navigate(path)}
           onSettings={() => setShowSettings(true)}
           onCreatePost={() => setShowPostCreation(true)}
         />
-        <main className="flex-1 flex flex-col items-center p-4 md:p-8 pb-14 md:pb-8">
+        <main className="flex-1 flex flex-col items-center p-4 md:p-8 pb-14 md:pb-8 overflow-y-auto min-h-0">
           {/* Banner */}
           <div className="w-full max-w-3xl relative">
             <img
