@@ -28,21 +28,12 @@ export default function SettingsModal({
   onLogout
 }: SettingsModalProps) {
   const [notifPermission, setNotifPermission] = useState<boolean | undefined>(undefined);
-  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
     if (OneSignal && OneSignal.Notifications && typeof OneSignal.Notifications.permission === 'boolean') {
       setNotifPermission(OneSignal.Notifications.permission);
     }
   }, [show]);
-
-  useEffect(() => {
-    // Check if it's the user's first time on this device
-    if (!localStorage.getItem('hasVisitedApp')) {
-      setShowWelcome(true);
-      localStorage.setItem('hasVisitedApp', 'true');
-    }
-  }, []);
 
   const handleEnableNotifications = () => {
     if (OneSignal.Notifications && OneSignal.Notifications.requestPermission) {
@@ -56,25 +47,6 @@ export default function SettingsModal({
 
   return (
     <AnimatePresence>
-      {showWelcome && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-        >
-          <div className="bg-neutral-900 rounded-xl p-8 max-w-md w-full text-center border border-blue-500 shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-blue-400">Welcome to the App!</h2>
-            <p className="mb-4 text-white">We're glad to have you here. You can personalize your profile and enable notifications in the settings menu at any time.</p>
-            <button
-              onClick={() => setShowWelcome(false)}
-              className="mt-2 px-6 py-2 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition-colors"
-            >
-              Get Started
-            </button>
-          </div>
-        </motion.div>
-      )}
       {show && (
         <motion.div
           initial={{ opacity: 0 }}
