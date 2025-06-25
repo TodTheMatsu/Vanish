@@ -79,6 +79,7 @@ export default function SettingsModal({
                 />
               </div>
               <div className="onesignal-customlink-container">
+                <div className='onesignal-customlink-subscribe'></div>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
