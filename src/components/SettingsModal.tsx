@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserProfile } from '../types/user';
+import { useEffect, useState } from 'react';
 
 interface SettingsModalProps {
   show: boolean;
@@ -26,6 +27,24 @@ export default function SettingsModal({
   onClose,
   onLogout
 }: SettingsModalProps) {
+  const [notifPermission, setNotifPermission] = useState<'default' | 'granted' | 'denied' | undefined>(undefined);
+
+  useEffect(() => {
+    if (window.OneSignal && window.OneSignal.Notifications && window.OneSignal.Notifications.permission) {
+      setNotifPermission(window.OneSignal.Notifications.permission);
+    }
+  }, [show]);
+
+  const handleEnableNotifications = () => {
+    if (window.OneSignal && window.OneSignal.Notifications && window.OneSignal.Notifications.requestPermission) {
+      window.OneSignal.Notifications.requestPermission().then(() => {
+        setNotifPermission(window.OneSignal.Notifications.permission);
+      });
+    } else {
+      alert('OneSignal is not initialized.');
+    }
+  };
+
   return (
     <AnimatePresence>
       {show && (
@@ -45,75 +64,85 @@ export default function SettingsModal({
               X
             </button>
             <h1 className="text-3xl font-bold mb-6">Settings</h1>
-                          <div className="onesignal-customlink-container">
-              </div>
-            <div className="space-y-6">
-              {/* Profile Preview */}
-              <div className="border border-neutral-700 rounded-lg p-4 flex items-center space-x-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left: Profile Preview */}
+              <div className="border border-neutral-700 rounded-lg p-6 flex flex-col items-center space-y-4 bg-neutral-800">
                 <img 
                   src={tempUser.profilePicture} 
                   alt="Profile Preview" 
-                  className="w-16 h-16 rounded-full object-cover" 
+                  className="w-24 h-24 rounded-full object-cover border-4 border-blue-500 shadow-lg" 
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBleHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif" }}
                 />
-                <div>
-                  <div className="font-bold">{tempUser.displayName}</div>
+                <div className="text-center">
+                  <div className="font-bold text-xl">{tempUser.displayName}</div>
                   <div className="text-sm text-neutral-400">@{tempUser.username}</div>
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Username</label>
-                <input
-                  type="text"
-                  value={tempUser.username}
-                  onChange={(e) => onUsernameChange(e.target.value)}
-                  className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Display Name</label>
-                <input
-                  type="text"
-                  value={tempUser.displayName}
-                  onChange={(e) => onDisplayNameChange(e.target.value)}
-                  className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
-                <input
-                  type="text"
-                  value={tempUser.profilePicture}
-                  onChange={(e) => onProfilePictureChange(e.target.value)}
-                  className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              {settingsError && <p className="text-red-500 text-sm text-center">{settingsError}</p>}
-              <div className="flex space-x-4">
-                <motion.button
-                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
-                  onClick={onSave}
-                  disabled={isLoading}
-                  className="w-full py-2 bg-blue-500 rounded-lg font-bold relative"
-                >
-                  <span className={isLoading ? "opacity-0" : "opacity-100"}>Save Changes</span>
-                  {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
-                </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={onLogout}
-                  className="w-full py-2 bg-transparent border-2 border-red-500 text-red-500 rounded-lg font-bold hover:bg-red-500 hover:text-white transition-colors"
+                  onClick={handleEnableNotifications}
+                  className={`mt-4 w-full py-2 rounded-lg font-bold text-white transition-colors ${notifPermission === 'granted' ? 'bg-green-400 cursor-default' : 'bg-green-600 hover:bg-green-700'}`}
+                  type="button"
+                  disabled={notifPermission === 'granted'}
                 >
-                  Logout
+                  {notifPermission === 'granted' ? 'Notifications Enabled' : notifPermission === 'denied' ? 'Notifications Blocked' : 'Enable Notifications'}
                 </motion.button>
+              </div>
+
+              {/* Right: Editable Fields */}
+              <div className="space-y-6 flex flex-col justify-between h-full">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={tempUser.username}
+                    onChange={(e) => onUsernameChange(e.target.value)}
+                    className="w-full p-2 bg-neutral-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Display Name</label>
+                  <input
+                    type="text"
+                    value={tempUser.displayName}
+                    onChange={(e) => onDisplayNameChange(e.target.value)}
+                    className="w-full p-2 bg-neutral-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
+                  <input
+                    type="text"
+                    value={tempUser.profilePicture}
+                    onChange={(e) => onProfilePictureChange(e.target.value)}
+                    className="w-full p-2 bg-neutral-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border border-neutral-700"
+                  />
+                </div>
+                {settingsError && <p className="text-red-500 text-sm text-center">{settingsError}</p>}
+                <div className="flex space-x-4 mt-4">
+                  <motion.button
+                    whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                    onClick={onSave}
+                    disabled={isLoading}
+                    className="w-full py-2 bg-blue-500 rounded-lg font-bold relative"
+                  >
+                    <span className={isLoading ? "opacity-0" : "opacity-100"}>Save Changes</span>
+                    {isLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onLogout}
+                    className="w-full py-2 bg-transparent border-2 border-red-500 text-red-500 rounded-lg font-bold hover:bg-red-500 hover:text-white transition-colors"
+                  >
+                    Logout
+                  </motion.button>
+                </div>
               </div>
             </div>
           </motion.div>
