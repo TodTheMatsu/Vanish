@@ -6,7 +6,6 @@ import { ConversationHeader } from './ConversationHeader';
 import { IoLockClosedOutline, IoHandRightOutline } from 'react-icons/io5';
 import { useConversations } from '../../hooks/useMessages';
 import { motion } from 'framer-motion';
-import { useQueryClient } from '@tanstack/react-query';
 
 interface ChatWindowProps {
   conversationId: string;
