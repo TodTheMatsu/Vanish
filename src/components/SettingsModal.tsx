@@ -45,6 +45,8 @@ export default function SettingsModal({
               X
             </button>
             <h1 className="text-3xl font-bold mb-6">Settings</h1>
+                          <div className="onesignal-customlink-container">
+              </div>
             <div className="space-y-6">
               {/* Profile Preview */}
               <div className="border border-neutral-700 rounded-lg p-4 flex items-center space-x-4">
@@ -78,9 +80,7 @@ export default function SettingsModal({
                   className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <div className="onesignal-customlink-container">
-                <button type="button" className='onesignal-customlink-subscribe medium button'></button>
-              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
                 <input
