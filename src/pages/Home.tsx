@@ -95,11 +95,7 @@ export default function Home() {
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
       {/* Notification Popup (always rendered, let OneSignal SDK handle its state) */}
       {/* Only render the container, and put your custom content inside it if you want to style the popup */}
-      <div className="onesignal-customlink-container fixed top-24 right-4 z-50 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-xs shadow-2xl backdrop-blur-sm flex flex-col items-center">
-        <div className="mb-3 text-center">
-          <h3 className="text-lg font-semibold text-white">Enable Notifications</h3>
-          <p className="text-sm text-neutral-300 mt-1">Stay up to date with new messages and activity.</p>
-        </div>
+      <div className="onesignal-customlink-container fixed z-50 bg-neutral-900/10 border rounded-2xl p-6 w-screen h-screen shadow-2xl backdrop-blur-sm flex flex-col items-center">
         {/* The OneSignal SDK will inject the button here */}
       </div>
       <Sidebar
