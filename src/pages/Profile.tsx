@@ -9,6 +9,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../UserContext';
 import { useFollow, useFollowerCount, useFollowingCount } from '../hooks/useFollow';
+import { useCreateConversation } from '../hooks/useMessages';
 
 export default function Profile() {
   // Handler for creating a post
@@ -32,6 +33,7 @@ export default function Profile() {
   const [newPost, setNewPost] = useState('');
   const [expiresIn, setExpiresIn] = useState(24);
   const { createPost } = usePosts();
+  const createConversation = useCreateConversation();
 
   const {
     tempUser,
@@ -94,6 +96,20 @@ export default function Profile() {
       setEditingBanner(false);
     } catch (error) {
       console.error('Banner update error:', error);
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!targetUserId) return;
+    try {
+      const conversation = await createConversation.mutateAsync({
+        type: 'direct',
+        participantIds: [targetUserId],
+      });
+      navigate(`/messages/${conversation.id}`);
+    } catch (err) {
+      // Optionally show a toast or error
+      console.error('Failed to start conversation:', err);
     }
   };
 
@@ -218,25 +234,34 @@ export default function Profile() {
             {/* Follower/Following counts and Follow button */}
             <div className="flex items-center gap-4 mb-4">
               {myUserId && targetUserId && myUserId !== targetUserId && (
-                followLoading ? (
-                  <button disabled className="bg-neutral-700 text-white rounded-md px-4 py-2">Loading...</button>
-                ) : isFollowing ? (
+                <>
+                  {followLoading ? (
+                    <button disabled className="bg-neutral-700 text-white rounded-md px-4 py-2">Loading...</button>
+                  ) : isFollowing ? (
+                    <button
+                      onClick={() => unfollow()}
+                      disabled={unfollowPending}
+                      className="bg-neutral-700 text-white rounded-md px-4 py-2 hover:bg-neutral-600"
+                    >
+                      Unfollow
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => follow()}
+                      disabled={followPending}
+                      className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700"
+                    >
+                      Follow
+                    </button>
+                  )}
                   <button
-                    onClick={() => unfollow()}
-                    disabled={unfollowPending}
-                    className="bg-neutral-700 text-white rounded-md px-4 py-2 hover:bg-neutral-600"
+                    onClick={handleMessage}
+                    disabled={createConversation.isPending}
+                    className="bg-white text-black rounded-md px-4 py-2 hover:bg-neutral-200 border border-neutral-700 ml-2 transition-all duration-200 shadow-lg hover:shadow-white/25 disabled:bg-neutral-700 disabled:text-neutral-500"
                   >
-                    Unfollow
+                    {createConversation.isPending ? 'Messaging...' : 'Message'}
                   </button>
-                ) : (
-                  <button
-                    onClick={() => follow()}
-                    disabled={followPending}
-                    className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700"
-                  >
-                    Follow
-                  </button>
-                )
+                </>
               )}
             </div>
             

@@ -6,6 +6,7 @@ import { ConversationHeader } from './ConversationHeader';
 import { IoLockClosedOutline, IoHandRightOutline } from 'react-icons/io5';
 import { useConversations } from '../../hooks/useMessages';
 import { motion } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ChatWindowProps {
   conversationId: string;
@@ -19,7 +20,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   showBackButton = false 
 }) => {
   
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useMessages(conversationId);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useMessages(conversationId);
   const { data: permissions, isLoadingPermissions } = useConversationPermissions(conversationId);
   const sendMessage = useSendMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -27,13 +28,24 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const { data: conversations } = useConversations();
   const safeConversations = Array.isArray(conversations) ? conversations : [];
   const conversation = safeConversations.find(c => c.id === conversationId);
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (shouldAutoScroll) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [data, shouldAutoScroll]);
+
+  // On conversationId change, force a refetch of messages to avoid stale cache.
+  // Only refetch if not already loading/fetching.
+  useEffect(() => {
+    if (conversationId && !isLoading && !isFetchingNextPage) {
+      refetch().catch((err) => {
+        // Log error, don't break UI
+        console.error('Failed to refetch messages for conversation:', conversationId, err);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId]);
 
   // Flatten all pages of messages (back to infinite query)
   const allMessages = data?.pages.flat() || [];
