@@ -250,13 +250,10 @@ export default function Sidebar({ onNavigate, onSettings, onCreatePost, minimize
                   className="mx-auto object-contain h-10 transition-all duration-300"
                 />
               </div>
-              
               {/* Profile button always at top */}
               <SidebarProfileButton user={user} isLoading={isLoading} minimized={minimized} onClick={goToProfile} />
               {/* Divider */}
               <div className="border-b border-neutral-800 my-4 w-full" />
-              {/* Custom OneSignal prompt link container */}
-              <div className="onesignal-customlink-container z-50"></div>
               {/* Main Navigation */}
               <div className="space-y-2 mb-4 w-full">
                 <motion.button

@@ -92,7 +92,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
-
+      {/* Custom OneSignal prompt link container */}
+      <div className="onesignal-customlink-container fixed top-24 right-4 z-50"></div>
       <Sidebar
         onNavigate={path => navigate(path)}
         onSettings={() => {
