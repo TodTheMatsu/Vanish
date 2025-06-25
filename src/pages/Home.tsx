@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
@@ -20,6 +20,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showWelcome, setShowWelcome] = useState(true);
+  const notificationPopupRef = useRef<HTMLDivElement>(null);
 
   const {
     tempUser,
@@ -92,8 +93,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
-      {/* Custom OneSignal prompt link container */}
-      <div className="onesignal-customlink-container fixed top-24 right-4 z-50"></div>
+      {/* Notification Popup (always rendered, let OneSignal SDK handle its state) */}
+      {/* Only render the container, and put your custom content inside it if you want to style the popup */}
+      <div className="onesignal-customlink-container fixed top-24 right-4 z-50 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-xs shadow-2xl backdrop-blur-sm flex flex-col items-center">
+        <div className="mb-3 text-center">
+          <h3 className="text-lg font-semibold text-white">Enable Notifications</h3>
+          <p className="text-sm text-neutral-300 mt-1">Stay up to date with new messages and activity.</p>
+        </div>
+        {/* The OneSignal SDK will inject the button here */}
+      </div>
       <Sidebar
         onNavigate={path => navigate(path)}
         onSettings={() => {
