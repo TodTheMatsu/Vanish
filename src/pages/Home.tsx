@@ -92,6 +92,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
+
       <Sidebar
         onNavigate={path => navigate(path)}
         onSettings={() => {
