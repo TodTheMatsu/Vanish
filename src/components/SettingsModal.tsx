@@ -78,6 +78,8 @@ export default function SettingsModal({
                   className="w-full p-2 bg-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="onesignal-customlink-container">
+              </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Profile Picture URL</label>
                 <input

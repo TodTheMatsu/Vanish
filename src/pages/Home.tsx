@@ -93,11 +93,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
-      {/* Notification Popup (always rendered, let OneSignal SDK handle its state) */}
-      {/* Only render the container, and put your custom content inside it if you want to style the popup */}
-      <div className="onesignal-customlink-container fixed z-50 bg-neutral-900/10 border rounded-2xl p-6 w-screen h-screen shadow-2xl backdrop-blur-sm flex flex-col items-center">
-        {/* The OneSignal SDK will inject the button here */}
-      </div>
+
       <Sidebar
         onNavigate={path => navigate(path)}
         onSettings={() => {

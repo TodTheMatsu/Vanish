@@ -22,11 +22,6 @@ interface SidebarProps {
   minimized?: boolean;
 }
 
-const navigationItems = [
-  { path: '/home', icon: IoHomeSharp, label: 'Home' },
-  { path: '/messages', icon: IoMailSharp, label: 'Messages' },
-];
-
 // SidebarProfileButton: Reusable profile button for sidebar
 function SidebarProfileButton({ user, isLoading, minimized, onClick }: { user: any, isLoading: boolean, minimized: boolean, onClick: () => void }) {
   if (isLoading) {
@@ -65,7 +60,7 @@ function SidebarProfileButton({ user, isLoading, minimized, onClick }: { user: a
   );
 }
 
-export default function Sidebar({ onNavigate, onSettings, onCreatePost, minimized = false }: SidebarProps) {
+export default function Sidebar({ onNavigate, onSettings, minimized = false }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser: user, isLoading } = useUser();
