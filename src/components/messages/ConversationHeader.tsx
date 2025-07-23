@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useConversations, useLeaveConversation } from '../../hooks/useMessages';
 import { ConversationPermissions } from '../../api/messagesApi';
 import { useUser } from '../../UserContext';
-import { IoPersonOutline, IoPeopleOutline, IoTimeOutline, IoHomeOutline, IoArrowBack } from 'react-icons/io5';
+import { IoPersonOutline, IoPeopleOutline, IoTimeOutline, IoArrowBack } from 'react-icons/io5';
 
 interface ConversationHeaderProps {
   conversationId: string;
@@ -90,6 +90,15 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
       )}
       {/* Conversation info */}
       <div className="flex items-center space-x-3 flex-1">
+        <div className="flex items-center space-x-2 mb-1">
+          <div className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center">
+            {typeof avatar === 'string' ? (
+              <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
+            ) : (
+              avatar
+            )}
+          </div>
+        </div>
         {/* Name and info */}
         <div>
           <h2 className="font-semibold text-white text-lg md:text-xl">{name}</h2>

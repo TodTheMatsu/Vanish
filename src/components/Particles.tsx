@@ -1,7 +1,6 @@
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
-import { useState, useCallback, useRef } from "react";
-import type { Container } from "tsparticles-slim";
+import { useState, useRef } from "react";
 
 const ParticlesComponent = () => {
     const [init, setInit] = useState(false);
@@ -16,18 +15,11 @@ const ParticlesComponent = () => {
         initRef.current = true;
     }
 
-    const particlesLoaded = useCallback(async (container: Container | undefined) => {
-        if (container) {
-            console.log(container);
-        }
-    }, []);
-
     return (
         <>
             {init && (
                 <Particles
                     id="tsparticles"
-                    particlesLoaded={particlesLoaded}
                     options={{
                         background: {
                             color: {

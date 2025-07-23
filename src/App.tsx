@@ -13,7 +13,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider';
 import { OneSignalInitializer } from './OneSignalInitializer';
 import { ConversationSubscriptions } from './components/ConversationSubscriptions';
-import React, { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 // Create a client
 const queryClient = new QueryClient({
