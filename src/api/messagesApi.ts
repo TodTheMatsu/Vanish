@@ -72,15 +72,21 @@ export interface ConversationPermissions {
   role: 'admin' | 'member';
 }
 
+async function getAuthHeader(): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('User not authenticated');
+  return `Bearer ${session.access_token}`;
+}
+
 export const messagesApi = {
   /**
    * Fetch all conversations for the current user using secure Edge Function
    */
-  async fetchConversations(_userId: string): Promise<Conversation[]> {
+  async fetchConversations(): Promise<Conversation[]> {
     try {
       const { data, error } = await supabase.functions.invoke('get-conversations', {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          Authorization: await getAuthHeader()
         }
       });
 
@@ -116,7 +122,7 @@ export const messagesApi = {
     try {
       const { data, error } = await supabase.functions.invoke('get-messages', {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          Authorization: await getAuthHeader()
         },
         body: { 
           conversationId: conversationId, 
@@ -137,11 +143,11 @@ export const messagesApi = {
   /**
    * Send a new message to a conversation using secure Edge Function
    */
-  async sendMessage(messageData: SendMessageData, _userId: string): Promise<Message> {
+  async sendMessage(messageData: SendMessageData): Promise<Message> {
     try {
       const { data, error } = await supabase.functions.invoke('send-message', {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          Authorization: await getAuthHeader()
         },
         body: {
           conversationId: messageData.conversationId,
@@ -193,15 +199,13 @@ export const messagesApi = {
 
     try {
       // Get the current session/access token
-      const { data: { session } } = await supabase.auth.getSession();
-      // Call the Edge Function instead of direct table insert
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-conversation`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session?.access_token || ''}`
+            'Authorization': await getAuthHeader()
           },
           body: JSON.stringify({
             ...conversationData,
@@ -247,11 +251,11 @@ export const messagesApi = {
   /**
    * Get user's permissions for a specific conversation using secure Edge Function
    */
-  async getUserPermissions(conversationId: string, _userId: string): Promise<ConversationPermissions | null> {
+  async getUserPermissions(conversationId: string): Promise<ConversationPermissions | null> {
     try {
       const { data, error } = await supabase.functions.invoke('get-user-permissions', {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          Authorization: await getAuthHeader()
         },
         body: { conversationId }
       });
@@ -271,7 +275,7 @@ export const messagesApi = {
   async leaveConversation(conversationId: string): Promise<void> {
     const { data, error } = await supabase.functions.invoke('leave-conversation', {
       headers: {
-        Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        Authorization: await getAuthHeader()
       },
       body: { conversationId }
     });
@@ -314,7 +318,6 @@ export const messagesApi = {
    * RLS ensures proper permissions
    */
   async deleteMessage(messageId: string): Promise<void> {
-    const { data: { session } } = await supabase.auth.getSession();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     const response = await fetch(
@@ -323,7 +326,7 @@ export const messagesApi = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || ''}`
+          'Authorization': await getAuthHeader()
         },
         body: JSON.stringify({ messageId, userId: user.id })
       }
@@ -409,7 +412,7 @@ export const messagesApi = {
     try {
       const { data, error } = await supabase.functions.invoke('get-conversations', {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          Authorization: await getAuthHeader()
         },
         body: { status: 'pending' }
       });
