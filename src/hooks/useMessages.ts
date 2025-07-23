@@ -3,6 +3,7 @@ import { messagesApi, SendMessageData, Message } from '../api/messagesApi';
 import { useUser } from '../UserContext';
 import { useToast } from './useToast';
 import { supabase } from '../supabaseClient';
+import StaleTime  from '../constants/staletime.ts';
 
 /**
  * Hook to fetch all conversations for the current user
@@ -14,7 +15,7 @@ export const useConversations = () => {
     queryKey: ['conversations', userId],
     queryFn: () => messagesApi.fetchConversations(userId!),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: StaleTime.FiveMinutes,
     refetchOnWindowFocus: false, // Disable window focus refetch
     refetchInterval: false // Disable automatic polling - use real-time instead
   });
@@ -33,7 +34,7 @@ export const useMessages = (conversationId: string) => {
     getNextPageParam: (lastPage, pages) => 
       (lastPage as any[]).length === 50 ? pages.length * 50 : undefined, // eslint-disable-line @typescript-eslint/no-explicit-any
     enabled: !!conversationId,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: StaleTime.TwoMinutes,
     refetchInterval: false // Disable automatic polling - use real-time instead
   });
 };
@@ -262,7 +263,7 @@ export const useConversationPermissions = (conversationId: string) => {
       return permissions;
     },
     enabled: !!conversationId && !!userId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: StaleTime.FiveMinutes,
     retry: false // Don't retry if user doesn't have permissions
   });
 
@@ -338,7 +339,7 @@ export const useSearchUsers = (query: string) => {
     queryKey: ['search-users', query],
     queryFn: () => messagesApi.searchUsers(query),
     enabled: query.length > 2, // Only search if query is longer than 2 characters
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: StaleTime.FiveMinutes,
   });
 };
 
@@ -371,7 +372,7 @@ export const usePendingInvitations = () => {
   return useQuery({
     queryKey: ['pending-invitations'],
     queryFn: () => messagesApi.fetchPendingInvitations(),
-    staleTime: 1000 * 60 * 5,
+    staleTime: StaleTime.FiveMinutes,
     refetchOnWindowFocus: false,
     refetchInterval: false
   });

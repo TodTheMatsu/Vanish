@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from '../types/user';
 import { postsApi } from '../api/postsApi';
-
+import StaleTime from '../constants/staletime.ts';
 export interface Post {
   id: number;
   content: string;
@@ -16,7 +16,7 @@ export const usePosts = () => {
   const {data: posts = [],isLoading,isError,refetch,} = useQuery<Post[]>({
     queryKey: ['posts'],
     queryFn: postsApi.fetchPosts,
-    staleTime: 1000 * 60, // 1min
+    staleTime: StaleTime.OneMinute,
   });
 
   const createPostMutation = useMutation({
@@ -45,7 +45,7 @@ export const usePostsByUsername = (username: string) => {
   return useQuery<Post[]>({
     queryKey: ['posts', 'user', username],
     queryFn: () => postsApi.fetchPostsByUsername(username),
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: StaleTime.TwoMinutes,
     enabled: !!username,
   });
 };

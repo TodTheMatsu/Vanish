@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from './types/user';
 import { userApi } from './api/userApi';
 import { supabase } from './supabaseClient';
+import StaleTime from './constants/staletime.ts';
 
 interface UserContextType {
   currentUser: UserProfile | undefined;
@@ -38,8 +39,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       };
     },
     enabled: true, // Re-enable the query
-    staleTime: 1000 * 60 * 10, // 10 minutes - increase staleTime
-    gcTime: 1000 * 60 * 15, // 15 minutes - keep in cache longer
+    staleTime: StaleTime.TenMinutes,
+    gcTime: StaleTime.FifteenMinutes, // Garbage collection time
     retry: 1,
     refetchOnWindowFocus: false,
     refetchOnMount: false, // Don't refetch on every mount

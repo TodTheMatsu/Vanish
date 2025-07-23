@@ -4,11 +4,12 @@ import './index.css'
 import App from './App.tsx'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import StaleTime from './constants/staletime.ts'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: StaleTime.FiveMinutes,
       retry: 2,
     },
   },

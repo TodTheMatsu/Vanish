@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserProfile } from '../types/user';
 import { userApi } from '../api/userApi';
-
+import StaleTime from '../constants/staletime.ts';
 const defaultUser: UserProfile = {
   username: 'defaultUser',
   displayName: 'Default User',
@@ -19,7 +19,7 @@ export const useUserData = (username?: string) => {
   } = useQuery<UserProfile, Error>({
     queryKey: ['userData', username],
     queryFn: () => userApi.fetchUser(username),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: StaleTime.FiveMinutes,
     retry: 2,
   });
 
