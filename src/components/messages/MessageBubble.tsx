@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Message, ConversationPermissions, SendMessageData } from '../../api/messagesApi';
 import { useDeleteMessage, useRetryMessage } from '../../hooks/useMessages';
 import { useUser } from '../../UserContext';
@@ -19,7 +19,7 @@ interface MessageBubbleProps {
   conversationType?: 'direct' | 'group'; // Add conversationType prop
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversationId, permissions, conversationType }) => {
+export function MessageBubble({ message, conversationId, permissions, conversationType }: MessageBubbleProps) {
   const deleteMessage = useDeleteMessage();
   const retryMessage = useRetryMessage();
   const { userId: currentUserId } = useUser();
@@ -41,13 +41,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   if (conversationType === 'direct') {
     canEdit = isOwnMessage && canEdit;
   }
-
-  // Mark message as read functionality - REMOVED to prevent network spam
-  // React.useEffect(() => {
-  //   if (!isOwnMessage && !message.read_by[currentUserId]) {
-  //     markAsRead.mutate(message.id);
-  //   }
-  // }, [message.id, isOwnMessage, currentUserId, message.read_by, markAsRead]);
 
   // Calculate time until expiration
   const getExpirationInfo = () => {
@@ -119,7 +112,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, conversat
   return (
     <>
       <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-2`}>
-        <div className={`max-w-[85%] sm:max-w-md md:max-w-lg lg:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl relative backdrop-blur-sm border ${
+        <div className={`max-w-[85%] -z-10 sm:max-w-md md:max-w-lg lg:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl relative backdrop-blur-sm border ${
           isOwnMessage 
             ? `${message._failed ? 'bg-red-600/80 border-red-500/50' : 'bg-white text-black border-white/20'} ${message._isOptimistic ? 'opacity-70' : ''} shadow-lg` 
             : 'bg-neutral-800/80 text-white border-neutral-700/50 shadow-lg'
