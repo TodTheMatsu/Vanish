@@ -100,7 +100,7 @@ export default function Home() {
   }, [location.state, location.pathname, navigate]);
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative overflow-hidden">
+    <div className="min-h-screen w-screen bg-gradient-to-br from-black via-neutral-900 to-black text-white flex flex-row relative max-h-screen overflow-hidden">
 
       <Sidebar
         onNavigate={path => navigate(path)}
@@ -149,36 +149,8 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 flex flex-col items-center justify-start p-4 pt-8 pb-14 md:pb-8 relative z-10">
+        <div className="flex overflow-y-scroll flex-col items-center justify-start p-4 pt-8 pb-14 md:pb-8 relative z-10">
           <div className="w-full max-w-xl md:max-w-2xl lg:max-w-4xl flex flex-col items-center">
-            {/* Stats Overview */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8 w-full"
-            >
-              <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-                <div className="text-lg md:text-2xl font-bold text-white">{posts.length}</div>
-                <div className="text-xs md:text-sm text-neutral-400">Posts</div>
-              </div>
-              <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-                <div className="text-lg md:text-2xl font-bold text-white">
-                  {posts.filter(post => {
-                    const expiration = new Date(post.timestamp).getTime() + (post.expiresIn * 60 * 60 * 1000);
-                    return expiration > Date.now();
-                  }).length}
-                </div>
-                <div className="text-xs md:text-sm text-neutral-400">Visible</div>
-              </div>
-              <div className="p-2 md:p-4 bg-neutral-900/50 rounded-lg md:rounded-xl border border-neutral-800 backdrop-blur-sm text-center">
-                <div className="text-lg md:text-2xl font-bold text-white">
-                  {new Set(posts.map(post => post.author.username)).size}
-                </div>
-                <div className="text-xs md:text-sm text-neutral-400">Users</div>
-              </div>
-            </motion.div>
-
             {/* Posts Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
