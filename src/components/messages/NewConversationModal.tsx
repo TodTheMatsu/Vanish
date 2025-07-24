@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import {useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useCreateConversation, useSearchUsers, useConversations } from '../../hooks/useMessages';
 import { IoCloseOutline } from 'react-icons/io5';
@@ -9,10 +9,7 @@ interface NewConversationModalProps {
   onConversationCreated: (conversationId: string) => void;
 }
 
-export const NewConversationModal: React.FC<NewConversationModalProps> = ({
-  onClose,
-  onConversationCreated
-}) => {
+export function NewConversationModal({ onClose, onConversationCreated }: NewConversationModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<Array<{ id: string; username: string; display_name: string }>>([]);
   const [conversationType, setConversationType] = useState<'direct' | 'group'>('direct');
