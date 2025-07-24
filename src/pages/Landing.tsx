@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { IoMdArrowDown, IoMdCheckmark, IoMdStar } from 'react-icons/io';
+import { IoMdArrowDown, IoMdCheckmark } from 'react-icons/io';
 import { IconContext } from 'react-icons';
-import {IoMdTimer, IoMdLock, IoMdEye, IoMdPeople, IoMdTrash, IoMdPhonePortrait, IoMdQuote} from 'react-icons/io';
+import {IoMdTimer, IoMdLock, IoMdEye, IoMdPeople, IoMdTrash, IoMdPhonePortrait} from 'react-icons/io';
 import Particles from '../components/Particles';
 import { useAuth } from '../AuthContext';
 
@@ -106,7 +106,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
   );
 };
 
-const AnimatedWords = ({ baseOpacity, text }: AnimatedTextProps) => {
+const AnimatedWords = ({text}: AnimatedTextProps) => {
   return (
     <>
     <motion.h2 className='text-white text-2xl md:text-3xl lg:text-4xl space-x-1'>
