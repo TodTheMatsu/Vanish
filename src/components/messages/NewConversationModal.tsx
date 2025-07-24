@@ -36,12 +36,17 @@ export function NewConversationModal({ onClose, onConversationCreated }: NewConv
         name: conversationType === 'group' ? groupName : undefined
       };
       // check for existing conversation and if it exists, open that instead
-      const existingConversation = existingConversations?.find(conversation =>
-        conversation.conversation_participants.some(p => selectedUsers.map(u => u.id).includes(p.user_id))
-      );
+      const existingConversation = conversationType === 'direct'
+        ? existingConversations?.find(conversation =>
+        conversation.type === 'direct' &&
+        conversation.conversation_participants.length === 2 &&
+        selectedUsers.every(u =>
+          conversation.conversation_participants.some(p => p.user_id === u.id)
+        )
+          )
+        : undefined;
       if (existingConversation) {
         onConversationCreated(existingConversation.id);
-        onClose();
         return;
       }
 
