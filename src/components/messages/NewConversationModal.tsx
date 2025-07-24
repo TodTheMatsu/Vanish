@@ -39,7 +39,6 @@ export function NewConversationModal({ onClose, onConversationCreated }: NewConv
       const existingConversation = conversationType === 'direct'
         ? existingConversations?.find(conversation =>
         conversation.type === 'direct' &&
-        conversation.conversation_participants.length === 2 &&
         selectedUsers.every(u =>
           conversation.conversation_participants.some(p => p.user_id === u.id)
         )
