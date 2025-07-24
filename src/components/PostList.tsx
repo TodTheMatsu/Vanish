@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Post } from '../hooks/usePosts';
 import { Link } from 'react-router-dom';
-
+import Masonry from 'react-masonry-css';
 interface PostListProps {
   posts: Post[];
 }
@@ -14,13 +14,17 @@ const timeLeft = (post: Post) => {
 
 export function PostList({ posts }: PostListProps) {
   return (
-    <div className="space-y-4 w-full flex flex-col items-center">
+    <Masonry
+      className="w-auto flex"
+      breakpointCols={{ default: 3, 768: 2, 480: 1 }}
+      columnClassName="pl-4 background-clip-padding"
+    >
       {posts.map(post => (
         <motion.div
           key={post.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 md:p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words w-full max-w-full"
+          className="p-4 pt-4 mb-4 md:p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words w-full max-w-full"
         >
           <Link to={`/profile/${post.author.username}`} className="inline-flex items-center space-x-3 mb-4">
             <img 
@@ -59,6 +63,6 @@ export function PostList({ posts }: PostListProps) {
           </div>
         </motion.div>
       ))}
-    </div>
+    </Masonry>
   );
 }
