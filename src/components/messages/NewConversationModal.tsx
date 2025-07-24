@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useCreateConversation, useSearchUsers } from '../../hooks/useMessages';
+import { useCreateConversation, useSearchUsers, useConversations } from '../../hooks/useMessages';
 import { IoCloseOutline } from 'react-icons/io5';
 import { motion } from 'framer-motion';
-import { useToast } from '../../hooks/useToast';
 
 interface NewConversationModalProps {
   onClose: () => void;
@@ -21,7 +20,7 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
 
   const { data: searchResults = [] } = useSearchUsers(searchQuery);
   const createConversation = useCreateConversation();
-  const { addToast } = useToast();
+  const { data: existingConversations } = useConversations();
 
   const handleUserSelect = (user: { id: string; username: string; display_name: string }) => {
     if (selectedUsers.find(u => u.id === user.id)) {
@@ -33,18 +32,23 @@ export const NewConversationModal: React.FC<NewConversationModalProps> = ({
 
   const handleCreateConversation = async () => {
     if (selectedUsers.length === 0) return;
-
     try {
       const conversationData = {
         type: conversationType,
         participantIds: selectedUsers.map(u => u.id),
         name: conversationType === 'group' ? groupName : undefined
       };
+      // check for existing conversation and if it exists, open that instead
+      const existingConversation = existingConversations?.find(conversation =>
+        conversation.conversation_participants.some(p => selectedUsers.map(u => u.id).includes(p.user_id))
+      );
+      if (existingConversation) {
+        onConversationCreated(existingConversation.id);
+        onClose();
+        return;
+      }
 
       const conversation = await createConversation.mutateAsync(conversationData);
-      if (conversation.existing) {
-        addToast('A direct message with this user already exists. Opening it...', 'info');
-      }
       onConversationCreated(conversation.id);
     } catch (error) {
       console.error('Failed to create conversation:', error);

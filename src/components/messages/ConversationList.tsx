@@ -3,7 +3,7 @@ import { useConversations } from '../../hooks/useMessages';
 import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
 import { PendingInvitationsModal } from './PendingInvitationsModal';
-import { IoChatbubbleOutline, IoMailOpenOutline } from 'react-icons/io5';
+import { IoMailOpenOutline } from 'react-icons/io5';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface ConversationListProps {

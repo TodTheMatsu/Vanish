@@ -13,7 +13,7 @@ export const useConversations = () => {
   
   return useQuery({
     queryKey: ['conversations', userId],
-    queryFn: () => messagesApi.fetchConversations(userId!),
+    queryFn: () => messagesApi.fetchConversations(),
     enabled: !!userId,
     staleTime: StaleTime.FiveMinutes,
     refetchOnWindowFocus: false, // Disable window focus refetch
