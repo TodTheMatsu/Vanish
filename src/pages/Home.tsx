@@ -8,7 +8,6 @@ import SettingsModal from '../components/SettingsModal';
 import { usePosts } from '../hooks/usePosts';
 import { useUser } from '../UserContext';
 import { useSettings } from '../hooks/useSettings';
-import Masonry from 'react-masonry-css';
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();

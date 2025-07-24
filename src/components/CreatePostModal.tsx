@@ -19,6 +19,8 @@ export default function CreatePostModal({
   onSubmit,
   onClose,
 }: CreatePostModalProps) {
+  const MAX_POST_LENGTH = 280;
+  const isTooLong = newPost.length > MAX_POST_LENGTH;
   return (
     <AnimatePresence>
       {show && (
@@ -41,8 +43,10 @@ export default function CreatePostModal({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                onSubmit();
-                onClose();
+                if (!isTooLong) {
+                  onSubmit();
+                  onClose();
+                }
               }}
             >
               <textarea
@@ -52,6 +56,9 @@ export default function CreatePostModal({
                 placeholder="What's happening?"
                 rows={4}
               />
+              {isTooLong && (
+                <div className="text-red-500 text-sm mb-2">Post is too long! Maximum {MAX_POST_LENGTH} characters allowed.</div>
+              )}
               <div className="flex justify-between items-center">
                 <select
                   value={expiresIn}
@@ -71,8 +78,9 @@ export default function CreatePostModal({
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600 text-white"
+                  className={`px-6 py-2 bg-blue-500 rounded-full font-bold hover:bg-blue-600 text-white ${isTooLong ? 'opacity-50 cursor-not-allowed' : ''}`}
                   type="submit"
+                  disabled={isTooLong}
                 >
                   Post
                 </motion.button>
