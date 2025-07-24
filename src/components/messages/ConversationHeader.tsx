@@ -3,7 +3,7 @@ import { useConversations, useLeaveConversation } from '../../hooks/useMessages'
 import { ConversationPermissions } from '../../api/messagesApi';
 import { useUser } from '../../UserContext';
 import { IoPersonOutline, IoPeopleOutline, IoTimeOutline, IoArrowBack } from 'react-icons/io5';
-
+import { ConfirmDialog } from '../ConfirmDialog';
 interface ConversationHeaderProps {
   conversationId: string;
   permissions?: ConversationPermissions | null;
@@ -21,6 +21,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   const safeConversations = Array.isArray(conversations) ? conversations : [];
   const leaveConversation = useLeaveConversation();
   const [showMenu, setShowMenu] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const { userId: currentUserId } = useUser();
 
   const conversation = safeConversations.find(c => c.id === conversationId);
@@ -66,14 +67,12 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   const { name, subtitle, avatar } = getConversationInfo();
 
   const handleLeaveConversation = async () => {
-    if (window.confirm('Are you sure you want to leave this conversation?')) {
       try {
         await leaveConversation.mutateAsync(conversationId);
         // Navigation back to conversations list should be handled by parent
       } catch (error) {
         console.error('Failed to leave conversation:', error);
       }
-    }
   };
 
   return (
@@ -180,7 +179,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
               <button
                 onClick={() => {
                   setShowMenu(false);
-                  handleLeaveConversation();
+                  setShowLeaveConfirm(true);
                 }}
                 className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-neutral-800 rounded-lg mx-1"
                 disabled={leaveConversation.isPending}
@@ -199,6 +198,15 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
           onClick={() => setShowMenu(false)}
         />
       )}
+      <ConfirmDialog
+        open={showLeaveConfirm}
+        onConfirm={handleLeaveConversation}
+        onCancel={() => setShowLeaveConfirm(false)}
+        title="Leave Conversation"
+        cancelText='Cancel'
+        confirmText='Leave'
+        message='Are you sure you want to leave this conversation? You will no longer receive messages and it cannot be undone.'
+      />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -8,9 +7,11 @@ interface ConfirmDialogProps {
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
+  cancelText?: string;
+  confirmText?: string;
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title, message, onConfirm, onCancel }) => {
+export function ConfirmDialog({ open, title, message, onConfirm, onCancel, cancelText = "Cancel", confirmText = "Confirm" }: ConfirmDialogProps) {
   return ReactDOM.createPortal(
     <AnimatePresence>
       {open && (
@@ -35,13 +36,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ open, title, messa
                 className="px-4 py-2 rounded bg-neutral-700 text-white hover:bg-neutral-600 transition-colors"
                 onClick={onCancel}
               >
-                Cancel
+                {cancelText}
               </button>
               <button
                 className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-500 transition-colors"
                 onClick={onConfirm}
               >
-                Delete
+                {confirmText}
               </button>
             </div>
           </motion.div>
