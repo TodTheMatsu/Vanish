@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { usePendingInvitations, useAcceptInvitation } from '../../hooks/useMessages';
 import { IoMailOpenOutline } from 'react-icons/io5';
 import { AnimatePresence, motion } from 'framer-motion';
+import { FiRefreshCw } from 'react-icons/fi';
 
 interface PendingInvitationsModalProps {
   isOpen: boolean;
@@ -10,7 +11,7 @@ interface PendingInvitationsModalProps {
 }
 
 export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = ({ isOpen, onClose }) => {
-  const { data: pendingInvitations, isLoading } = usePendingInvitations();
+  const { data: pendingInvitations, isLoading, refetch, isFetching } = usePendingInvitations();
   const acceptInvitation = useAcceptInvitation();
 
   return createPortal(
@@ -40,6 +41,18 @@ export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = (
             <div className="flex items-center justify-center mb-4">
               <IoMailOpenOutline className="text-3xl text-white mr-2" />
               <h2 className="text-2xl font-bold text-white">Pending Invitations</h2>
+            </div>
+            <div className="flex justify-center mb-3">
+              <button
+              className="bg-neutral-800 text-white px-3 py-1 rounded hover:bg-neutral-700 font-medium text-sm disabled:opacity-60 flex items-center gap-2"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              >
+              <FiRefreshCw
+                className={`text-lg ${isFetching ? 'animate-spin' : ''}`}
+              />
+              {isFetching ? 'Refreshing...' : 'Refresh'}
+              </button>
             </div>
             {isLoading ? (
               <div className="text-neutral-400 text-center">Loading...</div>
