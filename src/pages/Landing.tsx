@@ -60,85 +60,63 @@ const NavLinks = ({ navLinks }: NavLinksProps) => {
   );
 };
 
-interface AnimatedTextProps {
-  baseOpacity: number;
-  text: string;
-}
-
-const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
-  const textArray = text.split('');
+const AnimatedHeroText = () => {
   return (
-    <>
+    <div className="relative select-none leading-none text-center flex flex-col items-center justify-center min-h-[30vh] w-full">
       <motion.div
-        className="fixed w-screen h-[200%]"
-        initial={{ backdropFilter: 'blur(0.5em)' }}
-        animate={{ backdropFilter: 'blur(0em)' }}
-        transition={{delay:2, duration: 2 }}
-      ></motion.div>
-      <h1 className='text-white font-bold text-[7rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] absolute select-none leading-none'>
-        {textArray.map((char, index) => (
-          <motion.span
-            key={index}
-            initial={{ opacity: 0, y: -500 }}
-            animate={{ opacity: baseOpacity - index * 0.15, y: 0 }}
-            transition={{ duration: 2, delay: 1 + index * 0.15 }}
-          >
-            {char}
-          </motion.span>
-        ))}
-      </h1>
-      <motion.h1 className='text-white font-bold blur-md text-[7rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] select-none leading-none'>
-        {textArray.map((char, index) => (
-          <motion.span
-            key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: baseOpacity - index * 0.15 }}
-            transition={{
-              delay: 2 + index * 0.3,
-              duration: 1,
-            }}
-          >
-            {char}
-          </motion.span>
-        ))}
-      </motion.h1>
-    </>
+        className="w-full"
+        style={{ fontSize: '7rem', lineHeight: 1 }}
+      >
+        <motion.span
+          initial={{ opacity: 0, y: -100, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1, textShadow: '0 0 24px #fff' }}
+          transition={{ duration: 1.2, delay: 1 }}
+          className="text-white font-light px-4"
+        >
+          POST.
+        </motion.span>
+      </motion.div>
+      <motion.div
+        className="w-full"
+        style={{ fontSize: '7rem', lineHeight: 1 }}
+      >
+        <motion.span
+          initial={{ opacity: 0, y: -100, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1, textShadow: '0 0 24px #fff' }}
+          transition={{ duration: 1.2, delay: 1.5 }}
+          className="text-white font-light px-4"
+        >
+          SHARE.
+        </motion.span>
+      </motion.div>
+      <div className="w-full relative flex items-center justify-center" style={{ fontSize: '10rem', lineHeight: 1 }}>
+        <span className="relative text-white font-normal drop-shadow-[0_0_32px_black] px-1 inline-block">
+          {Array.from('VANISH').map((char, idx) => (
+            <motion.span
+              key={idx}
+              initial={{ opacity: 0, x: -100, scale: 0.7 }}
+              animate={{
+                opacity: 1 - idx * 0.13,
+                x: 0,
+                scale: 1.15,
+                textShadow: '0 0 64px #fff, 0 0 32px #000, 0 0 16px #000',
+              }}
+              transition={{ duration: 1.2, delay: 2 + idx * 0.1 }}
+              className="inline-block px-1"
+            >
+              {char}
+            </motion.span>
+          ))}
+        </span>
+      </div>
+    </div>
   );
 };
 
-const AnimatedWords = ({text}: AnimatedTextProps) => {
-  return (
-    <>
-      <motion.h2 className="text-white text-2xl md:text-3xl lg:text-4xl space-x-1 font-bold">
-        {text.split(' ').map((word, wordIndex) => {
-          return (
-            <motion.span
-              key={wordIndex}
-              initial={{ opacity: 0, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, filter: 'blur(0px)' }}
-              transition={{ duration: 0.7, delay: 3 + wordIndex * 0.5 }}
-              className="inline-block mr-2 relative overflow-hidden whitespace-nowrap drop-shadow-[0_0_32px_white]"
-            >
-              <motion.span
-                initial={{ width: 0 }}
-                animate={{ width: 'auto' }}
-                transition={{ duration: 0.5, delay: 3 + wordIndex * 0.5 }}
-                className="inline-block pr-1 relative"
-              >
-                {word}
-              </motion.span>
-            </motion.span>
-          );
-        })}
-      </motion.h2>
-    </>);
-};
 
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useAuth();
-  const text = 'Vanish';
-  const baseOpacity = 1;
   const vanishDescription = 'Vanish is a privacy-focused social media platform that gives you complete control over your digital footprint. Unlike traditional social networks that store your data indefinitely, Vanish automatically deletes your messages after a set period of time, ensuring your conversations remain private and temporary.';
 
   const scrollToSection = (sectionId: string) => {
@@ -173,18 +151,15 @@ export default function Landing() {
       <Particles />
       {/* Hero Section */}
       <div className='flex items-center w-screen h-screen justify-center flex-col relative overflow-hidden'>
-        <div className='flex items-center justify-center flex-col z-10'>
-          <AnimatedText baseOpacity={baseOpacity} text={text} />
+        <div className='flex items-center justify-center flex-col z-10 w-full'>
+          <AnimatedHeroText />
         </div>
-
-        <AnimatedWords baseOpacity={baseOpacity} text={'Post.  Share.  Vanish.'} />
-        
         {/* Enhanced tagline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 0.8, y: 0 }}
-          transition={{ delay: 4, duration: 1 }}
-          className='text-neutral-300 text-lg md:text-xl text-center max-w-2xl mx-auto px-4 mt-4 mb-8'
+          transition={{ delay: 3.5, duration: 1 }}
+          className='text-neutral-300 text-lg md:text-xl text-center max-w-2xl mx-auto px-4 mt-20 mb-8'
         >
           Your privacy matters. Experience social media that respects your digital footprint.
         </motion.p>
@@ -193,7 +168,7 @@ export default function Landing() {
         <div className='flex flex-col sm:flex-row gap-4 items-center z-20 relative'>
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 4.5, duration: 1 } }}
+            animate={{ opacity: 1, transition: { delay: 4.2, duration: 1 } }}
             whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 1)' }}
             whileTap={{ scale: 0.95 }}
             className='bg-white text-black font-semibold px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 text-lg cursor-pointer z-20'
@@ -212,7 +187,7 @@ export default function Landing() {
           
           <motion.button
             initial={{ scale: 1, opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 4.7, duration: 1 } }}
+            animate={{ opacity: 1, transition: { delay: 4.4, duration: 1 } }}
             whileHover={{ scale: 1.05, borderColor: 'white', backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
             whileTap={{ scale: 0.95 }}
             className='border border-neutral-400 text-white px-8 py-3 rounded-full hover:border-white transition-all duration-300 text-lg backdrop-blur-sm cursor-pointer z-20'
