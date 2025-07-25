@@ -111,7 +111,6 @@ const AnimatedWords = ({text}: AnimatedTextProps) => {
     <>
       <motion.h2 className="text-white text-2xl md:text-3xl lg:text-4xl space-x-1 font-bold">
         {text.split(' ').map((word, wordIndex) => {
-          const cursorDelay = 3 + wordIndex * 0.5 + 0.5;
           return (
             <motion.span
               key={wordIndex}
