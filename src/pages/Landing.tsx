@@ -289,8 +289,10 @@ export default function Landing() {
             Discover the core features that make Vanish the most secure and private way to connect online.
           </p>
           <div className="w-full overflow-x-auto pb-4">
-            <div className="flex flex-col gap-6 sm:flex-row sm:overflow-x-auto sm:pb-4 md:grid md:grid-cols-5 md:gap-8 md:min-w-0 overflow-hidden">
-              {[
+            <div
+              className="flex flex-col gap-6 sm:flex-row sm:overflow-x-auto sm:pb-4 md:grid md:grid-cols-3 md:grid-rows-2 md:gap-8 md:min-w-0 overflow-hidden"
+            >
+              {[ 
                 {
                   title: 'Timed Messages',
                   description: 'Set custom expiration times for your messages. When the timer ends, your message is gone for good.',
@@ -315,7 +317,13 @@ export default function Landing() {
                   title: 'Privacy First',
                   description: 'We do not collect or sell your personal data. Your activity stays private—always.',
                   icon: <IoMdEye size={48} className="mb-4 text-pink-400" />,
+                  gridClass: 'md:col-span-1 md:row-span-1', // Wide bento block
                 },
+                {
+                  title: 'Posts that Disappear',
+                  description: 'Share photos and videos that automatically delete after viewing. Perfect for sharing without the worry of permanence.',
+                  icon: <IoMdTrash size={48} className="mb-4 text-red-400" />,
+                }
               ].map((feature, idx) => (
                 <motion.div
                   key={idx}
@@ -324,7 +332,7 @@ export default function Landing() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.5 + idx * 0.15 }}
                   whileHover={{ scale: 1.05, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
-                  className="flex-shrink-0 bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center min-w-[80vw] sm:min-w-[280px] md:min-w-0 hover:border-white/20 transition-all duration-300"
+                  className={`flex-shrink-0 bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center min-w-[80vw] sm:min-w-[280px] md:min-w-0 hover:border-white/20 transition-all duration-300`}
                 >
                   <div>{feature.icon}</div>
                   <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{feature.title}</h3>
