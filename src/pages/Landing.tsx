@@ -273,98 +273,68 @@ export default function Landing() {
         }}
         src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-50 sm:scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
-      {/* Key Features Section */}
-      <div id="features-section" className='flex text-white items-center w-screen justify-center flex-col px-4 sm:px-0 py-20'>
+      {/* Key Features Section - Redesigned */}
+      <section id="features-section" className="w-full flex flex-col items-center justify-center py-20 px-4 sm:px-0">
         <motion.div
-        initial={{ opacity: 0}}
-        whileInView={{
-          opacity: 1,
-          transition: {delay: 0.3, duration: 1.5},
-        }}
-        viewport={{ once: true }}
-        className='flex text-white bg-gradient-to-br from-zinc-900 to-black backdrop-blur-sm items-center w-full max-w-7xl rounded-3xl py-20 md:py-32 justify-center flex-col shadow-2xl border border-white/10'>
-          <motion.h3
-          initial={{ opacity: 0, y: -50 }}
-          viewport={{ once: true }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-            transition: { delay: 0.5,duration: 1.5, stiffness: 100 },
-          }}
-        className='p-6 text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-neutral-300 bg-clip-text text-transparent'>Key Features</motion.h3>
-          <motion.h4
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
-          whileInView={{
-            opacity: 1,
-            y: 0,
-            transition: { delay: 0.7, duration: 1 },
-          }}
-          className='text-center text-xl md:text-2xl font-light w-[90%] sm:w-[80%] md:w-1/2 mx-auto text-neutral-300 mb-12'>
-            Designed with your privacy and security as the top priority.
-          </motion.h4>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 p-6'>
-          {[
-            {
-          title: 'Timed Messages',
-          description:
-          'Set custom expiration times for your messages, from seconds to days. Once the timer expires, your message is permanently deleted from all devices.',
-          icon: <IoMdTimer size={30} className="mb-2" />,
-            },
-            {
-          title: 'End-to-End Encryption',
-          description:
-          'All messages are encrypted from the moment they leave your device until they reach the recipient. Not even Vanish can read your private conversations.',
-          icon: <IoMdLock size={30} className="mb-2 " />,
-            },
-            {
-          title: 'Screenshot Detection',
-          description:
-          'Get notified immediately when someone takes a screenshot of your messages, giving you complete awareness of how your content is being saved.',
-          icon: <IoMdEye size={30} className="mb-2" />,
-            },
-            {
-          title: 'Secure Group Chats',
-          description:
-          'Create temporary group conversations that automatically dissolve after a set period, perfect for event planning or time-sensitive discussions.',
-          icon: <IoMdPeople size={30} className="mb-2 " />,
-            },
-            {
-          title: 'No Data Storage',
-          description:
-          "Unlike other platforms, we don't store your messages on our servers after they expire. When it's gone, it's truly gone.",
-          icon: <IoMdTrash size={30} className="mb-2" />,
-            },
-            {
-          title: 'Cross-Platform',
-          description:
-          'Available on iOS, Android, and web browsers, allowing you to communicate securely no matter which device you\'re using.',
-          icon: <IoMdPhonePortrait size={30} className="mb-2" />,
-            },
-          ].map((feature, featureIndex) => (
-            <motion.div
-          key={featureIndex}
-          className='bg-gradient-to-br from-white/5 to-white/10 p-8 py-12 rounded-2xl flex flex-col items-center text-center backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-xl'
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.8 + featureIndex * 0.1 }}
-          whileHover={{ y: -5 }}
-            >
-          <div className='text-white mb-4 p-3 rounded-full bg-gradient-to-br from-white/10 to-white/5'>
-            {feature.icon}
-          </div>
-          <h5 className='text-2xl font-bold mb-4 text-white'>
-            {feature.title}
-          </h5>
-          <p className='text-neutral-300 text-base md:text-lg leading-relaxed'>
-            {feature.description}
+          transition={{ duration: 1 }}
+          className="max-w-7xl w-full flex flex-col z-10 items-center"
+        >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center bg-gradient-to-r from-white to-neutral-300 bg-clip-text">
+            Why Choose Vanish?
+          </h2>
+          <p className="text-lg md:text-xl text-neutral-300 mb-10 text-center max-w-2xl">
+            Discover the core features that make Vanish the most secure and private way to connect online.
           </p>
-            </motion.div>
-          ))}
-        </div>
+          <div className="w-full overflow-x-auto pb-4">
+            <div className="flex flex-col gap-6 sm:flex-row sm:overflow-x-auto sm:pb-4 md:grid md:grid-cols-5 md:gap-8 md:min-w-0 overflow-hidden">
+              {[
+                {
+                  title: 'Timed Messages',
+                  description: 'Set custom expiration times for your messages. When the timer ends, your message is gone for good.',
+                  icon: <IoMdTimer size={48} className="mb-4 text-blue-400" />,
+                },
+                {
+                  title: 'End-to-End Encryption',
+                  description: 'Your messages are encrypted from sender to receiver. Only you and your recipient can read them.',
+                  icon: <IoMdLock size={48} className="mb-4 text-purple-400" />,
+                },
+                {
+                  title: 'Secure Group Chats',
+                  description: 'Create temporary group conversations that dissolve after a set period. Perfect for events and private discussions.',
+                  icon: <IoMdPeople size={48} className="mb-4 text-green-400" />,
+                },
+                {
+                  title: 'Cross-Platform',
+                  description: 'Use Vanish on iOS, Android, and web browsers. Stay secure and private on any device.',
+                  icon: <IoMdPhonePortrait size={48} className="mb-4 text-yellow-400" />,
+                },
+                {
+                  title: 'Privacy First',
+                  description: 'We do not collect or sell your personal data. Your activity stays private—always.',
+                  icon: <IoMdEye size={48} className="mb-4 text-pink-400" />,
+                },
+              ].map((feature, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.5 + idx * 0.15 }}
+                  whileHover={{ scale: 1.05, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}
+                  className="flex-shrink-0 bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center min-w-[80vw] sm:min-w-[280px] md:min-w-0 hover:border-white/20 transition-all duration-300"
+                >
+                  <div>{feature.icon}</div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{feature.title}</h3>
+                  <p className="text-neutral-300 text-base md:text-lg leading-relaxed">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </motion.div>
-      </div>
+      </section>
 
       {/* Pricing Section */}
       <div id="pricing-section" className='flex text-white items-center w-screen justify-center flex-col px-4 sm:px-0 py-20 bg-gradient-to-b from-transparent to-black/20'>
