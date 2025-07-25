@@ -249,7 +249,7 @@ export default function Landing() {
               transition: { duration: 1.5, stiffness: 100 },
             }}
           className='p-6 text-3xl md:text-4xl z-10 font-bold'>What is Vanish?</motion.h3>
-        <p className=' text-center z-10 font-light text-lg md:text-xl w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
+        <p className=' text-center pb-10 z-10 font-light text-lg md:text-xl w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
           {vanishDescription.split('').map((char, index) => (
             <motion.span
               key={index}
@@ -271,7 +271,7 @@ export default function Landing() {
           y: 0,
           transition: {delay: 1.2 ,duration: 1.5},
         }}
-        src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-50 sm:scale-70 rounded-3xl mask-b-from-70% '/>
+        src='https://i.postimg.cc/BQCk6Z8v/vanishapp-Preview.png' className='scale-100 sm:scale-70 rounded-3xl mask-b-from-70% '/>
       </div>
       {/* Key Features Section - Redesigned */}
       <section id="features-section" className="w-full flex flex-col items-center justify-center py-20 px-4 sm:px-0">
