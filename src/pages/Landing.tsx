@@ -64,33 +64,31 @@ const AnimatedHeroText = () => {
   return (
     <div className="relative select-none leading-none text-center flex flex-col items-center justify-center min-h-[30vh] w-full">
       <motion.div
-        className="w-full"
-        style={{ fontSize: '7rem', lineHeight: 1 }}
+        className="w-full break-words"
       >
         <motion.span
           initial={{ opacity: 0, y: -100, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1, textShadow: '0 0 24px #fff' }}
           transition={{ duration: 1.2, delay: 1 }}
-          className="text-white font-light px-4"
+          className="text-white font-light px-2 text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] max-w-xs sm:max-w-md md:max-w-2xl mx-auto"
         >
           POST.
         </motion.span>
       </motion.div>
       <motion.div
-        className="w-full"
-        style={{ fontSize: '7rem', lineHeight: 1 }}
+        className="w-full break-words"
       >
         <motion.span
           initial={{ opacity: 0, y: -100, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1, textShadow: '0 0 24px #fff' }}
           transition={{ duration: 1.2, delay: 1.5 }}
-          className="text-white font-light px-4"
+          className="text-white font-light px-2 text-5xl sm:text-6xl md:text-7xl lg:text-[7rem] max-w-xs sm:max-w-md md:max-w-2xl mx-auto"
         >
           SHARE.
         </motion.span>
       </motion.div>
-      <div className="w-full relative flex items-center justify-center" style={{ fontSize: '10rem', lineHeight: 1 }}>
-        <span className="relative text-white font-normal drop-shadow-[0_0_32px_black] px-1 inline-block">
+      <div className="w-full relative flex items-center justify-center break-words">
+        <span className="relative text-white font-normal drop-shadow-[0_0_32px_black] px-1 inline-block text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] max-w-xs sm:max-w-md md:max-w-2xl mx-auto">
           {Array.from('VANISH').map((char, idx) => (
             <motion.span
               key={idx}
@@ -233,7 +231,7 @@ export default function Landing() {
               y: 0,
               transition: { duration: 1.5, stiffness: 100 },
             }}
-          className='p-6 text-3xl md:text-4xl z-10 font-bold'>What is Vanish?</motion.h3>
+          className='p-6 text-4xl z-10 font-normal'>What is Vanish?</motion.h3>
         <p className=' text-center pb-10 z-10 font-light text-lg md:text-xl w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
           {vanishDescription.split('').map((char, index) => (
             <motion.span
@@ -267,7 +265,7 @@ export default function Landing() {
           transition={{ duration: 1 }}
           className="max-w-7xl w-full flex flex-col z-10 items-center"
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center bg-gradient-to-r from-white to-neutral-300 bg-clip-text">
+          <h2 className="text-4xl md:text-5xl font-normal text-white mb-4 text-center">
             Why Choose Vanish?
           </h2>
           <p className="text-lg md:text-xl text-neutral-300 mb-10 text-center max-w-2xl">
@@ -338,7 +336,7 @@ export default function Landing() {
           transition={{ duration: 1, delay: 0.2 }}
           className='text-center mb-16 z-10'
         >
-          <h3 className='text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-neutral-300 h-20 bg-clip-text text-transparent'>
+          <h3 className='text-4xl md:text-5xl lg:text-6xl font-normal mb-6 text-white'>
             Simple Pricing
           </h3>
           <p className='text-xl md:text-2xl text-neutral-300 max-w-2xl mx-auto'>
