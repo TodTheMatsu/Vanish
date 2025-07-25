@@ -75,7 +75,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
         animate={{ backdropFilter: 'blur(0em)' }}
         transition={{delay:2, duration: 2 }}
       ></motion.div>
-      <h1 className='text-white font-bold text-6xl sm:text-7xl md:text-8xl lg:text-9xl absolute select-none'>
+      <h1 className='text-white font-bold text-[7rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] absolute select-none leading-none'>
         {textArray.map((char, index) => (
           <motion.span
             key={index}
@@ -87,7 +87,7 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
           </motion.span>
         ))}
       </h1>
-      <motion.h1 className='text-white font-bold blur-md text-6xl sm:text-7xl md:text-8xl lg:text-9xl select-none'>
+      <motion.h1 className='text-white font-bold blur-md text-[7rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] select-none leading-none'>
         {textArray.map((char, index) => (
           <motion.span
             key={index}
@@ -109,19 +109,30 @@ const AnimatedText = ({ baseOpacity, text }: AnimatedTextProps) => {
 const AnimatedWords = ({text}: AnimatedTextProps) => {
   return (
     <>
-    <motion.h2 className='text-white text-2xl md:text-3xl lg:text-4xl space-x-1'>
-      {text.split(' ').map((word, wordIndex) => (
-        <motion.span
-          key={wordIndex}
-          initial={{ opacity: 0, x: 25 }}
-          animate={{ opacity: 0.9, x: 0 }}
-          transition={{ duration: 0.5, delay: 3 + wordIndex * 0.15 }}
-        >
-          {word}
-        </motion.span>
-      ))}
-    </motion.h2>
-  </>);
+      <motion.h2 className="text-white text-2xl md:text-3xl lg:text-4xl space-x-1 font-bold">
+        {text.split(' ').map((word, wordIndex) => {
+          const cursorDelay = 3 + wordIndex * 0.5 + 0.5;
+          return (
+            <motion.span
+              key={wordIndex}
+              initial={{ opacity: 0, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.7, delay: 3 + wordIndex * 0.5 }}
+              className="inline-block mr-2 relative overflow-hidden whitespace-nowrap drop-shadow-[0_0_32px_white]"
+            >
+              <motion.span
+                initial={{ width: 0 }}
+                animate={{ width: 'auto' }}
+                transition={{ duration: 0.5, delay: 3 + wordIndex * 0.5 }}
+                className="inline-block pr-1 relative"
+              >
+                {word}
+              </motion.span>
+            </motion.span>
+          );
+        })}
+      </motion.h2>
+    </>);
 };
 
 export default function Landing() {
@@ -162,7 +173,7 @@ export default function Landing() {
       <meta name="description" content={vanishDescription} />
       <Particles />
       {/* Hero Section */}
-      <div className='flex items-center h-screen justify-center flex-col relative overflow-hidden'>
+      <div className='flex items-center w-screen h-screen justify-center flex-col relative overflow-hidden'>
         <div className='flex items-center justify-center flex-col z-10'>
           <AnimatedText baseOpacity={baseOpacity} text={text} />
         </div>
