@@ -231,7 +231,7 @@ export default function Landing() {
               y: 0,
               transition: { duration: 1.5, stiffness: 100 },
             }}
-          className='p-6 text-4xl z-10 font-normal'>What is Vanish?</motion.h3>
+          className='p-6 text-4xl md:text-5xl z-10 font-normal'>What is Vanish?</motion.h3>
         <p className=' text-center pb-10 z-10 font-light text-lg md:text-xl w-[90%] sm:w-[80%] md:w-1/2 mx-auto'>
           {vanishDescription.split('').map((char, index) => (
             <motion.span

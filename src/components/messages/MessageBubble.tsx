@@ -112,7 +112,7 @@ export function MessageBubble({ message, conversationId, permissions, conversati
   return (
     <>
       <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-2`}>
-        <div className={`max-w-[85%] -z-10 sm:max-w-md md:max-w-lg lg:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl relative backdrop-blur-sm border ${
+        <div className={`max-w-[85%] sm:max-w-md md:max-w-lg lg:max-w-xl px-3 sm:px-4 py-2 sm:py-3 rounded-xl relative backdrop-blur-sm border ${
           isOwnMessage 
             ? `${message._failed ? 'bg-red-600/80 border-red-500/50' : 'bg-white text-black border-white/20'} ${message._isOptimistic ? 'opacity-70' : ''} shadow-lg` 
             : 'bg-neutral-800/80 text-white border-neutral-700/50 shadow-lg'
@@ -225,7 +225,7 @@ export function MessageBubble({ message, conversationId, permissions, conversati
                 )}
                 {canDelete && (
                   <button
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors cursor-pointer"
                     onClick={handleDelete}
                     disabled={deleteMessage.isPending}
                   >

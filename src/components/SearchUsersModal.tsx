@@ -65,7 +65,7 @@ export default function SearchUsersModal({ show, onClose }: SearchUsersModalProp
             className="bg-neutral-900 rounded-xl p-6 max-w-lg w-full"
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Search Users</h2>
+              <h2 className="text-2xl">Search Users</h2>
               <button onClick={onClose} className="text-neutral-400 hover:text-white">
                 X
               </button>

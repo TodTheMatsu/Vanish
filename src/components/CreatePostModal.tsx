@@ -39,7 +39,7 @@ export default function CreatePostModal({
             <button onClick={onClose} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
               X
             </button>
-            <h2 className="text-2xl text-white font-bold mb-4">Create Post</h2>
+            <h2 className="text-2xl text-white font-normal mb-4">Create Post</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();

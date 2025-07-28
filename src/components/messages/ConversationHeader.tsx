@@ -76,7 +76,7 @@ export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   };
 
   return (
-    <div className="p-4 border-b border-neutral-800 flex items-center bg-neutral-900/80 backdrop-blur-sm">
+    <div className="p-4 border-b z-20 border-neutral-800 flex items-center bg-neutral-900/80 backdrop-blur-sm">
       {/* Mobile Back Button */}
       {showBackButton && onShowConversationList && (
         <button

@@ -65,7 +65,7 @@ export default function Login() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl font-bold mb-6 text-white">Welcome Back</h1>
+            <h1 className="text-4xl font-normal mb-6 text-white">Welcome Back</h1>
             <p className="text-neutral-400 mb-8">Sign in to your account to continue</p>
           </motion.div>
 
@@ -130,7 +130,7 @@ export default function Login() {
               whileTap={{ scale: isLoading ? 1 : 0.98 }}
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-white text-black font-bold relative overflow-hidden group hover:bg-neutral-200 transition-colors"
+              className="w-full py-3 bg-white text-black relative overflow-hidden group hover:bg-neutral-200 transition-colors"
             >
               <span className={`inline-block transition-all duration-200 ${isLoading ? "opacity-0" : "opacity-100"}`}>
                 Sign In

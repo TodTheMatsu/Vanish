@@ -59,7 +59,7 @@ export function PostList({ posts }: PostListProps) {
           </div>
           <div className="flex justify-between text-sm text-neutral-400 mt-auto">
             <span>{post.timestamp.toLocaleString()}</span>
-            <span className="font-bold text-blue-400">{timeLeft(post)}</span>
+            <span className="text-blue-400">{timeLeft(post)}</span>
           </div>
         </motion.div>
       ))}

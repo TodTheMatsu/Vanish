@@ -63,7 +63,7 @@ export default function SettingsModal({
             <button onClick={onClose} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
               X
             </button>
-            <h1 className="text-3xl font-bold mb-6">Settings</h1>
+            <h1 className="text-3xl mb-6">Settings</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Left: Profile Preview */}
               <div className="border border-neutral-700 rounded-lg p-6 flex flex-col items-center space-y-4 bg-neutral-800">

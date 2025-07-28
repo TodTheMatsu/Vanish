@@ -76,16 +76,31 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
       {/* Message Input */}
       <form onSubmit={handleSubmit} className="flex items-start space-x-2">
+        {/* Settings Button */}
+        <button
+          type="button"
+          onClick={() => setShowSettings(!showSettings)}
+          className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-200 flex-shrink-0 ${
+            showSettings 
+              ? 'bg-white text-black shadow-lg' 
+              : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:border-neutral-600'
+          }`}
+          title="Message Settings"
+        >
+          <IoTimeOutline className="w-5 h-5" />
+        </button>
         <div className="flex-1">
           <textarea
             ref={inputRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="w-full px-3 sm:px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 resize-none text-sm sm:text-base backdrop-blur-sm transition-all duration-200 overflow-hidden"
+            className="w-full px-3 sm:px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl
+             text-white placeholder-neutral-400 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 resize-none text-sm sm:text-base
+              backdrop-blur-sm transition-all duration-200 overflow-hidden"
             style={{
               minHeight: '48px',
               maxHeight: '120px',
@@ -107,20 +122,6 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             }}
           />
         </div>
-
-        {/* Settings Button */}
-        <button
-          type="button"
-          onClick={() => setShowSettings(!showSettings)}
-          className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all duration-200 flex-shrink-0 ${
-            showSettings 
-              ? 'bg-white text-black shadow-lg' 
-              : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:text-white hover:border-neutral-600'
-          }`}
-          title="Message Settings"
-        >
-          <IoTimeOutline className="w-5 h-5" />
-        </button>
 
         {/* Send Button */}
         <button

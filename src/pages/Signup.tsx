@@ -121,7 +121,7 @@ export default function Signup() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl font-bold mb-6 text-white">Create Account</h1>
+            <h1 className="text-4xl mb-6 text-white">Create Account</h1>
             <p className="text-neutral-400 mb-8">Join Vanish and take control of your digital footprint</p>
           </motion.div>
 
@@ -243,7 +243,7 @@ export default function Signup() {
               whileTap={{ scale: isLoading ? 1 : 0.98 }}
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-white text-black font-bold relative overflow-hidden group hover:bg-neutral-200 transition-colors"
+              className="w-full py-3 bg-white text-black  relative overflow-hidden group hover:bg-neutral-200 transition-colors"
             >
               <span className={`inline-block transition-all duration-200 ${isLoading ? "opacity-0" : "opacity-100"}`}>
                 Create Account
