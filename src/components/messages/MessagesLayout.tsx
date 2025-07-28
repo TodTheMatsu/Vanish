@@ -11,10 +11,10 @@ interface MessagesLayoutProps {
   onMobileViewChange?: (view: 'list' | 'chat') => void;
 }
 
-export const MessagesLayout: React.FC<MessagesLayoutProps> = ({
+export function MessagesLayout({
   selectedConversationId,
   onMobileViewChange
-}) => {
+}: MessagesLayoutProps) {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(
     selectedConversationId || null
   );

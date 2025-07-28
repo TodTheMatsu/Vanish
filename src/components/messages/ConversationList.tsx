@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useConversations } from '../../hooks/useMessages';
 import { ConversationItem } from './ConversationItem';
 import { NewConversationModal } from './NewConversationModal';
@@ -12,11 +12,11 @@ interface ConversationListProps {
   onClose?: () => void;
 }
 
-export const ConversationList: React.FC<ConversationListProps> = ({
+export function ConversationList({
   selectedConversationId,
   onSelectConversation,
   onClose
-}) => {
+}: ConversationListProps) {
   const { data: conversations, isLoading, error } = useConversations();
   const [showNewConversationModal, setShowNewConversationModal] = useState(false);
   const [showPendingModal, setShowPendingModal] = useState(false);

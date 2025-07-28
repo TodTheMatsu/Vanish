@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { IoCloseOutline, IoTimeOutline, IoSendOutline } from 'react-icons/io5';
 import { ImSpinner8 } from 'react-icons/im';
 
@@ -8,11 +8,11 @@ interface MessageInputProps {
   placeholder?: string;
 }
 
-export const MessageInput: React.FC<MessageInputProps> = ({
+export function MessageInput({
   onSend,
   disabled = false,
   placeholder = "Type a message..."
-}) => {
+}: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [expirationHours, setExpirationHours] = useState(24);
   const [showSettings, setShowSettings] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useConversations, useLeaveConversation } from '../../hooks/useMessages';
 import { ConversationPermissions } from '../../api/messagesApi';
 import { useUser } from '../../UserContext';
@@ -11,12 +11,12 @@ interface ConversationHeaderProps {
   showBackButton?: boolean;
 }
 
-export const ConversationHeader: React.FC<ConversationHeaderProps> = ({ 
+export function ConversationHeader({ 
   conversationId, 
   permissions,
   onShowConversationList,
   showBackButton = false
-}) => {
+}: ConversationHeaderProps) {
   const { data: conversations } = useConversations();
   const safeConversations = Array.isArray(conversations) ? conversations : [];
   const leaveConversation = useLeaveConversation();

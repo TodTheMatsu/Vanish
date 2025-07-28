@@ -1,4 +1,3 @@
-import React from 'react';
 import { Conversation } from '../../api/messagesApi';
 import { useUnreadCount } from '../../hooks/useMessages';
 import { useUser } from '../../UserContext';
@@ -10,11 +9,11 @@ interface ConversationItemProps {
   onClick: () => void;
 }
 
-export const ConversationItem: React.FC<ConversationItemProps> = ({
+export function ConversationItem({
   conversation,
   isSelected,
   onClick
-}) => {
+}: ConversationItemProps) {
   const unreadCount = useUnreadCount(conversation.id);
   const { userId: currentUserId } = useUser();
 

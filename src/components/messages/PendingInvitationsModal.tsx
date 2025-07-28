@@ -1,4 +1,3 @@
-import React from 'react';
 import { createPortal } from 'react-dom';
 import { usePendingInvitations, useAcceptInvitation } from '../../hooks/useMessages';
 import { IoMailOpenOutline } from 'react-icons/io5';
@@ -10,7 +9,7 @@ interface PendingInvitationsModalProps {
   onClose: () => void;
 }
 
-export const PendingInvitationsModal: React.FC<PendingInvitationsModalProps> = ({ isOpen, onClose }) => {
+export function PendingInvitationsModal({ isOpen, onClose }: PendingInvitationsModalProps) {
   const { data: pendingInvitations, isLoading, refetch, isFetching } = usePendingInvitations();
   const acceptInvitation = useAcceptInvitation();
 

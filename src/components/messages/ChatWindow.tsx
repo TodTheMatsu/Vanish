@@ -13,11 +13,11 @@ interface ChatWindowProps {
   showBackButton?: boolean;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ 
+export function ChatWindow({ 
   conversationId, 
   onShowConversationList,
   showBackButton = false 
-}) => {
+}: ChatWindowProps) {
   
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useMessages(conversationId);
   const { data: permissions, isLoadingPermissions } = useConversationPermissions(conversationId);

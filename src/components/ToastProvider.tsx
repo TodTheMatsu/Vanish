@@ -2,7 +2,8 @@ import React, { useState, useCallback, ReactNode } from 'react';
 import { Toast, ToastContext } from '../hooks/useToast';
 import { IoCheckmarkCircle, IoCloseCircle, IoWarning, IoInformationCircle } from 'react-icons/io5';
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+type ToastProviderProps = { children: ReactNode };
+export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((message: string, type: Toast['type'], duration: number = 5000) => {
@@ -31,7 +32,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   );
 };
 
-const ToastContainer: React.FC<{ toasts: Toast[]; onRemove: (id: string) => void }> = ({ toasts, onRemove }) => {
+function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: string) => void }) {
   if (toasts.length === 0) return null;
 
   return (
@@ -43,7 +44,7 @@ const ToastContainer: React.FC<{ toasts: Toast[]; onRemove: (id: string) => void
   );
 };
 
-const ToastItem: React.FC<{ toast: Toast; onRemove: (id: string) => void }> = ({ toast, onRemove }) => {
+function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
   const getToastStyles = () => {
     switch (toast.type) {
       case 'success':
