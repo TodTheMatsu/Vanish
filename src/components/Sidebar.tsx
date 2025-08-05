@@ -14,6 +14,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useUser } from '../UserContext';
 import SearchUsersModal from './SearchUsersModal';
+import { NotificationBell } from './NotificationBell';
+import { NotificationCenter } from './NotificationCenter';
 
 interface SidebarProps {
   onNavigate: (path: string) => void;
@@ -68,6 +70,7 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
   const [isOpen, setIsOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
 
   // Handle window resize for responsive behavior
   useEffect(() => {
@@ -271,6 +274,14 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
                   <IoMailSharp size={20} />
                   {!minimized && <span>Messages</span>}
                 </motion.button>
+                {/* Notification Bell */}
+                <div className={`${minimized ? 'flex justify-center' : ''}`}>
+                  <NotificationBell 
+                    onClick={() => setShowNotificationCenter(true)}
+                    className={`${minimized ? '' : 'w-full'}  `}
+                    minimized={minimized}
+                  />
+                </div>
               </div>
               {/* Divider */}
               <div className="border-b border-neutral-800 my-4 w-full" />
@@ -325,6 +336,12 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
       )}
       {/* Modals */}
       <SearchUsersModal show={showSearch} onClose={() => setShowSearch(false)} />
+      
+      {/* Notification Center */}
+      <NotificationCenter 
+        isOpen={showNotificationCenter} 
+        onClose={() => setShowNotificationCenter(false)}
+      />
     </>
   );
 }

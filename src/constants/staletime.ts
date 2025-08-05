@@ -1,4 +1,7 @@
 const enum StaleTime{
+    // The data is considered fresh for 30 seconds
+    ThirtySeconds = 30 * 1000,
+
     // The data is considered fresh for 1 minut
     OneMinute = 60 * 1000,
 

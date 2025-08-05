@@ -8,6 +8,7 @@ import SettingsModal from '../components/SettingsModal';
 import { usePosts } from '../hooks/usePosts';
 import { useUser } from '../UserContext';
 import { useSettings } from '../hooks/useSettings';
+import { NotificationDebugPanel } from '../components/NotificationDebugPanel';
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -183,6 +184,16 @@ export default function Home() {
               ) : (
                 <PostList posts={posts} />
               )}
+            </motion.div>
+
+            {/* Notification Debug Panel (remove after testing) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="w-full mt-6"
+            >
+              <NotificationDebugPanel />
             </motion.div>
 
             {/* Floating Action Button */}
