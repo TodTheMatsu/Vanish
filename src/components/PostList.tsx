@@ -39,7 +39,7 @@ export function PostList({ posts }: PostListProps) {
             </div>
           </Link>
           <div className="min-h-[50px] mb-4">
-            <p className="text-lg whitespace-pre-wrap">
+            <p className="text-lg whitespace-pre-wrap mb-4">
               {post.content.split(/(\s+)/).map((seg, i) => {
                 // Check if the segment is an image/gif link.
                 const imageRegex = /(https?:\/\/.*\.(?:png|jpe?g|gif|webp))/i;
@@ -56,6 +56,16 @@ export function PostList({ posts }: PostListProps) {
                 return <span key={i}>{seg}</span>;
               })}
             </p>
+            
+            {/* Display dedicated post image */}
+            {post.imageUrl && (
+              <img 
+                src={post.imageUrl} 
+                alt="Post image" 
+                className="w-full rounded-lg object-cover max-h-96" 
+                loading="lazy"
+              />
+            )}
           </div>
           <div className="flex justify-between text-sm text-neutral-400 mt-auto">
             <span>{post.timestamp.toLocaleString()}</span>

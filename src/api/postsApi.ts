@@ -7,7 +7,7 @@ export const postsApi = {
     const { data: raw, error } = await supabase
       .from('posts')
       .select(`
-        id, content, timestamp, expires_in,
+        id, content, timestamp, expires_in, image_url,
         profiles:profiles ( username, display_name, profile_picture )
       `)
       .order('timestamp', { ascending: false });
@@ -18,11 +18,31 @@ export const postsApi = {
   },
 
   // Create a new post
-  async createPost(input: { content: string; expiresIn: number }): Promise<Post> {
+  async createPost(input: { content: string; expiresIn: number; image?: File }): Promise<Post> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
+
+    let imageUrl: string | undefined;
+
+    // Upload image if provided
+    if (input.image) {
+      const fileExt = input.image.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('post-images')
+        .upload(fileName, input.image);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(fileName);
+
+      imageUrl = publicUrl;
+    }
 
     const { data: newRaw, error } = await supabase
       .from('posts')
@@ -31,9 +51,10 @@ export const postsApi = {
         timestamp: new Date().toISOString(),
         expires_in: input.expiresIn,
         author_id: user.id,
+        image_url: imageUrl,
       })
       .select(`
-        id, content, timestamp, expires_in,
+        id, content, timestamp, expires_in, image_url,
         profiles ( username, display_name, profile_picture )
       `)
       .single();
@@ -47,7 +68,7 @@ export const postsApi = {
     const { data, error } = await supabase
       .from('posts')
       .select(`
-        id, content, timestamp, expires_in,
+        id, content, timestamp, expires_in, image_url,
         profiles:profiles ( username, display_name, profile_picture )
       `)
       .eq('profiles.username', username)
@@ -66,6 +87,7 @@ const formatAndFilter = (postsData: any[]): Post[] => {
       content: post.content,
       timestamp: new Date(post.timestamp),
       expiresIn: post.expires_in,
+      imageUrl: post.image_url,
       author: {
         username: post.profiles?.username ?? 'unknown',
         displayName: post.profiles?.display_name ?? 'Unknown',

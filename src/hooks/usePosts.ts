@@ -8,6 +8,7 @@ export interface Post {
   timestamp: Date;
   expiresIn: number;
   author: UserProfile;
+  imageUrl?: string;
 }
 
 export const usePosts = () => {

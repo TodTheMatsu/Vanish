@@ -68,10 +68,10 @@ export default function Home() {
   }, []);
 
   // Handlers for creating a post
-  const handleCreatePost = async () => {
+  const handleCreatePost = async (image?: File) => {
     if (!newPost.trim()) return;
-    await createPost({ content: newPost, expiresIn });
     setNewPost('');
+    await createPost({ content: newPost, expiresIn, image });
   };
 
   const getGreeting = () => {

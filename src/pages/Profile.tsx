@@ -13,10 +13,10 @@ import { useCreateConversation } from '../hooks/useMessages';
 
 export default function Profile() {
   // Handler for creating a post
-  const handleCreatePost = async () => {
+  const handleCreatePost = async (image?: File) => {
     if (!newPost.trim()) return;
-    await createPost({ content: newPost, expiresIn });
     setNewPost('');
+    await createPost({ content: newPost, expiresIn, image });
   };
 
   const { username: routeUsername } = useParams<{ username: string }>();
