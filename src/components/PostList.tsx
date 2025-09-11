@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Post } from '../hooks/usePosts';
 import { Link } from 'react-router-dom';
 import Masonry from 'react-masonry-css';
+import { CommentSection } from './CommentSection';
 interface PostListProps {
   posts: Post[];
 }
@@ -71,6 +72,9 @@ export function PostList({ posts }: PostListProps) {
             <span>{post.timestamp.toLocaleString()}</span>
             <span className="text-blue-400">{timeLeft(post)}</span>
           </div>
+
+          {/* Comments section */}
+          <CommentSection postId={post.id} />
         </motion.div>
       ))}
     </Masonry>
