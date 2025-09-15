@@ -3,7 +3,7 @@ import { Comment } from '../api/commentsApi';
 
 interface CommentListProps {
   comments: Comment[];
-  onReply?: (parentCommentId: number) => void;
+  onReply?: (parentCommentId: number, replyingToAuthor: { username: string; displayName: string }) => void;
   onDelete?: (commentId: number) => void;
   isDeleting?: boolean;
   isLoading?: boolean;
@@ -50,6 +50,7 @@ export function CommentList({
           onReply={onReply}
           onDelete={onDelete}
           isDeleting={isDeleting}
+          level={0}
         />
       ))}
     </div>

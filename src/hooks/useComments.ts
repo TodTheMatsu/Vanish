@@ -19,17 +19,29 @@ export const useComments = (postId: number) => {
       qc.setQueryData<Comment[]>(['comments', postId], (prev) => {
         if (!prev) return [newComment];
 
-        // If it's a reply, add it to the parent comment's replies
-        if (newComment.parentCommentId) {
-          return prev.map(comment => {
+        // Helper function to recursively find and update parent comment
+        const updateReplies = (comments: Comment[]): Comment[] => {
+          return comments.map(comment => {
             if (comment.id === newComment.parentCommentId) {
               return {
                 ...comment,
                 replies: [...(comment.replies || []), newComment],
               };
             }
+            // Recursively check replies
+            if (comment.replies) {
+              return {
+                ...comment,
+                replies: updateReplies(comment.replies),
+              };
+            }
             return comment;
           });
+        };
+
+        // If it's a reply, add it to the parent comment's replies
+        if (newComment.parentCommentId) {
+          return updateReplies(prev);
         }
 
         // Otherwise, add as a top-level comment
@@ -48,15 +60,20 @@ export const useComments = (postId: number) => {
       qc.setQueryData<Comment[]>(['comments', postId], (prev) => {
         if (!prev) return [];
 
-        return prev
-          .map(comment => {
-            // Remove from replies if it's a reply
-            if (comment.replies) {
-              comment.replies = comment.replies.filter(reply => reply.id !== deletedCommentId);
-            }
-            return comment;
-          })
-          .filter(comment => comment.id !== deletedCommentId); // Remove top-level comment
+        // Helper function to recursively find and remove comment
+        const removeComment = (comments: Comment[]): Comment[] => {
+          return comments
+            .map(comment => {
+              // Remove from replies if it's a reply
+              if (comment.replies) {
+                comment.replies = removeComment(comment.replies);
+              }
+              return comment;
+            })
+            .filter(comment => comment.id !== deletedCommentId); // Remove top-level comment
+        };
+
+        return removeComment(prev);
       });
 
       // Update the comment count cache

@@ -1,19 +1,29 @@
 import { motion } from 'framer-motion';
 import { Comment } from '../api/commentsApi';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { supabase } from '../supabaseClient';
 
 interface CommentItemProps {
   comment: Comment;
-  onReply?: (parentCommentId: number) => void;
+  onReply?: (parentCommentId: number, replyingToAuthor: { username: string; displayName: string }) => void;
   onDelete?: (commentId: number) => void;
   isDeleting?: boolean;
-  level?: number; // For nested comments
+  level?: number; // For visual indentation
+  parentAuthor?: {
+    username: string;
+    displayName: string;
+  };
 }
 
-export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0 }: CommentItemProps) {
-  const [showReplies, setShowReplies] = useState(true);
-  const maxLevel = 3; // Maximum nesting level
+export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0, parentAuthor }: CommentItemProps) {
+  const [showReplies, setShowReplies] = useState(false); // Start collapsed
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id || null));
+  }, []);
 
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
@@ -25,11 +35,19 @@ export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0 
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const getTotalRepliesCount = (replies: Comment[]): number => {
+    return replies.reduce((count, reply) => count + 1 + getTotalRepliesCount(reply.replies || []), 0);
+  };
+
+  const totalRepliesCount = comment.replies ? getTotalRepliesCount(comment.replies) : 0;
+
+  const indentClass = level === 0 ? 'mt-4' : level === 1 ? 'ml-6 mt-2' : 'mt-2';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`${level > 0 ? 'ml-8 mt-3' : 'mt-4'} ${level >= maxLevel ? 'opacity-75' : ''}`}
+      className={indentClass}
     >
       <div className="flex space-x-3">
         <Link to={`/profile/${comment.author.username}`}>
@@ -52,30 +70,43 @@ export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0 
             >
               {comment.author.displayName}
             </Link>
-            <span className="text-neutral-400 text-xs">
-              @{comment.author.username}
-            </span>
-            <span className="text-neutral-500 text-xs">·</span>
             <span className="text-neutral-500 text-xs">
               {formatTimeAgo(comment.timestamp)}
             </span>
           </div>
+
+          {parentAuthor && (
+            <div className="text-neutral-400 text-xs mb-2">
+              replying to <Link to={`/profile/${parentAuthor.username}`} className="hover:underline">{parentAuthor.displayName}</Link>
+            </div>
+          )}
 
           <p className="text-white text-sm leading-relaxed mb-2">
             {comment.content}
           </p>
 
           <div className="flex items-center space-x-4 text-xs">
-            {level < maxLevel && onReply && (
+            {level === 0 && comment.replies && comment.replies.length > 0 && (
               <button
-                onClick={() => onReply(comment.id)}
+                onClick={() => setShowReplies(!showReplies)}
+                className="text-neutral-400 hover:text-blue-400 transition-colors flex items-center space-x-1"
+              >
+                {showReplies ? <FiChevronUp className="w-3 h-3" /> : <FiChevronDown className="w-3 h-3" />}
+                <span>{showReplies ? 'Hide' : 'Show'} {totalRepliesCount} {totalRepliesCount === 1 ? 'reply' : 'replies'}</span>
+              </button>
+            )}
+            {onReply && (
+              <button
+                onClick={() => onReply(comment.id, {
+                  username: comment.author.username,
+                  displayName: comment.author.displayName
+                })}
                 className="text-neutral-400 hover:text-blue-400 transition-colors"
               >
                 Reply
               </button>
             )}
-
-            {onDelete && (
+            {onDelete && currentUserId === comment.author.userId && (
               <button
                 onClick={() => onDelete(comment.id)}
                 disabled={isDeleting}
@@ -89,18 +120,14 @@ export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0 
       </div>
 
       {/* Render replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="mt-3">
-          {comment.replies.length > 2 && (
-            <button
-              onClick={() => setShowReplies(!showReplies)}
-              className="text-blue-400 text-xs mb-2 hover:underline"
-            >
-              {showReplies ? 'Hide' : 'Show'} {comment.replies.length} replies
-            </button>
-          )}
-
-          {showReplies && comment.replies.map((reply: Comment) => (
+      {comment.replies && comment.replies.length > 0 && (level === 0 ? showReplies : true) && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="mt-1"
+        >
+          {comment.replies.map((reply: Comment) => (
             <CommentItem
               key={reply.id}
               comment={reply}
@@ -108,9 +135,10 @@ export function CommentItem({ comment, onReply, onDelete, isDeleting, level = 0 
               onDelete={onDelete}
               isDeleting={isDeleting}
               level={level + 1}
+              parentAuthor={comment.author}
             />
           ))}
-        </div>
+        </motion.div>
       )}
     </motion.div>
   );

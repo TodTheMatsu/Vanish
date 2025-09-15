@@ -12,6 +12,7 @@ interface CommentSectionProps {
 export function CommentSection({ postId, initialCommentCount = 0 }: CommentSectionProps) {
   const [showComments, setShowComments] = useState(false);
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyingToAuthor, setReplyingToAuthor] = useState<{ username: string; displayName: string } | null>(null);
 
   const { comments, isLoading, createComment, deleteComment, isCreatingComment, isDeletingComment } = useComments(postId);
   const { data: commentCount = initialCommentCount } = useCommentCount(postId);
@@ -19,14 +20,17 @@ export function CommentSection({ postId, initialCommentCount = 0 }: CommentSecti
   const handleCreateComment = async (content: string, parentCommentId?: number) => {
     await createComment({ postId, content, parentCommentId });
     setReplyingTo(null);
+    setReplyingToAuthor(null);
   };
 
-  const handleReply = (parentCommentId: number) => {
+  const handleReply = (parentCommentId: number, author: { username: string; displayName: string }) => {
     setReplyingTo(parentCommentId);
+    setReplyingToAuthor(author);
   };
 
   const handleCancelReply = () => {
     setReplyingTo(null);
+    setReplyingToAuthor(null);
   };
 
   const handleDeleteComment = async (commentId: number) => {
@@ -90,7 +94,9 @@ export function CommentSection({ postId, initialCommentCount = 0 }: CommentSecti
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <div className="bg-neutral-900 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-white font-semibold mb-4">Reply to comment</h3>
+            <h3 className="text-white font-semibold mb-4">
+              Reply to {replyingToAuthor ? replyingToAuthor.displayName : 'comment'}
+            </h3>
             <AddCommentForm
               onSubmit={handleCreateComment}
               onCancel={handleCancelReply}

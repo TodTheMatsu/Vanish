@@ -6,11 +6,16 @@ export interface Comment {
   content: string;
   timestamp: Date;
   author: {
+    userId: string;
     username: string;
     displayName: string;
     profilePicture: string;
   };
   parentCommentId?: number;
+  replyingTo?: {
+    username: string;
+    displayName: string;
+  };
   replies?: Comment[];
 }
 
@@ -21,10 +26,11 @@ export const commentsApi = {
       .from('comments')
       .select('id, post_id, content, timestamp, parent_comment_id, author_id')
       .eq('post_id', postId)
-      .is('parent_comment_id', null)
       .order('timestamp', { ascending: true });
 
     if (error) throw error;
+
+    if (!raw || raw.length === 0) return [];
 
     // Fetch profiles for all comment authors
     const authorIds = raw?.map(comment => comment.author_id) || [];
@@ -37,27 +43,40 @@ export const commentsApi = {
       profiles?.map(profile => [profile.user_id, profile]) || []
     );
 
-    const comments = raw?.map(comment => ({
+    // Create comment objects
+    const allComments = raw.map(comment => ({
       id: comment.id,
       postId: comment.post_id,
       content: comment.content,
       timestamp: new Date(comment.timestamp),
       parentCommentId: comment.parent_comment_id,
       author: {
+        userId: comment.author_id,
         username: profileMap.get(comment.author_id)?.username ?? 'unknown',
         displayName: profileMap.get(comment.author_id)?.display_name ?? 'Unknown',
         profilePicture: profileMap.get(comment.author_id)?.profile_picture ??
           'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',
       },
-      replies: [] as Comment[],
-    })) ?? [];
+      replies: [],
+    }));
 
-    // Fetch replies for each comment
-    for (const comment of comments) {
-      comment.replies = await this.fetchCommentReplies(comment.id);
+    // Build the tree structure
+    const commentMap = new Map<number, Comment>();
+    const topLevelComments: Comment[] = [];
+
+    for (const comment of allComments) {
+      commentMap.set(comment.id, comment);
+      if (comment.parentCommentId) {
+        const parentComment = commentMap.get(comment.parentCommentId);
+        if (parentComment && parentComment.replies) {
+          parentComment.replies.push(comment);
+        }
+      } else {
+        topLevelComments.push(comment);
+      }
     }
 
-    return comments;
+    return topLevelComments;
   },
 
   // Fetch replies for a specific comment
@@ -83,19 +102,28 @@ export const commentsApi = {
       profiles?.map(profile => [profile.user_id, profile]) || []
     );
 
-    return raw.map(reply => ({
+    const replies = raw.map(reply => ({
       id: reply.id,
       postId: reply.post_id,
       content: reply.content,
       timestamp: new Date(reply.timestamp),
       parentCommentId: reply.parent_comment_id,
       author: {
+        userId: reply.author_id,
         username: profileMap.get(reply.author_id)?.username ?? 'unknown',
         displayName: profileMap.get(reply.author_id)?.display_name ?? 'Unknown',
         profilePicture: profileMap.get(reply.author_id)?.profile_picture ??
           'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmo5MXJsb2U4ZDVlNjU5dzJ4NGRpanY0YTJ0Zm16MnBseHJxMWx1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l41m0CPz6UCnaUmxG/giphy.gif',
       },
+      replies: [] as Comment[],
     }));
+
+    // Recursively fetch replies for each reply
+    for (const reply of replies) {
+      reply.replies = await this.fetchCommentReplies(reply.id);
+    }
+
+    return replies;
   },
 
   // Create a new comment
@@ -141,6 +169,7 @@ export const commentsApi = {
       timestamp: new Date(newRaw.timestamp),
       parentCommentId: newRaw.parent_comment_id,
       author: {
+        userId: user.id,
         username: profile?.username ?? 'unknown',
         displayName: profile?.display_name ?? 'Unknown',
         profilePicture: profile?.profile_picture ??
