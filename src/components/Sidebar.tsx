@@ -8,12 +8,14 @@ import {
   IoAddCircleOutline,
   IoPersonOutline,
   IoMenuOutline,
-  IoSearchSharp
+  IoSearchSharp,
+  IoNotifications
 } from 'react-icons/io5';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useUser } from '../UserContext';
 import SearchUsersModal from './SearchUsersModal';
+import { useNotifications } from '../hooks/useNotifications';
 
 interface SidebarProps {
   onNavigate: (path: string) => void;
@@ -64,6 +66,7 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser: user, isLoading } = useUser();
+  const { unreadCount } = useNotifications();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isOpen, setIsOpen] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -149,6 +152,21 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
           >
             <IoMailSharp size={24} />
             <span className="text-xs">Messages</span>
+          </button>
+          <button
+            onClick={() => onNavigate('/notifications')}
+            className={`flex flex-col items-center justify-center flex-1 h-full ${isActive('/notifications') ? 'text-blue-500' : 'text-white'} relative`}
+            aria-label="Notifications"
+          >
+            <div className="relative">
+              <IoNotifications size={24} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </div>
+            <span className="text-xs">Notifications</span>
           </button>
           {/* Centered Post Button */}
           <div className="relative flex-1 flex justify-center items-center h-full">
@@ -270,6 +288,23 @@ export default function Sidebar({ onNavigate, onSettings, minimized = false }: S
                 >
                   <IoMailSharp size={20} />
                   {!minimized && <span>Messages</span>}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => onNavigate('/notifications')}
+                  className={`flex items-center space-x-3 text-white cursor-pointer w-full p-3 rounded-xl transition-all duration-200 ${isActive('/notifications') ? 'bg-white/10 font-medium' : 'hover:bg-white/5'} ${minimized ? 'justify-center' : ''}`}
+                  aria-label="Notifications"
+                >
+                  <div className="relative">
+                    <IoNotifications size={20} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  {!minimized && <span>Notifications</span>}
                 </motion.button>
               </div>
               {/* Divider */}

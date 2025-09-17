@@ -48,6 +48,29 @@ Deno.serve(async (req) => {
       senderName = senderProfile.display_name;
     }
 
+    // Create in-app notifications for each recipient
+    const notificationsToInsert = recipientIds.map((recipientId: string) => ({
+      user_id: recipientId,
+      type: 'message',
+      title: 'New Message',
+      message: `New message from ${senderName}`,
+      data: {
+        conversationId,
+        senderId,
+        senderName,
+        content: content.substring(0, 100) + (content.length > 100 ? '...' : '')
+      }
+    }));
+
+    const { error: notificationError } = await supabase
+      .from('notifications')
+      .insert(notificationsToInsert);
+
+    if (notificationError) {
+      console.error("Error creating in-app notifications:", notificationError);
+      // Don't return error here, continue with push notification
+    }
+
     // Build OneSignal notification body
     const oneSignalBody = {
       app_id: Deno.env.get("ONESIGNAL_APP_ID")!,

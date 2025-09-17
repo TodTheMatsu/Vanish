@@ -7,12 +7,14 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile'; // import the profile page
 import Messages from './pages/Messages'; // import the messages page
+import Notifications from './pages/Notifications'; // import the notifications page
 import { AuthProvider } from './AuthContext';
 import { UserProvider } from './UserContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider';
 import { OneSignalInitializer } from './OneSignalInitializer';
 import { ConversationSubscriptions } from './components/ConversationSubscriptions';
+import { RealtimeNotificationsProvider } from './components/RealtimeNotificationsProvider';
 import { useMemo, useEffect, useState } from 'react';
 
 // Create a client
@@ -223,9 +225,10 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <UserProvider>
-            <OneSignalInitializer />
-            <ToastProvider>
-              <ConversationSubscriptions />
+              <OneSignalInitializer />
+              <ToastProvider>
+            <RealtimeNotificationsProvider>
+                <ConversationSubscriptions />
               <div className='bg-black min-h-screen overflow-x-hidden w-screen flex items-center flex-col justify-start'>
                 <Routes>
                   <Route path="/" element={<Landing />} />
@@ -246,6 +249,11 @@ function App() {
                       <Messages />
                     </ProtectedRoute>
                   } />
+                  <Route path="/notifications" element={
+                    <ProtectedRoute>
+                      <Notifications />
+                    </ProtectedRoute>
+                  } />
                   {/* Add the route for the profile page */}
                   <Route path="/profile/:username" element={
                     <ProtectedRoute>
@@ -254,6 +262,7 @@ function App() {
                   } />
                 </Routes>
               </div>
+            </RealtimeNotificationsProvider>
             </ToastProvider>
           </UserProvider>
         </AuthProvider>
