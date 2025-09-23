@@ -5,7 +5,8 @@ import Sidebar from '../components/Sidebar';
 import { PostList } from '../components/PostList';
 import CreatePostModal from '../components/CreatePostModal';
 import SettingsModal from '../components/SettingsModal';
-import { usePosts } from '../hooks/usePosts';
+import { PostFocusModal } from '../components/PostFocusModal';
+import { Post, usePosts } from '../hooks/usePosts';
 import { useUser } from '../UserContext';
 import { useSettings } from '../hooks/useSettings';
 export default function Home() {
@@ -19,6 +20,8 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showWelcome, setShowWelcome] = useState(false);
+  const [focusedPost, setFocusedPost] = useState<Post | null>(null);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
   const {
     tempUser,
@@ -43,6 +46,24 @@ export default function Home() {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Handle hash navigation for notifications
+  useEffect(() => {
+    if (location.hash) {
+      const hash = location.hash.substring(1); // Remove the '#'
+      if (hash.startsWith('post-')) {
+        const postId = hash.replace('post-', '');
+        // Find the post in the current posts
+        const post = posts.find(p => p.id.toString() === postId);
+        if (post) {
+          setFocusedPost(post);
+          setIsPostModalOpen(true);
+          // Clear the hash to avoid reopening on refresh
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+    }
+  }, [location.hash, posts]);
 
   // Hide welcome message after 5 seconds, only once per session
   useEffect(() => {
@@ -181,7 +202,10 @@ export default function Home() {
                   </motion.button>
                 </motion.div>
               ) : (
-                <PostList posts={posts} />
+                <PostList
+                  posts={posts}
+
+                />
               )}
             </motion.div>
 
@@ -243,6 +267,16 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Post Focus Modal */}
+        <PostFocusModal
+          post={focusedPost}
+          isOpen={isPostModalOpen}
+          onClose={() => {
+            setIsPostModalOpen(false);
+            setFocusedPost(null);
+          }}
+        />
       </div>
     </div>
   );

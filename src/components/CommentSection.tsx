@@ -6,11 +6,12 @@ import { motion } from 'framer-motion';
 
 interface CommentSectionProps {
   postId: number;
+  showAllComments?: boolean; 
   initialCommentCount?: number;
 }
 
-export function CommentSection({ postId, initialCommentCount = 0 }: CommentSectionProps) {
-  const [showComments, setShowComments] = useState(false);
+export function CommentSection({ postId, showAllComments = false, initialCommentCount = 0}: CommentSectionProps) {
+  const [showComments, setShowComments] = useState(showAllComments);
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyingToAuthor, setReplyingToAuthor] = useState<{ username: string; displayName: string } | null>(null);
 
@@ -40,7 +41,7 @@ export function CommentSection({ postId, initialCommentCount = 0 }: CommentSecti
   };
 
   return (
-    <div className="mt-4 border-t border-neutral-800 pt-4">
+    <div className="mt-4 pt-4">
       {/* Comment toggle */}
       <button
         onClick={() => setShowComments(!showComments)}

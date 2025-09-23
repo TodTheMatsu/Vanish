@@ -3,6 +3,10 @@ import { Post } from '../hooks/usePosts';
 import { Link } from 'react-router-dom';
 import Masonry from 'react-masonry-css';
 import { CommentSection } from './CommentSection';
+
+interface PostListProps {
+  posts: Post[];
+}
 interface PostListProps {
   posts: Post[];
 }
@@ -23,6 +27,7 @@ export function PostList({ posts }: PostListProps) {
       {posts.map(post => (
         <motion.div
           key={post.id}
+          id={`post-${post.id}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-4 pt-4 mb-4 md:p-6 bg-neutral-900 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-all break-words w-full max-w-full"
@@ -68,9 +73,11 @@ export function PostList({ posts }: PostListProps) {
               />
             )}
           </div>
-          <div className="flex justify-between text-sm text-neutral-400 mt-auto">
+          <div className="flex justify-between items-center text-sm text-neutral-400 mt-auto">
             <span>{post.timestamp.toLocaleString()}</span>
-            <span className="text-blue-400">{timeLeft(post)}</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-blue-400">{timeLeft(post)}</span>
+            </div>
           </div>
 
           {/* Comments section */}
