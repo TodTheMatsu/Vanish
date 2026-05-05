@@ -101,7 +101,7 @@ export default function Signup() {
       setIsLoading(false);
     } else {
       setErrorMsg('');
-      navigate('/login');
+      navigate('/home');
     }
   };
 

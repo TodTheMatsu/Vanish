@@ -1,6 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -15,7 +14,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // new state
-  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -91,7 +89,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     setIsAuthenticated(true);
-    navigate('/home');
     return "";
   };
 
