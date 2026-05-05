@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -87,7 +88,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return profileError.message;
     }
 
+
+    const { error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email: email
+    })
+    if (resendError) {
+      return resendError.message;
+    }
+
+
     setIsAuthenticated(true);
+    const navigate = useNavigate();
+    navigate('/home');
     return "";
   };
 
