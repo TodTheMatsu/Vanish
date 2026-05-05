@@ -15,6 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // new state
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -90,7 +91,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     setIsAuthenticated(true);
-    const navigate = useNavigate();
     navigate('/home');
     return "";
   };
