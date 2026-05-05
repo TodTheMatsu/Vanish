@@ -80,8 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         {
           user_id: signUpData.user.id,  // Added user_id field for non-null constraint
           username: sanitizedUsername,
-          display_name: sanitizedUsername,
-          email
+          display_name: sanitizedUsername
         }
       ]);
     if (profileError) {
