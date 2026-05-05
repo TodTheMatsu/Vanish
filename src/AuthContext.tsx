@@ -89,15 +89,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
 
-    const { error: resendError } = await supabase.auth.resend({
-      type: 'signup',
-      email: email
-    })
-    if (resendError) {
-      return resendError.message;
-    }
-
-
     setIsAuthenticated(true);
     const navigate = useNavigate();
     navigate('/home');
